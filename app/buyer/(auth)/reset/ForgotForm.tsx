@@ -31,7 +31,9 @@ const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
       localStorage.clear();
       setIsLoading(true);
 
-      const response = await axios.post(`${forgetForm}`, data);
+      // const response = await axios.post(`${forgetForm}`, data);
+      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/password/forgot'
+      const response = await axios.post(endpoint, data)
       const responseJson = response.data.data;
 
       if (responseJson.token !== null) {

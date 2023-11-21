@@ -11,7 +11,6 @@ import { toast } from "react-hot-toast";
 import Input from "../../../components/inputs/Input";
 import Heading from "../../../components/products/Heading";
 import Button from "../../../components/Button";
-import { checkMiddlewareAuth, middlewareAuth } from "../../../middleware";
 import { loginForm } from "@/utils/api";
 
 const LoginForm = () => {
@@ -31,14 +30,16 @@ const LoginForm = () => {
       setIsLoading(true);
       localStorage.clear();
 
-      const response = await axios.post(`${loginForm}`, data);
+      // const response = await axios.post(`${loginForm}`, data);
+      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/login'
+      const response = await axios.post(endpoint, data)
       const responseData = response.data.data;
       const responsePayload = responseData.payload;
 
       if (responseData.token !== null) {
-        localStorage.setItem('email', responsePayload.email);
+        // localStorage.setItem('email', responsePayload.email);
         localStorage.setItem('token', responseData.token);
-        localStorage.setItem('is_verified', responsePayload.is_verified);
+        // localStorage.setItem('is_verified', responsePayload.is_verified);
         localStorage.setItem('is_login', 'true')
 
         if (responsePayload.is_verified === false) {
@@ -66,8 +67,6 @@ const LoginForm = () => {
       router.push('/');
     };
 
-    checkMiddlewareAuth(onAuthSuccess, router)();
-    middlewareAuth(() => { }, router)();
   }, [router]);
 
   return (

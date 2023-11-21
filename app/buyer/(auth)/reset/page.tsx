@@ -1,19 +1,17 @@
 'use client'
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import Container from "@/app/components/Container";
 import FormWrap from "@/app/components/FormWrap";
 import ForgetForm from "./ForgotForm";
 import ResetForm from "./ResetForm";
 import VerifyToken from "./VerifyToken";
-import { useRouter } from "next/navigation";
-import { checkMiddlewareAuth, middlewareAuth } from "@/app/middleware";
 
 const Reset = () => {
   const [isForgetFormSubmitted, setIsForgetFormSubmitted] = useState(false);
   const [isTokenVerified, setIsTokenVerified] = useState(false);
-  const token = localStorage.getItem('token');
 
   const router = useRouter();
 
@@ -30,8 +28,6 @@ const Reset = () => {
       router.push('/');
     };
 
-    checkMiddlewareAuth(onAuthSuccess, router)();
-    middlewareAuth(() => { }, router)();
   }, [router]);
 
   return (

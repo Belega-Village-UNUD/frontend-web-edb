@@ -9,7 +9,7 @@ import Footer from './components/footer/Footer'
 
 dotenv.config();
 
-const poppins = Poppins({ subsets: ['latin'], weight: ['400','700'] })
+const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] })
 
 export const metadata: Metadata = {
   title: 'B-Commerce',
@@ -21,12 +21,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-
   return (
-    <html lang="en">
+    <html lang="id">
       <body className={`${poppins.className} text-slate-700`}>
         <div className='flex flex-col min-h-screen'>
-          <Toaster /> 
+          <Toaster />
           <NavBar />
           <main className='flew-grow'>{children}</main>
           <Footer />

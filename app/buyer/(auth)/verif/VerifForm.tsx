@@ -45,14 +45,16 @@ const VerifForm = () => {
       const token = localStorage.getItem('token');
 
       if (!token) {
-        toast.error('Email dan token tidak tersedia');
+        toast.error('Token tidak tersedia');
         setIsLoading(false);
         return;
       }
 
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      const response = await axios.post(`${verifyForm}`, data);
+      // const response = await axios.post(`${verifyForm}`, data);
+      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/otp/verify'
+      const response = await axios.post(endpoint, data)
       const responseJson = response.data;
 
       if (responseJson.data.token !== null) {
@@ -117,6 +119,9 @@ const VerifForm = () => {
       <Button outline label={isLoading ? 'Loading' : 'Masukkan OTP'} onClick={handleSubmit(onSubmit)} />
       {countdown > 0 && (
         <p className="text-sm">Waktu OTP tersisa : {formatCountdown()} detik</p>
+        // <span className="countdown">
+        //   <span style={{ "--value": 54 }}></span>
+        // </span>
       )}
       {countdown === 0 && (
         <p className="text-base">

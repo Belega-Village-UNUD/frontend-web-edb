@@ -12,7 +12,6 @@ import toast from "react-hot-toast";
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [decodedRoleId, setDecodedRoleId] = useState<string | null>(null);
 
   const router = useRouter()
 
@@ -35,7 +34,9 @@ const UserMenu = () => {
   }
 
   const currentUser = () => {
-    return localStorage.getItem('token') && localStorage.getItem('email')
+    const logged = localStorage.getItem('is_login')
+    if (!logged || logged === 'false') { return false }
+    return true
   }
 
   return (

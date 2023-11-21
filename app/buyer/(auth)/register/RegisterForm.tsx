@@ -11,7 +11,6 @@ import toast from "react-hot-toast";
 import Input from "../../../components/inputs/Input";
 import Heading from "../../../components/products/Heading";
 import Button from "../../../components/Button";
-import { checkMiddlewareAuth, middlewareAuth } from "@/app/middleware";
 import { registerForm } from "@/utils/api";
 
 const RegisterForm = () => {
@@ -33,7 +32,9 @@ const RegisterForm = () => {
       localStorage.clear();
       setIsLoading(true);
 
-      const response = await axios.post(`${registerForm}`, data);
+      // const response = await axios.post(`${registerForm}`, data);
+      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/register'
+      const response = await axios.post(endpoint, data)
       const responseJson = response.data;
 
       if (responseJson.data.token !== null) {
@@ -56,9 +57,6 @@ const RegisterForm = () => {
     const onAuthSuccess = () => {
       router.push('/');
     };
-
-    checkMiddlewareAuth(onAuthSuccess, router)();
-    middlewareAuth(() => { }, router)();
   }, [getValues, router])
 
   return (
