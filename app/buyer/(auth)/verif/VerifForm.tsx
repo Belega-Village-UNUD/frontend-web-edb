@@ -86,12 +86,14 @@ const VerifForm = () => {
 
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      const response = await axios.post(`${resendOtpForm}`, params);
+      // const response = await axios.post(`${resendOtpForm}`, params);
+      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/otp'
+      const response = await axios.post(endpoint, params)
+      console.log(response)
       const responseJson = response.data;
 
       if (responseJson.success === true) {
         toast.success(responseJson.message);
-        router.push('/buyer/verif');
         setIsLoading(false);
       }
 
@@ -119,9 +121,6 @@ const VerifForm = () => {
       <Button outline label={isLoading ? 'Loading' : 'Masukkan OTP'} onClick={handleSubmit(onSubmit)} />
       {countdown > 0 && (
         <p className="text-sm">Waktu OTP tersisa : {formatCountdown()} detik</p>
-        // <span className="countdown">
-        //   <span style={{ "--value": 54 }}></span>
-        // </span>
       )}
       {countdown === 0 && (
         <p className="text-base">

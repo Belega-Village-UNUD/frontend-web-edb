@@ -23,6 +23,7 @@ const NavBar = () => {
               <Link href="/" className={`${redressed.className} font-bold text-2xl`}>B-commerce</Link>
               <SearchBar />
               <div className='flex items-center gap-8 md:gap-12'>
+                <div>Cart</div>
                 <UserMenu />
               </div>
             </div>

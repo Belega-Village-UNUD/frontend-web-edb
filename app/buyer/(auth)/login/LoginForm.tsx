@@ -12,6 +12,7 @@ import Input from "../../../components/inputs/Input";
 import Heading from "../../../components/products/Heading";
 import Button from "../../../components/Button";
 import { loginForm } from "@/utils/api";
+import { login } from "@/lib/auth";
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +32,9 @@ const LoginForm = () => {
       localStorage.clear();
 
       // const response = await axios.post(`${loginForm}`, data);
-      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/login'
-      const response = await axios.post(endpoint, data)
+      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api'
+      // const response = await axios.post(endpoint, data)
+      const response = await login(data)
       const responseData = response.data.data;
       const responsePayload = responseData.payload;
 
@@ -63,9 +65,10 @@ const LoginForm = () => {
   }
 
   useEffect(() => {
-    const onAuthSuccess = () => {
+    const isLoged = localStorage.getItem('is_login');
+    if (isLoged === 'true') {
       router.push('/');
-    };
+    }
 
   }, [router]);
 

@@ -17,9 +17,6 @@ interface ForgetFormProps {
 
 const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-
-  const router = useRouter();
-
   const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
     defaultValues: {
       email: "",
