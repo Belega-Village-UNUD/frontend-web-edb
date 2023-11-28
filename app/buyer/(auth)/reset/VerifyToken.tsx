@@ -4,7 +4,6 @@ import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-import { verifyForm } from "@/utils/api";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/products/Heading";
@@ -38,8 +37,9 @@ const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       // const response = await axios.post(`${verifyForm}`, data);
-      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/otp/verify'
-      const response = await axios.post(endpoint, data)
+      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/otp/verify'
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/otp/verify`;
+      const response = await axios.post(url, data)
       const responseJson = response.data;
 
       if (responseJson.success === true) {
