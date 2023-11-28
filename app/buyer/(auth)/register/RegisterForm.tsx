@@ -1,17 +1,15 @@
 "use client";
 
+import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import Link from "next/link";
-import { AiOutlineGoogle } from "react-icons/ai";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
+import Button from "../../../components/Button";
 import Input from "../../../components/inputs/Input";
 import Heading from "../../../components/products/Heading";
-import Button from "../../../components/Button";
-import { registerForm } from "@/utils/api";
 
 const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,8 +31,9 @@ const RegisterForm = () => {
       setIsLoading(true);
 
       // const response = await axios.post(`${registerForm}`, data);
-      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/register'
-      const response = await axios.post(endpoint, data)
+      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/register'
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/register`;
+      const response = await axios.post(url, data)
       const responseJson = response.data;
 
       if (responseJson.data.token !== null) {

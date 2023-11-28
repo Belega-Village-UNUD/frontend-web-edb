@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { FieldValues, SubmitHandler, set, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
+import Button from "../../../components/Button";
 import Input from "../../../components/inputs/Input";
 import Heading from "../../../components/products/Heading";
-import Button from "../../../components/Button";
-import { forgetForm } from "@/utils/api";
 
 interface ForgetFormProps {
   onForgetFormSubmit: () => void;
@@ -29,8 +27,9 @@ const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
       setIsLoading(true);
 
       // const response = await axios.post(`${forgetForm}`, data);
-      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/password/forgot'
-      const response = await axios.post(endpoint, data)
+      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/password/forgot'
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/password/forgot`;
+      const response = await axios.post(url, data)
       const responseJson = response.data.data;
 
       if (responseJson.token !== null) {
