@@ -1,16 +1,15 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
-import Input from "../../../components/inputs/Input";
-import Heading from "../../../components/products/Heading";
-import Button from "../../../components/Button";
 import axios from "axios";
 import Link from "next/link";
-import { resendOtpForm, verifyForm } from "@/utils/api";
+import Button from "../../../components/Button";
+import Input from "../../../components/inputs/Input";
+import Heading from "../../../components/products/Heading";
 
 const VerifForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -87,9 +86,9 @@ const VerifForm = () => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       // const response = await axios.post(`${resendOtpForm}`, params);
-      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/otp'
-      const response = await axios.post(endpoint, params)
-      console.log(response)
+      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/otp'
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/otp`;
+      const response = await axios.post(url, params)
       const responseJson = response.data;
 
       if (responseJson.success === true) {

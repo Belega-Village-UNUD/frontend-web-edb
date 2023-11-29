@@ -1,18 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { AiOutlineGoogle } from "react-icons/ai";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { toast } from "react-hot-toast";
+import { useEffect, useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
+import axios from "axios";
+import toast from "react-hot-toast";
+import Button from "../../../components/Button";
 import Input from "../../../components/inputs/Input";
 import Heading from "../../../components/products/Heading";
-import Button from "../../../components/Button";
-import { loginForm } from "@/utils/api";
-import { login } from "@/lib/auth";
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,10 +28,9 @@ const LoginForm = () => {
       setIsLoading(true);
       localStorage.clear();
 
-      // const response = await axios.post(`${loginForm}`, data);
-      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api'
-      // const response = await axios.post(endpoint, data)
-      const response = await login(data)
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
+      const response = await axios.post(url, data)
+      console.log("🚀 ~ file: LoginForm.tsx:36 ~ constonSubmit:SubmitHandler<FieldValues>= ~ response:", response)
       const responseData = response.data.data;
       const responsePayload = responseData.payload;
 
@@ -56,7 +52,6 @@ const LoginForm = () => {
         router.push('/');
         setIsLoading(false);
       }
-
     }
     catch (error: any) {
       toast.error(error.response.data.message)

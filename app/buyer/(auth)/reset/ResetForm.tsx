@@ -1,13 +1,12 @@
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 
 import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/products/Heading";
-import { resetForm } from "@/utils/api";
 
 interface ResetFormProps {
   onSubmit: () => void;
@@ -42,8 +41,9 @@ const ResetForm = ({ onSubmit }: ResetFormProps) => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       // const response = await axios.put(`${resetForm}`, data);
-      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/password/reset'
-      const response = await axios.put(endpoint, data)
+      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/password/reset'
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/password/reset`;
+      const response = await axios.put(url, data)
       const responseJson = response.data;
 
       if (responseJson.success === true) {
