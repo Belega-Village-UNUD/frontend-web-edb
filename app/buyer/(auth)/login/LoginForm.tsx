@@ -16,12 +16,16 @@ const LoginForm = () => {
 
   const router = useRouter();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FieldValues>({
     defaultValues: {
       email: "",
       password: "",
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
@@ -29,42 +33,43 @@ const LoginForm = () => {
       localStorage.clear();
 
       const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
-      const response = await axios.post(url, data)
-      console.log("🚀 ~ file: LoginForm.tsx:36 ~ constonSubmit:SubmitHandler<FieldValues>= ~ response:", response)
+      const response = await axios.post(url, data);
+      console.log(
+        "🚀 ~ file: LoginForm.tsx:36 ~ constonSubmit:SubmitHandler<FieldValues>= ~ response:",
+        response
+      );
       const responseData = response.data.data;
       const responsePayload = responseData.payload;
 
       if (responseData.token !== null) {
         // localStorage.setItem('email', responsePayload.email);
-        localStorage.setItem('token', responseData.token);
+        localStorage.setItem("token", responseData.token);
         // localStorage.setItem('is_verified', responsePayload.is_verified);
-        localStorage.setItem('is_login', 'true')
+        localStorage.setItem("is_login", "true");
 
         if (responsePayload.is_verified === false) {
           toast("Akun anda belum diverifikasi, silahkan cek email anda", {
-            icon: '❗',
+            icon: "❗",
           });
-          router.push('/buyer/verif');
-          return
+          router.push("/buyer/verif");
+          return;
         }
 
         toast.success("Login berhasil");
-        router.push('/');
+        router.push("/");
         setIsLoading(false);
       }
-    }
-    catch (error: any) {
-      toast.error(error.response.data.message)
+    } catch (error: any) {
+      toast.error(error.response.data.message);
       setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    const isLoged = localStorage.getItem('is_login');
-    if (isLoged === 'true') {
-      router.push('/');
+    const isLoged = localStorage.getItem("is_login");
+    if (isLoged === "true") {
+      router.push("/");
     }
-
   }, [router]);
 
   return (
@@ -73,14 +78,45 @@ const LoginForm = () => {
       {/* <Button outline label="Log In with Google" icon={AiOutlineGoogle} onClick={() => { }} /> */}
       <hr className="bg-slate-300 w-full h-px" />
       <p className="text-base">
-        Belum punya akun? <Link href='/buyer/register' className="text-lime-500 hover:text-lime-700 hover:underline">Daftar</Link>
+        Belum punya akun?{" "}
+        <Link
+          href="/buyer/register"
+          className="text-lime-500 hover:text-lime-700 hover:underline"
+        >
+          Daftar
+        </Link>
       </p>
-      <Input id="email" label="Email" type="email" disable={isLoading} register={register} errors={errors} required />
-      <Input id="password" label="Password" disable={isLoading} register={register} errors={errors} type="password" required />
-      <Button outline label={isLoading ? 'Loading' : 'Masuk'} onClick={handleSubmit(onSubmit)} />
-      <Link href='/buyer/reset' className="text-lime-500 hover:text-lime-700 hover:underline">Lupa Password?</Link>
+      <Input
+        id="email"
+        label="Email"
+        type="email"
+        disable={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+      <Input
+        id="password"
+        label="Password"
+        disable={isLoading}
+        register={register}
+        errors={errors}
+        type="password"
+        required
+      />
+      <Button
+        outline
+        label={isLoading ? "Loading" : "Masuk"}
+        onClick={handleSubmit(onSubmit)}
+      />
+      <Link
+        href="/buyer/reset"
+        className="text-lime-500 hover:text-lime-700 hover:underline"
+      >
+        Lupa Password?
+      </Link>
     </>
   );
-}
+};
 
 export default LoginForm;

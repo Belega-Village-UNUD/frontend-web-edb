@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 
-const {parse: parseEnv} = require('dotenv').config();
+//const {parse: parseEnv} = require('dotenv').config();
 
 const nextConfig = {
   images: {
-    domains: ['firebasestorage.googleapis.com', 'lh3.googleusercontent.com'],
+    domains: ["firebasestorage.googleapis.com", "lh3.googleusercontent.com"],
   },
-  // env: {
-  //   NEXT_PUBLIC_API_URL: parseEnv.NEXT_PUBLIC_API_URL,
-  // }
-}
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
