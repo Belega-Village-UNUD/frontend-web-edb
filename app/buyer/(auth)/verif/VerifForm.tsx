@@ -52,7 +52,7 @@ const VerifForm = () => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       // const response = await axios.post(`${verifyForm}`, data);
-      const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/otp/verify'
+      const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/auth/otp/verify`
       const response = await axios.post(endpoint, data)
       const responseJson = response.data;
 

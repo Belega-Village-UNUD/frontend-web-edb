@@ -28,9 +28,9 @@ const LoginForm = () => {
       setIsLoading(true);
       localStorage.clear();
 
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
-      const response = await axios.post(url, data)
-      console.log("🚀 ~ file: LoginForm.tsx:36 ~ constonSubmit:SubmitHandler<FieldValues>= ~ response:", response)
+      // const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, data)
+      // const response = await postLogin(data)
       const responseData = response.data.data;
       const responsePayload = responseData.payload;
 
@@ -44,6 +44,24 @@ const LoginForm = () => {
           toast("Akun anda belum diverifikasi, silahkan cek email anda", {
             icon: '❗',
           });
+          const token = localStorage.getItem('token');
+          const email = localStorage.getItem('email');
+
+          let params = null
+
+          if (!token) { params = { email: email }; }
+
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+          const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/otp`;
+          const response = await axios.post(url, params)
+          const responseJson = response.data;
+
+          if (responseJson.success === true) {
+            toast.success(responseJson.message);
+            setIsLoading(false);
+          }
+
           router.push('/buyer/verif');
           return
         }

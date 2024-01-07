@@ -1,6 +1,3 @@
-"use server"
-require('dotenv').config();
-
 const login = async (data: any) => {
   const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
   console.log("🚀 ~ file: auth.tsx:8 ~ login ~ url:", url)

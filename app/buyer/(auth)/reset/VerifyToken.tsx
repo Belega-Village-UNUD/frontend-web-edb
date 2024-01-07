@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -7,7 +6,6 @@ import toast from "react-hot-toast";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
 import Heading from "@/app/components/products/Heading";
-
 interface ResetFormProps {
   onTokenVerified: () => void;
 }
@@ -26,7 +24,7 @@ const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
     try {
       setIsLoading(true);
 
-      const token = localStorage.getItem('token');
+      const token = await localStorage.getItem('token');
 
       if (!token) {
         toast.error('Token tidak tersedia');
@@ -34,24 +32,42 @@ const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
         return;
       }
 
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/otp/verify`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
 
-      // const response = await axios.post(`${verifyForm}`, data);
-      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/otp/verify'
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/otp/verify`;
-      const response = await axios.post(url, data)
-      const responseJson = response.data;
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
 
-      if (responseJson.success === true) {
+      const responseJson = await response.json();
+
+      if (responseJson.data.success === true) {
         localStorage.setItem('token', responseJson.data.token);
-
-        toast.success(responseJson.message);
+        toast.success(responseJson.data.message);
         setIsLoading(false);
         onTokenVerified();
       }
+      // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      // const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/otp/verify`, data)
+      // const responseJson = response.data;
+
+      // if (response.data.success === true) {
+      //   localStorage.setItem('token', response.data.token);
+      //   toast.success(response.data.message);
+      //   setIsLoading(false);
+      //   onTokenVerified();
+      // }
 
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      // toast.error(error.response.message);
+      console.log(error);
       setIsLoading(false);
     }
   }

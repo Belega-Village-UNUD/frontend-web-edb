@@ -30,10 +30,7 @@ const RegisterForm = () => {
       localStorage.clear();
       setIsLoading(true);
 
-      // const response = await axios.post(`${registerForm}`, data);
-      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/register'
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/register`;
-      const response = await axios.post(url, data)
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, data)
       const responseJson = response.data;
 
       if (responseJson.data.token !== null) {

@@ -42,8 +42,8 @@ const ResetForm = ({ onSubmit }: ResetFormProps) => {
 
       // const response = await axios.put(`${resetForm}`, data);
       // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/password/reset'
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/password/reset`;
-      const response = await axios.put(url, data)
+      // const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/password/reset`;
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/auth/password/reset`, data)
       const responseJson = response.data;
 
       if (responseJson.success === true) {
