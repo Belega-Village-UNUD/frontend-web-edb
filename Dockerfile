@@ -5,6 +5,10 @@ COPY ./package.json ./
 RUN npm install
 COPY ./ ./
 COPY .env .env.local
-EXPOSE ${PORT}
+
+# Build
+FROM base as build
+WORKDIR /build
+COPY --from=base ./usr/app ./
 RUN npm run build
-CMD ["npm", "run", "start"]
+
