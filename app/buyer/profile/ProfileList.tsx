@@ -17,20 +17,22 @@ interface User {
 
 const ProfileList = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [userPhone, setUserPhone] = useState('');
-  const [userImage, setUserImage] = useState(null);
-  const [userAddress, setUserAddress] = useState('');
+  // const [userName, setUserName] = useState('');
+  // const [userEmail, setUserEmail] = useState('');
+  // const [userPhone, setUserPhone] = useState('');
+  // const [userImage, setUserImage] = useState(null);
+  // const [userAddress, setUserAddress] = useState('');
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-    }
-  });
+  // const { register, handleSubmit, setValue, formState: { errors } } = useForm<FieldValues>({
+  //   defaultValues: {
+  //     name: userName || "",
+  //     email: userEmail || "",
+  //     phone: userPhone || "",
+  //     address: userAddress || "",
+  //   }
+  // });
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FieldValues>()
 
   const handleGetProfile = async () => {
     const token = await localStorage.getItem('token');
@@ -48,11 +50,16 @@ const ProfileList = () => {
       const responseJson = await response.json();
 
       if (responseJson.success) {
-        setUserName(responseJson.data.profile.name);
-        setUserEmail(responseJson.data.user.email);
-        setUserPhone(responseJson.data.profile.phone);
-        setUserImage(responseJson.data.profile.avatar_link);
-        setUserAddress(responseJson.data.profile.address);
+        // setUserName(responseJson.data.profile.name);
+        // setUserEmail(responseJson.data.user.email);
+        // setUserPhone(responseJson.data.profile.phone);
+        // setUserImage(responseJson.data.profile.avatar_link);
+        // setUserAddress(responseJson.data.profile.address);
+
+        setValue('name', responseJson.data.profile.name);
+        setValue('email', responseJson.data.user.email);
+        setValue('phone', responseJson.data.profile.phone);
+        setValue('address', responseJson.data.profile.address);
       }
     } catch (error) {
       console.log(error);
@@ -101,7 +108,7 @@ const ProfileList = () => {
 
   useEffect(() => {
     handleGetProfile();
-  }, [handleGetProfile]);
+  }, []);
 
   return (
     <div className="space-y-10 divide-y divide-gray-900/10 m-3">
@@ -138,7 +145,6 @@ const ProfileList = () => {
                   <Input
                     type="text"
                     id="name"
-                    value={userName || ''}
                     register={register}
                     {...register('name')}
                     label='Full Name'
@@ -156,12 +162,11 @@ const ProfileList = () => {
                   <Input
                     type="email"
                     id="email"
-                    value={userEmail || ''}
                     label='Email'
                     errors={errors}
                     register={register}
                     {...register('email')}
-                    readonly={true}
+                    readonly
                   />
                 </div>
               </div>
@@ -174,7 +179,6 @@ const ProfileList = () => {
                   <Input
                     type="text"
                     id="address"
-                    value={userAddress || ''}
                     register={register}
                     {...register('address')}
                     label='Address'
@@ -204,7 +208,6 @@ const ProfileList = () => {
                   <Input
                     type="number"
                     id="phone"
-                    value={userPhone || ''}
                     register={register}
                     {...register('phone')}
                     label='Phone Number'

@@ -29,7 +29,7 @@ const Input: React.FC<InputProps> = ({
   type = 'text',
   disable,
   required,
-  readonly = false,
+  readonly,
   value,
   placeholder,
   validate,
