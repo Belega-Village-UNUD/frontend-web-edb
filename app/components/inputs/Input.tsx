@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UseFormRegister, FieldValues, FieldErrors, useForm } from "react-hook-form";
+import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const isValidEmail = (value: string): boolean => {
@@ -12,9 +12,12 @@ const isValidEmail = (value: string): boolean => {
 interface InputProps {
   id: string;
   label: string;
-  type?: 'text' | 'password' | 'email';
+  type?: 'text' | 'password' | 'email' | 'number';
   disable?: boolean;
   required?: boolean;
+  readonly?: boolean;
+  value?: string;
+  placeholder?: string;
   validate?: (value: any) => true | string;
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors | any;
@@ -26,6 +29,9 @@ const Input: React.FC<InputProps> = ({
   type = 'text',
   disable,
   required,
+  readonly = false,
+  value,
+  placeholder,
   validate,
   register,
   errors,
@@ -53,7 +59,8 @@ const Input: React.FC<InputProps> = ({
             return validate?.(value) || true;
           }
         })}
-        placeholder=""
+        placeholder={placeholder}
+        readOnly={readonly}
         type={type === "password" ? (isPasswordVisible ? "text" : "password") : type}
         className={`peer w-full p-4 pt-6 outline-none bg-white font-light border-2 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed ${errors[id] ? "border-red-500" : "border-slate-300"} 
           ${errors[id]
@@ -61,6 +68,7 @@ const Input: React.FC<InputProps> = ({
             : "peer-focus:border-lime-600"
           }`
         }
+        value={value}
       />
 
       {type === "password" && (

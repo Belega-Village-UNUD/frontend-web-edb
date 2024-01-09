@@ -1,4 +1,3 @@
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -12,7 +11,6 @@ interface ResetFormProps {
 
 const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
     defaultValues: {
@@ -41,33 +39,20 @@ const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
         body: JSON.stringify(data)
       })
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-
       const responseJson = await response.json();
 
-      if (responseJson.data.success === true) {
+      if (responseJson.success === true) {
         localStorage.setItem('token', responseJson.data.token);
-        toast.success(responseJson.data.message);
+        toast.success(responseJson.message);
         setIsLoading(false);
         onTokenVerified();
+      } else {
+        toast.error(responseJson.message);
+        setIsLoading(false);
       }
-      // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-      // const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/otp/verify`, data)
-      // const responseJson = response.data;
-
-      // if (response.data.success === true) {
-      //   localStorage.setItem('token', response.data.token);
-      //   toast.success(response.data.message);
-      //   setIsLoading(false);
-      //   onTokenVerified();
-      // }
 
     } catch (error: any) {
-      // toast.error(error.response.message);
-      console.log(error);
+      toast.error(error);
       setIsLoading(false);
     }
   }
@@ -78,7 +63,7 @@ const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
       <hr className="bg-slate-300 w-full h-px" />
       <h4>Cek email anda untuk melihat OTP Code</h4>
       <Input id="otp" label="OTP Code" disable={isLoading} register={register} errors={errors} required />
-      <Button outline label={isLoading ? 'Loading' : 'Masukkan OTP'} onClick={handleSubmit(onSubmit)} />
+      <Button outline label={isLoading ? 'Loading...' : 'Masukkan OTP'} onClick={handleSubmit(onSubmit)} />
     </>
   )
 }

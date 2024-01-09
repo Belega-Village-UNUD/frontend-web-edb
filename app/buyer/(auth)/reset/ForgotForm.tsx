@@ -3,7 +3,6 @@
 import axios from "axios";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 
 import Button from "../../../components/Button";
 import Input from "../../../components/inputs/Input";
@@ -35,13 +34,15 @@ const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
       if (responseJson.token !== null) {
         localStorage.setItem('token', responseJson.token);
         localStorage.setItem('email', data.email)
-        toast.success(response.data.message);
+        // toast.success(responseJson.data.message);
+        console.log(responseJson);
         setIsLoading(false);
         onForgetFormSubmit();
       }
     }
     catch (error: any) {
-      toast.error(error.response.data.message);
+      // toast.error(error.response.data.message);
+      console.error(error);
       setIsLoading(false);
     }
   }
@@ -51,7 +52,7 @@ const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
       <Heading title="Lupa Password" />
       <hr className="bg-slate-300 w-full h-px" />
       <Input id="email" label="Email" type="email" disable={isLoading} register={register} errors={errors} required />
-      <Button outline label={isLoading ? 'Loading' : 'Konfirmasi Email'} onClick={handleSubmit(onSubmit)} />
+      <Button outline label={isLoading ? 'Loading...' : 'Konfirmasi Email'} onClick={handleSubmit(onSubmit)} />
     </>
   );
 }

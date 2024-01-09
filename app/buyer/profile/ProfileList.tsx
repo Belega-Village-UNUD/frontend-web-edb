@@ -2,7 +2,11 @@
 
 import Avatar from '@/app/components/Avatar';
 import { useEffect, useState } from 'react';
-import * as Yup from "yup";
+
+import Input from '@/app/components/inputs/Input';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import Button from "../../components/Button";
 
 interface User {
   name: string;
@@ -11,59 +15,93 @@ interface User {
   address: string;
 }
 
-const validationSchema = Yup.object().shape({
-  userName: Yup.string().matches(/[a-zA-Z]/, "Nama hanya boleh berisi huruf"),
-  userPhone: Yup.string().matches(
-    /^\+62[0-9]*/,
-    "Nomor harus diawali dengan +62"
-  ),
-  userAddress: Yup.string().matches(
-    /^[a-zA-Z0-9.,\s]*$/,
-    "Tidak boleh ada simbol selain titik dan koma"
-  ),
-});
-
 const ProfileList = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userPhone, setUserPhone] = useState('');
   const [userImage, setUserImage] = useState(null);
   const [userAddress, setUserAddress] = useState('');
 
+  const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+    }
+  });
+
   const handleGetProfile = async () => {
     const token = await localStorage.getItem('token');
-
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
         }
-      }).then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        } return response.json()
-      }).then(data => {
-        return data
-      }).catch(error => {
-        console.error('There has been a problem with your fetch operation:', error);
       })
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
 
-      if (response.success) {
-        setUserName(response.data.profile.name);
-        setUserEmail(response.data.user.email);
-        setUserPhone(response.data.profile.phone);
-        setUserImage(response.data.profile.avatar_link);
-        setUserAddress(response.data.profile.address);
+      const responseJson = await response.json();
+
+      if (responseJson.success) {
+        setUserName(responseJson.data.profile.name);
+        setUserEmail(responseJson.data.user.email);
+        setUserPhone(responseJson.data.profile.phone);
+        setUserImage(responseJson.data.profile.avatar_link);
+        setUserAddress(responseJson.data.profile.address);
       }
     } catch (error) {
       console.log(error);
     }
   }
 
+  const handleChangeProfile: SubmitHandler<FieldValues> = async (data) => {
+    try {
+      setIsLoading(true);
+      const token = await localStorage.getItem('token');
+
+      if (!token) {
+        toast.error('Token tidak tersedia');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log(data);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+      })
+
+      const responseJson = await response.json();
+
+      if (responseJson.success === true) {
+        toast.success(responseJson.message);
+        setIsLoading(false);
+      } else {
+        toast.error(responseJson.message);
+        setIsLoading(false);
+      }
+    }
+    catch (error: any) {
+      console.error('Error:', error);
+      toast.error('Terjadi kesalahan saat mengirim request');
+      setIsLoading(false);
+      // toast.error(error);
+      // setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
     handleGetProfile();
-  }, [])
+  }, [handleGetProfile]);
 
   return (
     <div className="space-y-10 divide-y divide-gray-900/10 m-3">
@@ -82,7 +120,7 @@ const ProfileList = () => {
                   Photo
                 </label>
                 <div className="mt-2 flex items-center gap-x-3">
-                  <Avatar />
+                  <Avatar size={48} />
                   <button
                     type="button"
                     className="rounded-md bg-white px-2.5 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -92,49 +130,19 @@ const ProfileList = () => {
                 </div>
               </div>
 
-              {/* <div className="sm:col-span-3">
-                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  First name
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="first-name"
-                    id="first-name"
-                    autoComplete="given-name"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
-                  Last name
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="last-name"
-                    id="last-name"
-                    autoComplete="family-name"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div> */}
-
               <div className="sm:col-span-4">
                 <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
                   Full name
                 </label>
                 <div className="mt-2">
-                  <input
+                  <Input
                     type="text"
-                    name="name"
-                    autoComplete="family-name"
-                    className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    id="name"
                     value={userName || ''}
-                    placeholder={userName ? userName : "Masukkan Nama Lengkap Anda"}
-                    onChange={(e) => setUserName(e.target.value)}
+                    register={register}
+                    {...register('name')}
+                    label='Full Name'
+                    errors={errors}
                   />
 
                 </div>
@@ -145,15 +153,15 @@ const ProfileList = () => {
                   Email address
                 </label>
                 <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
+                  <Input
                     type="email"
-                    autoComplete="email"
-                    className="block w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    id="email"
                     value={userEmail || ''}
-                    placeholder={userEmail ? userEmail : "Masukkan Email Anda"}
-                    onChange={(e) => setUserName(e.target.value)}
+                    label='Email'
+                    errors={errors}
+                    register={register}
+                    {...register('email')}
+                    readonly={true}
                   />
                 </div>
               </div>
@@ -163,15 +171,14 @@ const ProfileList = () => {
                   Street address
                 </label>
                 <div className="mt-2">
-                  <input
+                  <Input
                     type="text"
-                    name="street-address"
-                    id="street-address"
-                    autoComplete="street-address"
-                    className="block w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    id="address"
                     value={userAddress || ''}
-                    placeholder={userAddress ? userAddress : "Masukkan Alamat Anda"}
-                    onChange={(e) => setUserName(e.target.value)}
+                    register={register}
+                    {...register('address')}
+                    label='Address'
+                    errors={errors}
                   />
                 </div>
               </div>
@@ -194,29 +201,21 @@ const ProfileList = () => {
                       <option>ID</option>
                     </select>
                   </div>
-                  <input
-                    type="text"
-                    name="phone-number"
-                    id="phone-number"
-                    className="block w-full rounded-md border-0 py-2 pl-16 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  <Input
+                    type="number"
+                    id="phone"
                     value={userPhone || ''}
-                    placeholder={userPhone ? userPhone : "+62 821-4719-9941"}
-                    onChange={(e) => setUserName(e.target.value)}
+                    register={register}
+                    {...register('phone')}
+                    label='Phone Number'
+                    errors={errors}
                   />
                 </div>
               </div>
             </div>
           </div>
           <div className="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-            <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Save
-            </button>
+            <Button outline label={isLoading ? 'Loading...' : 'Update Profile'} onClick={handleSubmit(handleChangeProfile)} />
           </div>
         </form>
       </div>
