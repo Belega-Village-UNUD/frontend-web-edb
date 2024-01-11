@@ -98,4 +98,13 @@ jobs:
           zone: ${{ env.ZONE }}
           ssh_private_key: ${{ secrets.SERVICE_ACCOUNT_SECRET_SSH_KEY }}
           user: ${{ secrets.GCP_INSTANCE_USER }}
-          command: "" # TODO create the command to deploy the app
+          command: "
+            cd frontend-web-edb; \
+            git fetch; \
+            git checkout EDP-72-frontend-web-sast; \
+            git pull origin staging; \
+            docker image prune -f; \
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}; \
+            # docker pull ghcr.io/belega-village-unud/backend-api-edb:staging; \
+            make build up dns; \
+            docker ps"
