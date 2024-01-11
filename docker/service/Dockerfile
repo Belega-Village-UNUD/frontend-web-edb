@@ -13,8 +13,8 @@ COPY --from=base ./usr/app ./
 RUN npm run build
 
 # Distroless Image
-FROM gcr.io/distroless/nodejs:16
-ENV NODE_ENV=development
+FROM gcr.io/distroless/nodejs20:latest
+ENV NODE_ENV=${NODE_ENV}
 WORKDIR /app
 
 COPY --from=build /build/package*.json ./
@@ -25,4 +25,3 @@ COPY --from=build /build/next.config.js ./
 
 EXPOSE ${PORT}
 CMD ["node_modules/.bin/next", "start"]
-
