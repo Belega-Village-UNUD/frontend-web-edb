@@ -21,3 +21,8 @@ restart_nginx:
 ps:
 	docker compose -p frontend_belega --file docker/service/docker-compose.yml --env-file .env ps 
 
+gen_key:
+	# generate ssl key 
+	mkdir ./nginx/dhparam
+	openssl dhparam -out ./nginx/dhparam/dhparam-2048.pem 2048
+
