@@ -6,8 +6,10 @@ up:
 	docker compose -p frontend_belega --file docker/service/docker-compose.yml --env-file .env up -d --force-recreate 
 	docker compose -p frontend_belega --file docker/ssl/docker-compose.yml --env-file .env up nginx -d --force-recreate
 
-stop:
-	docker stop frontend-web-edb-container
+down:
+	# docker stop frontend-web-edb-container
+	docker compose -p frontend_belega --file docker/service/docker-compose.yml --env-file .env down
+	docker compose -p frontend_belega --file docker/ssl/docker-compose.yml --env-file .env down nginx 
 
 remove:
 	docker rm frontend-web-edb-container
