@@ -15,3 +15,6 @@ rm:
 	#docker rm frontend-web-edb-container
 	docker compose -p frontend_belega --file docker/service/docker-compose.yml --env-file .env rm 
 	
+restart_nginx:
+	docker compose -p frontend_belega --file docker/ssl/docker-compose.yml --env-file .env restart nginx
+
