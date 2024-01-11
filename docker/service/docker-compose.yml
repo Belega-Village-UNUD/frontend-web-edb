@@ -2,7 +2,7 @@ version: "3.4"
 services:
   app:
     container_name: frontend-ecommerce-desa-belega
-    image: ghcr.io/belega-village-unud/frontend-web-edb:staging
+    image: ghcr.io/belega-village-unud/frontend-web-edb:v1
     env_file:
       - ../../.env
     restart: always
@@ -10,8 +10,6 @@ services:
       - ${PORT}:${PORT}
     networks:
       - service
-    depends_on:
-      - db
 
 networks:
   service:
