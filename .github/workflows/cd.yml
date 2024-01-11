@@ -2,7 +2,7 @@ name: SAST on Container and Deploy
 
 on:
   push:
-    branches: ["staging"]
+    branches: ["EDP-72-frontend-web-sast"]
 
 env:
   REGISTRY: ghcr.io
