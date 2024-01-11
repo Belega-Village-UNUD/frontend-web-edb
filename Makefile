@@ -26,3 +26,8 @@ gen_key:
 	mkdir ./nginx/dhparam
 	openssl dhparam -out ./nginx/dhparam/dhparam-2048.pem 2048
 
+ssl:
+	sudo docker compose -p frontend_belega --file docker/ssl/docker-compose.yml --env-file .env up nginx -d
+
+dns:
+	docker compose -p frontend_belega --file docker/ssl/docker-compose.yml --env-file .env up duckdns certbot certbot_cron -d
