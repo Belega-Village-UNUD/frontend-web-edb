@@ -61,7 +61,6 @@ jobs:
         with:
           image-ref: "${{ env.REGISTRY }}/belega-village-unud/frontend-web-edb:edp-72-frontend-web-sast"
           format: "sarif"
-          github-pat: ${{ secrets.GITHUB_TOKEN }}
           exit-code: "0"
           ignore-unfixed: true
           output: "trivy-results-container.sarif"
