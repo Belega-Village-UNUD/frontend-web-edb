@@ -65,6 +65,9 @@ jobs:
           ignore-unfixed: true
           output: "trivy-results-container.sarif"
           severity: "CRITICAL,HIGH,MEDIUM"
+        env:
+          TRIVY_USERNAME: "${{ github.actor }}"
+          TRIVY_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Upload Trivy Report into Github Security
         uses: github/codeql-action/upload-sarif@v2
