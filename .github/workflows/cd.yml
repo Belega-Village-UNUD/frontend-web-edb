@@ -49,6 +49,7 @@ jobs:
   sast-container-checks:
     needs: build-and-push-image
     environment: staging
+    packages: read
     runs-on: ubuntu-latest
     permissions:
       contents: read
