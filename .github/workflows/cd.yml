@@ -4,9 +4,6 @@ on:
   push:
     branches: ["EDP-72-frontend-web-sast"]
 
-permissions:
-  contents: write
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
