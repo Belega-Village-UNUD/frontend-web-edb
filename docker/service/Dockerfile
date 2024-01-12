@@ -4,7 +4,6 @@ WORKDIR /usr/app
 COPY ./package.json ./
 RUN npm install
 COPY ./ ./
-COPY .env .env.local
 
 # Build
 FROM base as build
