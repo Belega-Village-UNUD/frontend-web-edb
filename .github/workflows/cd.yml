@@ -89,7 +89,7 @@ jobs:
         uses: "google-github-actions/auth@v1"
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-          service_account: ${{ secrets.CLOUD_RUN_SA }}
+          service_account: ${{ secrets.GCP_SA }}
 
       - name: SSH to Compute Engine and Deploy
         id: compute-ssh-deploy
