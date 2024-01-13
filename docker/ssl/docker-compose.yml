@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   duckdns:
-    container_name: frontend_duckdns-ecommerce-desa-belega
+    container_name: frontend-duckdns-ecommerce-desa-belega
     image: lscr.io/linuxserver/duckdns:latest
     environment:
       - PUID=1000
@@ -14,7 +14,7 @@ services:
       - frontend_belega_service
 
   nginx:
-    container_name: frontend_nginx-ecommerce-desa-belega
+    container_name: frontend-nginx-ecommerce-desa-belega
     image: nginx:latest
     ports:
       - 80:80
@@ -27,7 +27,7 @@ services:
       - frontend_belega_service
 
   certbot:
-    container_name: frontend_certbot-ecommerce-desa-belega
+    container_name: frontend-certbot-ecommerce-desa-belega
     image: infinityofspace/certbot_dns_duckdns:latest
     command: certonly
       --non-interactive
