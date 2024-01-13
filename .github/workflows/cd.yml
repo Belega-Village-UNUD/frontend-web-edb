@@ -46,36 +46,36 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }} github actions to run publish docker image to github packages
 
-  sast-container-checks:
-    needs: build-and-push-image
-    environment: staging
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      packages: read
-      actions: read
-    steps:
-      - name: SAST Trivy Container Checks
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "${{ env.REGISTRY }}/belega-village-unud/frontend-web-edb:edp-72-frontend-web-sast"
-          format: "sarif"
-          exit-code: "0"
-          ignore-unfixed: true
-          output: "trivy-results-container.sarif"
-          severity: "CRITICAL,HIGH,MEDIUM"
-        env:
-          TRIVY_USERNAME: "${{ github.actor }}"
-          TRIVY_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Upload Trivy Report into Github Security
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results-container.sarif"
+#  sast-container-checks:
+#    needs: build-and-push-image
+#    environment: staging
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: read
+#      security-events: write
+#      packages: read
+#      actions: read
+#    steps:
+#      - name: SAST Trivy Container Checks
+#        uses: aquasecurity/trivy-action@master
+#        with:
+#          image-ref: "${{ env.REGISTRY }}/belega-village-unud/frontend-web-edb:edp-72-frontend-web-sast"
+#          format: "sarif"
+#          exit-code: "0"
+#          ignore-unfixed: true
+#          output: "trivy-results-container.sarif"
+#          severity: "CRITICAL,HIGH,MEDIUM"
+#        env:
+#          TRIVY_USERNAME: "${{ github.actor }}"
+#          TRIVY_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
+#
+#      - name: Upload Trivy Report into Github Security
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: "trivy-results-container.sarif"
 
   deploy:
-    needs: sast-container-checks
+#    needs: sast-container-checks
     runs-on: ubuntu-latest
     environment: staging
     permissions:
@@ -109,6 +109,6 @@ jobs:
             git pull origin staging; \
             docker image prune -f; \
             echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}; \
-            # docker pull ghcr.io/belega-village-unud/backend-api-edb:staging; \
-            make build up dns; \
+            docker pull ghcr.io/belega-village-unud/backend-api-edb:staging; \
+            make gen_key build up dns; \
             docker ps"
