@@ -2,7 +2,7 @@ version: "3.4"
 services:
   app:
     container_name: frontend-ecommerce-desa-belega
-    image: ghcr.io/belega-village-unud/frontend-web-edb:v1
+    image: ghcr.io/belega-village-unud/frontend-web-edb:edp-72-sast-on-container
     env_file:
       - ../../.env
     restart: always
