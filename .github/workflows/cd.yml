@@ -109,6 +109,6 @@ jobs:
             git pull origin staging; \
             docker image prune -f; \
             echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}; \
-            docker pull ghcr.io/belega-village-unud/backend-api-edb:staging; \
+            docker pull ghcr.io/belega-village-unud/frontend-web-edb:edp-72-sast-on-container; \
             make gen_key build up dns; \
             docker ps"
