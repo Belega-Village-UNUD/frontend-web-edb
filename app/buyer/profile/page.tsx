@@ -1,4 +1,4 @@
-import Container from "@/app/components/Container";
+import Container from "@/components/Container";
 import ProfileList from "./ProfileList";
 
 const Profile = () => {

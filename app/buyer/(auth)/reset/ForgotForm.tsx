@@ -1,12 +1,12 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
-import Button from "../../../components/Button";
-import Input from "../../../components/inputs/Input";
-import Heading from "../../../components/products/Heading";
+import ButtonConfirm from "@/components/button/ButtonConfirm";
+import InputAuth from "@/components/inputs/InputAuth";
+import Heading from "@/components/products/Heading";
+import toast from "react-hot-toast";
 
 interface ForgetFormProps {
   onForgetFormSubmit: () => void;
@@ -14,6 +14,7 @@ interface ForgetFormProps {
 
 const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+
   const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
     defaultValues: {
       email: "",
@@ -25,34 +26,42 @@ const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
       localStorage.clear();
       setIsLoading(true);
 
-      // const response = await axios.post(`${forgetForm}`, data);
-      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/password/forgot'
-      // const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/password/forgot`;
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/password/forgot`, data)
-      const responseJson = response.data.data;
+      // const responseJson = await postForgotPassword(data);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/password/forgot`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
 
-      if (responseJson.token !== null) {
-        localStorage.setItem('token', responseJson.token);
-        localStorage.setItem('email', data.email)
-        // toast.success(responseJson.data.message);
-        console.log(responseJson);
+      const responseJson = await response.json();
+
+      if (responseJson.success === true) {
+        await localStorage.setItem('token', responseJson.data.token);
+        await localStorage.setItem('email', data.email)
+
+        toast.success(responseJson.message);
         setIsLoading(false);
         onForgetFormSubmit();
+        return
       }
+
+      toast.error(responseJson.message);
+      setIsLoading(false);
     }
     catch (error: any) {
-      // toast.error(error.response.data.message);
-      console.error(error);
       setIsLoading(false);
+      toast.error(error.message);
     }
   }
 
   return (
     <>
-      <Heading title="Lupa Password" />
+      <Heading title="Forgot Password" />
       <hr className="bg-slate-300 w-full h-px" />
-      <Input id="email" label="Email" type="email" disable={isLoading} register={register} errors={errors} required />
-      <Button outline label={isLoading ? 'Loading...' : 'Konfirmasi Email'} onClick={handleSubmit(onSubmit)} />
+      <InputAuth name="email" label="Email" type="email" disable={isLoading} register={register} errors={errors} required />
+      <ButtonConfirm outline label={isLoading ? '' : 'Confirm your email'} loading={isLoading} onClick={handleSubmit(onSubmit)} />
     </>
   );
 }

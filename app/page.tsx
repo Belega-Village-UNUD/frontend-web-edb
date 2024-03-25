@@ -1,14 +1,36 @@
 "use client"
 
-import { products } from '@/utils/products'
-import Container from './components/Container'
-import HomeBanner from './components/HomeBanner'
-import ProductCard from './components/products/ProductCard'
-import MainCategory from './components/MainCategory'
-import ProductSkeleton from './components/skeleton/ProductSkeleton'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+
+import Container from '@/components/Container'
+import HomeBanner from '@/components/HomeBanner'
+import ProductCard from '@/components/products/ProductCard'
+import ProductSkeleton from '@/components/skeleton/ProductSkeleton'
 
 export default function Home() {
+  const [products, setProducts] = useState([])
+
+  const handleGetAllProduct = async () => {
+    try {
+      // const responseJson = getAllProducts()
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/guest/all`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      const responseJson = await response.json();
+      setProducts(responseJson.data)
+      // console.log(responseJson)
+    } catch (error: any) {
+      console.log(error.message)
+    }
+  }
+
+  useEffect(() => {
+    handleGetAllProduct()
+  }, [])
 
   useEffect(() => {
     const clearIsLogin = () => {
@@ -20,26 +42,26 @@ export default function Home() {
   }, [])
 
   return (
-    <div className='p-4'>
+    <div className='p-0'>
       <Container>
-        <div>
-          <MainCategory />
-        </div>
         <div>
           <HomeBanner />
         </div>
-        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap:8'>
-          {products.length > 0 ? (
-            <>
-              {products.map((product: any) => {
-                return <ProductCard key={product.id} data={product} />
-              })}
-            </>
-          ) : (
-            <>
-              <ProductSkeleton />
-            </>
-          )}
+        <div className='bg-white'>
+          <h2 className="text-xl font-bold text-gray-900 p-5">Customers also bought</h2>
+          <div className='grid grid-cols-2 p-4 gap:8 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'>
+            {products.length > 0 ? (
+              <>
+                {products.map((product: any) => {
+                  return <ProductCard key={product.id} data={product} />
+                })}
+              </>
+            ) : (
+              <>
+                <ProductSkeleton />
+              </>
+            )}
+          </div>
         </div>
       </Container>
     </div>

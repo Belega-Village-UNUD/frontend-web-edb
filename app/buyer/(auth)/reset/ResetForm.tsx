@@ -1,12 +1,11 @@
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-import Button from "@/app/components/Button";
-import Input from "@/app/components/inputs/Input";
-import Heading from "@/app/components/products/Heading";
+import ButtonConfirm from "@/components/button/ButtonConfirm";
+import InputAuth from "@/components/inputs/InputAuth";
+import Heading from "@/components/products/Heading";
 
 interface ResetFormProps {
   onSubmit: () => void;
@@ -29,49 +28,55 @@ const ResetForm = ({ onSubmit }: ResetFormProps) => {
     try {
       setIsLoading(true);
 
-      const email = localStorage.getItem('email');
-      const token = localStorage.getItem('token');
+      const token = await localStorage.getItem('token');
 
-      if (!email && !token) {
+      if (!token) {
         toast.error('Email atau token tidak tersedia');
         setIsLoading(false);
         return;
       }
 
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      // const responseJson = await putResetPassword(token, data)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/password/reset`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
 
-      // const response = await axios.put(`${resetForm}`, data);
-      // const endpoint = 'https://belega-commerce-api-staging-tku2lejm6q-et.a.run.app/api/auth/password/reset'
-      // const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/password/reset`;
-      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/auth/password/reset`, data)
-      const responseJson = response.data;
+      const responseJson = await response.json();
 
       if (responseJson.success === true) {
         toast.success(responseJson.message);
         onSubmit();
-        setIsLoading(false);
         localStorage.clear();
+        setIsLoading(false);
         router.push('/buyer/login');
+        return
       }
 
-    } catch (error: any) {
-      toast.error(error.response.data.message);
+      toast.error(responseJson.message);
       setIsLoading(false);
+
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error(error.message);
     }
   }
 
   useEffect(() => {
     setNewPassword(getValues('newPassword'));
-
   }, [getValues]);
 
   return (
     <>
-      <Heading title="Buat password baru" />
+      <Heading title="Create New Password" />
       <hr className="bg-slate-300 w-full h-px" />
-      <Input id="newPassword" type="password" label="Password Baru" disable={isLoading} register={register} errors={errors} required />
-      <Input id="confirmNewPassword" type="password" label="Konfirmasi Password Baru" disable={isLoading} register={register} errors={errors} validate={(value) => value === getValues('newPassword') || "Password tidak sama"} required />
-      <Button outline label={isLoading ? 'Loading' : 'Konfirmasi Password'} onClick={handleSubmit(handleFormSubmit)} />
+      <InputAuth name="newPassword" type="password" label="New Password" disable={isLoading} register={register} errors={errors} required />
+      <InputAuth name="confirmNewPassword" type="password" label="Confirm New Password" disable={isLoading} register={register} errors={errors} validate={(value) => value === getValues('newPassword') || "Password tidak sama"} required />
+      <ButtonConfirm outline label={isLoading ? '' : 'Confirm your new password'} loading={isLoading} onClick={handleSubmit(handleFormSubmit)} />
     </>
   );
 }

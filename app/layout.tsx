@@ -3,8 +3,8 @@ import { Poppins } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
-import Footer from './components/footer/Footer';
-import NavBar from './components/nav/NavBar';
+import Footer from '@/components/footer/Footer';
+import NavBar from '@/components/nav/NavBar';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] })
 

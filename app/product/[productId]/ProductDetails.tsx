@@ -1,12 +1,18 @@
 "use client";
 
-import Button from "@/app/components/Button";
-import ProductImage from "@/app/components/products/ProductImage";
-import SetColor from "@/app/components/products/SetColor";
-import SetQuantity from "@/app/components/products/SetQuantity";
+import Button from "@/components/button/ButtonConfirm";
+import ProductImage from "@/components/products/ProductImage";
+import SetColor from "@/components/products/SetColor";
+import SetQuantity from "@/components/products/SetQuantity";
 import { Rating } from "@mui/material";
 import { useCallback, useState } from "react";
 
+
+declare global {
+  interface Window {
+    snap: any;
+  }
+}
 interface ProductDetailsProps {
   product: any
 }
@@ -28,10 +34,10 @@ export type SelectedImgType = {
   image: string
 }
 
-const Horizontal = () => { return <hr className="w-[30% my-2]"/> }
+const Horizontal = () => { return <hr className="w-[30% my-2]" /> }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
-  
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
+
   const productRating = product.reviews.reduce((acc: number, item: any) => acc + item.rating, 0) / product.reviews.length
 
   const [cartProduct, setCartProduct] = useState<CartProductType>({
@@ -40,23 +46,16 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
     description: product.description,
     category: product.category,
     brand: product.brand,
-    selectedImg: {...product.images[0]},
+    selectedImg: { ...product.images[0] },
     quantity: 1,
     price: product.price
   })
 
   const handleColorSelect = useCallback((value: SelectedImgType) => {
     setCartProduct((prev) => {
-      return {...prev, selectedImg: value};
+      return { ...prev, selectedImg: value };
     });
   }, [setCartProduct]);
-
-  // const handleColorSelect = useCallback((value: SelectedImgType) => {
-  //   setCartProduct((prev) => {
-  //     return {...prev, selectedImg: value};
-  //   });
-  // }, [cartProduct.selectedImg]);
-  console.log(cartProduct);
 
   const handlQtyIncrease = useCallback(() => {
     if (cartProduct.quantity === 100) {
@@ -64,7 +63,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
     }
 
     setCartProduct((prev) => {
-      return {...prev, quantity: ++prev.quantity};
+      return { ...prev, quantity: ++prev.quantity };
     })
   }, [cartProduct]);
 
@@ -74,18 +73,49 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
     }
 
     setCartProduct((prev) => {
-      return {...prev, quantity: --prev.quantity};
+      return { ...prev, quantity: --prev.quantity };
     });
   }, [cartProduct]);
 
+  const checkout = async () => {
+    const data = {
+      id: product.id,
+      productName: product.name,
+      price: product.price,
+      quantity: cartProduct.quantity,
+    }
 
-  return (  
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/transaction`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      console.error('Error:', response.status, response.statusText);
+      return;
+    }
+
+    let responseJson;
+    try {
+      responseJson = await response.json();
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+      return;
+    }
+
+    window.snap.pay(responseJson.data.token)
+  }
+
+  return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-      <ProductImage cartProduct={cartProduct} product={product} handleColorSelect={handleColorSelect}/>
+      <ProductImage cartProduct={cartProduct} product={product} handleColorSelect={handleColorSelect} />
       <div className="flex flex-col gap-1 text-slate-500 text-sm">
         <h2 className="text-3xl font-medium text-slate-700">{product.name}</h2>
         <div className="flex items-center gap-2">
-          <Rating value={productRating} readOnly/>
+          <Rating value={productRating} readOnly />
           <div>{product.reviews.length} Reviews</div>
         </div>
         <Horizontal />
@@ -97,15 +127,19 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
         <div>
           <span className="font-semibold">BRAND</span> {product.brand}
         </div>
-        <div className={product.inStock? 'text-lime-600': 'text-red-600'}>{product.inStock? "In Stock": "Our of Stock"}</div>
+        <h4 className="text-3xl font-medium text-slate-700">Rp. {product.price}</h4>
+        <div className={product.inStock ? 'text-lime-600' : 'text-red-600'}>{product.inStock ? "In Stock" : "Our of Stock"}</div>
         <Horizontal />
-        <SetColor cartProduct={cartProduct} images={product.images} handleColorSelect={handleColorSelect}/>
+        <SetColor cartProduct={cartProduct} images={product.images} handleColorSelect={handleColorSelect} />
         <Horizontal />
         <SetQuantity cartProduct={cartProduct} handleQtyIncrease={handlQtyIncrease} handleQtyDecrease={handleQtyDecrease} />
         <Horizontal />
         <div className="max-w-[300px] mt-2">
-          <Button label="Add To Cart" onClick={() => {}} />
+          <Button label="Checkout" onClick={checkout} />
         </div>
+        {/* <div className="max-w-[300px] mt-2">
+          <Button label="Add To Cart" onClick={() => { }} />
+        </div> */}
       </div>
     </div>
   );

@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-import Button from "@/app/components/Button";
-import Input from "@/app/components/inputs/Input";
-import Heading from "@/app/components/products/Heading";
+import ButtonConfirm from "@/components/button/ButtonConfirm";
+import InputAuth from "@/components/inputs/InputAuth";
+import Heading from "@/components/products/Heading";
+import Link from "next/link";
+
 interface ResetFormProps {
   onTokenVerified: () => void;
 }
 
 const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [countdown, setCountdown] = useState(0);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
     defaultValues: {
@@ -30,6 +33,7 @@ const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
         return;
       }
 
+      // const responseJson = await postVerifyOTP(token, data);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/otp/verify`, {
         method: 'POST',
         headers: {
@@ -46,24 +50,91 @@ const VerifyToken = ({ onTokenVerified }: ResetFormProps) => {
         toast.success(responseJson.message);
         setIsLoading(false);
         onTokenVerified();
-      } else {
-        toast.error(responseJson.message);
-        setIsLoading(false);
+        return
       }
 
-    } catch (error: any) {
-      toast.error(error);
+      toast.error(responseJson.message);
       setIsLoading(false);
+
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error(error.message);
+    }
+
+  }
+
+  const onResendOTP = async () => {
+    try {
+      setIsLoading(true);
+
+      const token = await localStorage.getItem('token');
+
+      // const responseJson = await postResendOTP(token)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/otp`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const responseJson = await response.json();
+
+      if (responseJson.success === true) {
+        toast.success(responseJson.message);
+        setCountdown(60);
+        setIsLoading(false);
+        return
+      }
+
+      toast.error(responseJson.message);
+      setIsLoading(false);
+
+    }
+    catch (error: any) {
+      setIsLoading(false);
+      toast.error(error.message)
     }
   }
 
+  const formatCountdown = () => {
+    const minutes = Math.floor(countdown / 60);
+    const seconds = countdown % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (countdown > 0) {
+      intervalId = setInterval(() => {
+        setCountdown(prevCountdown => prevCountdown - 1);
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [countdown]);
+
   return (
     <>
-      <Heading title="Masukkan OTP Code" />
+      <Heading title="Enter OTP Code" />
       <hr className="bg-slate-300 w-full h-px" />
-      <h4>Cek email anda untuk melihat OTP Code</h4>
-      <Input id="otp" label="OTP Code" disable={isLoading} register={register} errors={errors} required />
-      <Button outline label={isLoading ? 'Loading...' : 'Masukkan OTP'} onClick={handleSubmit(onSubmit)} />
+      <h4>Check your email to see the OTP Code</h4>
+      <InputAuth name="otp" label="Enter your OTP Code" disable={isLoading} register={register} errors={errors} required />
+      <ButtonConfirm outline label={isLoading ? '' : 'Confirm your OTP Code'} loading={isLoading} onClick={handleSubmit(onSubmit)} />
+      {countdown > 0 && (
+        <p className="text-sm">OTP time remaining : {formatCountdown()} second</p>
+      )}
+      {countdown === 0 && (
+        <p className="text-base">
+          Not receiving OTP Code?{" "}
+          <Link href="#" className="text-lime-500 hover:text-lime-700" onClick={onResendOTP}>
+            Send again
+          </Link>
+        </p>
+      )}
     </>
   )
 }

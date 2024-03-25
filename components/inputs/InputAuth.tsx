@@ -10,8 +10,8 @@ const isValidEmail = (value: string): boolean => {
 };
 
 interface InputProps {
-  id: string;
-  label: string;
+  name: string;
+  label?: string;
   type?: 'text' | 'password' | 'email' | 'number';
   disable?: boolean;
   required?: boolean;
@@ -23,8 +23,8 @@ interface InputProps {
   errors: FieldErrors | any;
 }
 
-const Input: React.FC<InputProps> = ({
-  id,
+const InputAuth: React.FC<InputProps> = ({
+  name,
   label,
   type = 'text',
   disable,
@@ -46,9 +46,8 @@ const Input: React.FC<InputProps> = ({
     <div className="w-full relative">
       <input
         autoComplete="off"
-        id={id}
         disabled={disable}
-        {...register(id, {
+        {...register(name, {
           required, validate: (value) => {
             if (type === "email" && !isValidEmail(value)) {
               return "Email tidak valid";
@@ -62,8 +61,8 @@ const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         readOnly={readonly}
         type={type === "password" ? (isPasswordVisible ? "text" : "password") : type}
-        className={`peer w-full p-4 pt-6 outline-none bg-white font-light border-2 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed ${errors[id] ? "border-red-500" : "border-slate-300"} 
-          ${errors[id]
+        className={`peer w-full p-4 pt-6 outline-none bg-white font-light border-2 rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed ${errors[name] ? "border-red-500" : "border-slate-300"} 
+          ${errors[name]
             ? "peer-focus:border-red-500"
             : "peer-focus:border-lime-600"
           }`
@@ -81,15 +80,15 @@ const Input: React.FC<InputProps> = ({
         </div>
       )}
 
-      <label htmlFor={id} className={`absolute cursor-text text-md duration-150 transform -translate-y-3 top-5 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 ${errors[id] ? "text-red-500" : "text-slate-400"}`}>
+      <label htmlFor={name} className={`absolute cursor-text text-md duration-150 transform -translate-y-3 top-5 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 ${errors[name] ? "text-red-500" : "text-slate-400"}`}>
         {label}
       </label>
 
-      {errors[id]?.message && (
-        <p className="text-xs text-red-500 mt-2">{errors[id]!.message}</p>
+      {errors[name]?.message && (
+        <p className="text-xs text-red-500 mt-2">{errors[name]!.message}</p>
       )}
     </div>
   );
 };
 
-export default Input;
+export default InputAuth;

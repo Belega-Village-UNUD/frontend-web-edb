@@ -1,14 +1,15 @@
+import CartList from "./CartList";
+
 interface IParams {
   productId?: string
 }
 
-const Cart = ({params}: {params: IParams}) => {
-  console.log("params",params)
-  console.log("params",params.productId)
+const Cart = ({ params }: { params: IParams }) => {
+  // console.log("params", params)
 
-  return (  
+  return (
     <div>
-      <h1>Cart</h1>
+      <CartList />
     </div>
   );
 }
