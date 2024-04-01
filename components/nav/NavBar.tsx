@@ -1,6 +1,5 @@
 "use client"
 
-import { Redressed } from 'next/font/google';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -10,8 +9,6 @@ import CartMenu from './CartMenu';
 import { DisableNav } from './DisableNav';
 import SearchBar from './SearchBar';
 import UserMenu from './UserMenu';
-
-const redressed = Redressed({ subsets: ['latin'], weight: ['400'] })
 
 const NavBar = () => {
   const pathname = usePathname()

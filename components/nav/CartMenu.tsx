@@ -58,7 +58,7 @@ const CartMenu = () => {
 
               <p className="mt-4 flex justify-between items-center">
                 <span className="text-sm text-green-900">{otherProducts} other products</span>
-                <Link href="/cart">
+                <Link href="/buyer/cart">
                   <button
                     type="submit"
                     className="flex-shrink-0 px-4 py-2 rounded-md border border-transparent bg-lime-900 text-sm font-medium text-white shadow-sm hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:ring-offset-gray-50"

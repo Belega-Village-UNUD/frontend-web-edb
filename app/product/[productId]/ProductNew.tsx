@@ -8,7 +8,10 @@ import {
   PlusIcon
 } from '@heroicons/react/24/outline'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import toast from 'react-hot-toast'
+
 
 const navigation = {
   categories: [
@@ -243,20 +246,45 @@ interface ProductDetailsProps {
 
 const ProductNew: React.FC<ProductDetailsProps> = ({ data }) => {
   const [quantity, setQuantity] = useState(1);
+  const pathname = usePathname()
+  const lastSegment = pathname.split('/').pop()
+  // const { productId } = router.query
 
-  const checkout = async () => {
+  // const checkout = async () => {
+  //   const token = localStorage.getItem('token')
+
+  //   const idOrder = Math.floor(Math.random() * 1000000000)
+
+  //   const payload = {
+  //     id: idOrder,
+  //     productName: data.name_product,
+  //     price: data.price,
+  //     quantity: quantity,
+  //   }
+
+  //   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/transaction`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Authorization': `Bearer ${token}`,
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(payload),
+  //   })
+
+  //   const responseJson = await response.json();
+
+  //   window.snap.pay(responseJson.data.midtrans_token)
+  // }
+
+  const addCart = async () => {
     const token = localStorage.getItem('token')
 
-    const idOrder = Math.floor(Math.random() * 1000000000)
-
     const payload = {
-      id: idOrder,
-      productName: data.name_product,
-      price: data.price,
-      quantity: quantity,
+      product_id: lastSegment,
+      qty: quantity,
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/transaction`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -267,12 +295,13 @@ const ProductNew: React.FC<ProductDetailsProps> = ({ data }) => {
 
     const responseJson = await response.json();
 
-    window.snap.pay(responseJson.data.midtrans_token)
+    toast.success(responseJson.message);
   }
 
   const handleClick = (event: any) => {
     event.preventDefault();
-    checkout();
+    // checkout();
+    addCart();
   }
 
 
@@ -361,7 +390,7 @@ const ProductNew: React.FC<ProductDetailsProps> = ({ data }) => {
                     className="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
                     onClick={handleClick}
                   >
-                    Checkout
+                    Add to cart
                   </button>
 
                   <button
