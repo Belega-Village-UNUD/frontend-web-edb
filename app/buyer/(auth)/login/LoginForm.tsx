@@ -39,6 +39,7 @@ const LoginForm = () => {
       if (responseJson.success === true) {
         localStorage.setItem('token', responseJson.data.token)
         localStorage.setItem('is_login', 'true')
+        localStorage.setItem('role', responseJson.data.payload.role_id)
         toast.success(responseJson.message);
         setIsLoading(false);
 
@@ -46,7 +47,6 @@ const LoginForm = () => {
           toast("Akun anda belum diverifikasi, silahkan cek email anda", { icon: '❗' });
           const token = localStorage.getItem('token');
 
-          // const responseJson = await postResendOTP(token)
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/otp`, {
             method: 'POST',
             headers: {
@@ -92,7 +92,7 @@ const LoginForm = () => {
       <hr className="bg-slate-300 w-full h-px" />
       <p className="text-base">
         Don`t have an account?
-        <Link href='/buyer/register' className="text-lime-500 hover:text-lime-700 hover:underline">Register</Link>
+        <Link href='/buyer/register' className="text-lime-500 hover:text-lime-700 hover:underline"> Register</Link>
       </p>
       <InputAuth name="email" label="Email" type="email" disable={isLoading} register={register} errors={errors} required />
       <InputAuth name="password" label="Password" disable={isLoading} register={register} errors={errors} type="password" required />

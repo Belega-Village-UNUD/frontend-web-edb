@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const products = [
   {
@@ -38,6 +39,7 @@ const products = [
 ]
 
 const CheckoutList = () => {
+
   return (
     <div className="pt-10">
 

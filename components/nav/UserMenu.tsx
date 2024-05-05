@@ -36,16 +36,18 @@ const UserMenu = () => {
   }
 
   const currentUser = () => {
-    // const logged = localStorage.getItem('is_login')
-    // if (!logged || logged === 'false') { return false }
-    // return true
-
     if (typeof window !== 'undefined') {
       const logged = localStorage.getItem('is_login')
       if (!logged || logged === 'false') { return false }
       return true
     }
     return false
+  }
+
+  const currentRole = (): string => {
+    const role = localStorage.getItem('role')
+    if (!role) { return '' }
+    return role
   }
 
   const handleGetProfile = async () => {
@@ -111,13 +113,23 @@ const UserMenu = () => {
 
             {currentUser() ? (
               <div>
-                <Link href="#">
-                  <MenuItem onClick={toggleOpen}>Your Orders</MenuItem>
+                {!currentRole().includes('WGVUqKhyoV') ? (
+                  <Link href='#'>
+                    <MenuItem onClick={toggleOpen}>Register Your Store</MenuItem>
+                  </Link>
+                ) : (
+                  <Link href='/store/product'>
+                    <MenuItem onClick={toggleOpen}>Dashboard Store</MenuItem>
+                  </Link>
+                )}
+                <hr className="border-t border-gray-300" />
+                <Link href="/buyer/history">
+                  <MenuItem onClick={toggleOpen}>History Orders</MenuItem>
                 </Link>
                 <Link href="/buyer/profile">
                   <MenuItem onClick={toggleOpen}>Your Profile</MenuItem>
                 </Link>
-                <hr />
+                <hr className="border-t border-gray-300" />
                 <MenuItem onClick={() => {
                   handleSignOut()
                 }}>Log Out</MenuItem>
@@ -132,20 +144,6 @@ const UserMenu = () => {
                 </Link>
               </div>
             )}
-
-            {/* <div>
-              <Link href="#">
-                <MenuItem onClick={toggleOpen}>User Dashboard</MenuItem>
-              </Link>
-              <hr />
-            </div>
-
-            <div>
-              <Link href="#">
-                <MenuItem onClick={toggleOpen}>Seller Dashboard</MenuItem>
-              </Link>
-              <hr />
-            </div> */}
 
           </div>
         )}

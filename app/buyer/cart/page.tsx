@@ -6,8 +6,6 @@ interface ProductIdProps {
 }
 
 const Cart = ({ params }: { params: ProductIdProps }) => {
-  // console.log("params", params)
-
   return (
     <Container>
       <CartList />

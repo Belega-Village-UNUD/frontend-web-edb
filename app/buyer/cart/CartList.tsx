@@ -1,7 +1,7 @@
 'use client'
-import ButtonConfirm from '@/components/button/ButtonConfirm';
 import SetQuantity from '@/components/products/SetQuantity';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 
 const products = [
@@ -58,9 +58,12 @@ const CartList = () => {
   return (
     <div className="mx-auto max-w-7xl pt-10 lg:max-w-7xl md:max-w-5xl md:px-6 sm:max-w-xl sm:px-2">
 
-      <div className="space-y-2 px-4 sm:flex sm:items-baseline sm:justify-between sm:space-y-0 sm:px-0">
-        <div className="flex sm:items-baseline sm:space-x-4">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-700 sm:text-3xl">Shopping Chart</h1>
+      <div className="max-w-7xl mb-6 sm:px-2">
+        <div className="max-w-2xl lg:max-w-4xl">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Shopping Chart</h1>
+          <p className="mt-2 text-sm text-gray-500">
+            Check the status of recent orders, manage returns, and discover similar products.
+          </p>
         </div>
       </div>
 
@@ -152,7 +155,15 @@ const CartList = () => {
           <div className="p-2 flex items-center justify-center flex-wrap w-full text-lg">
             <p className="text-slate-500">Total (0 Product):</p>
             <p className='p-2 text-lime-700 font-bold text-xl'>Rp.3030003</p>
-            <ButtonConfirm label={isLoading ? '' : 'Checkout'} />
+            {/* <ButtonConfirm label={isLoading ? '' : 'Checkout'} /> */}
+            <Link href="/buyer/checkout">
+              <button
+                type="submit"
+                className="flex-shrink-0 px-4 py-2 rounded-md border border-transparent bg-lime-900 text-sm font-medium text-white shadow-sm hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+              >
+                View Cart Bag
+              </button>
+            </Link>
           </div>
 
         </div>

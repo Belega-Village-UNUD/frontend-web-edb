@@ -51,7 +51,8 @@ const InputAuth: React.FC<InputProps> = ({
           required, validate: (value) => {
             if (type === "email" && !isValidEmail(value)) {
               return "Email tidak valid";
-            } else if (type === "password" && value.length < 8) {
+              // } else if (type === "password" && value.length < 8) {
+            } else if (type === "password" && value.length < 3) {
               return "Password minimal 8 karakter";
             }
 

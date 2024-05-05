@@ -1,9 +1,9 @@
 "use client"
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-import Image from 'next/image';
+import { useState } from 'react';
 import Container from '../Container';
 import CartMenu from './CartMenu';
 import { DisableNav } from './DisableNav';
@@ -11,13 +11,48 @@ import SearchBar from './SearchBar';
 import UserMenu from './UserMenu';
 
 const NavBar = () => {
+  const [showNav, setShowNav] = useState(true);
+  const [scrollPos, setScrollPos] = useState(0);
   const pathname = usePathname()
 
   const currentUser = () => {
-    const logged = localStorage.getItem('is_login')
-    if (!logged || logged === 'false') { return false }
-    return true
+    if (typeof window !== 'undefined') {
+      const logged = window.localStorage.getItem('is_login');
+      if (!logged || logged === 'false') { return false; }
+      return true;
+    }
+    return false;
   }
+
+  // const debounce = (func: (...args: any[]) => void, wait: number = 10, immediate: boolean = true) => {
+  //   let timeout: NodeJS.Timeout | null;
+  //   return (...args: any[]) => {
+  //     const later = () => {
+  //       timeout = null;
+  //       if (!immediate) func(...args);
+  //     };
+  //     const callNow = immediate && !timeout;
+  //     clearTimeout(timeout as NodeJS.Timeout);
+  //     timeout = setTimeout(later, wait);
+  //     if (callNow) func(...args);
+  //   };
+  // };
+
+  // useEffect(() => {
+  //   const handleScroll = debounce(() => {
+  //     const currentScrollPos = window.pageYOffset;
+  //     const visible = scrollPos - currentScrollPos > 50 || currentScrollPos < 50;
+
+  //     setScrollPos(currentScrollPos);
+  //     setShowNav(visible);
+  //   }, 100);
+
+  //   window.addEventListener('scroll', handleScroll);
+
+  //   return () => {
+  //     window.removeEventListener('scroll', handleScroll);
+  //   };
+  // }, [scrollPos]);
 
   return (
     !DisableNav(pathname) && (
