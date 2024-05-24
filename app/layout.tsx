@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={`${poppins.className} text-slate-700`}>
-        <div className='flex flex-col min-h-screen'>
+        <div className='flex flex-col min-h-screen bg-green-50'>
           <Toaster />
           <NavBar />
           <main className='flew-grow'>{children}</main>

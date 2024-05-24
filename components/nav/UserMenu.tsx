@@ -1,11 +1,10 @@
 "use client"
 
-import { UserIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, ChevronUpIcon, UserIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 
 import Avatar from "../Avatar";
 import BackDrop from "./BackDrop";
@@ -14,6 +13,7 @@ import MenuItem from "./MenuItem";
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [name, setName] = useState();
 
   const router = useRouter()
 
@@ -30,7 +30,7 @@ const UserMenu = () => {
 
     } catch (error) {
       setIsOpen(false);
-      console.log(error);
+      console.error(error);
       toast.error("Logout gagal");
     }
   }
@@ -68,13 +68,15 @@ const UserMenu = () => {
       })
 
       const responseJson = await response.json();
+      // console.log(responseJson)
 
       if (responseJson.success === true) {
-        console.log(responseJson.message)
         setAvatarPreview(responseJson.data.profile.avatar_link);
+        setName(responseJson.data.profile.name);
         return
       } else {
         console.error(responseJson.message);
+        localStorage.clear();
         return
       }
 
@@ -86,6 +88,12 @@ const UserMenu = () => {
 
   useEffect(() => {
     handleGetProfile();
+    const intervalId = setInterval(() => {
+      handleGetProfile();
+    }, 10000);
+    return () => {
+      clearInterval(intervalId);
+    }
   });
 
   return (
@@ -93,13 +101,17 @@ const UserMenu = () => {
       <div className="relative z-30">
 
         {currentUser() ? (
-          <div onClick={toggleOpen} className="p-2 border-[1px] border-lime-900 flex flex-row items-center gap-1 rounded-full cursor-pointer hover:shadow-md transition text-lime-900">
+          <div onClick={toggleOpen} className="p-2 flex flex-row items-center rounded-md cursor-pointer hover:border-[1px] hover:border-lime-900 text-lime-900">
+
             {avatarPreview ? (
               <Avatar width={30} height={30} size={30} src={avatarPreview} />
             ) : (
               <Avatar width={30} height={30} size={30} />
             )}
-            {isOpen ? <AiFillCaretUp /> : <AiFillCaretDown />}
+            <span className="mx-2 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
+              {name}
+            </span>
+            {isOpen ? <ChevronUpIcon className="h-5 w-5 text-gray-400" /> : <ChevronDownIcon className="h-5 w-5 text-gray-400" />}
           </div>
         ) : (
           <div onClick={toggleOpen} className="p-2 text-gray-400 hover:text-gray-500 lg:ml-4">
@@ -118,7 +130,7 @@ const UserMenu = () => {
                     <MenuItem onClick={toggleOpen}>Register Your Store</MenuItem>
                   </Link>
                 ) : (
-                  <Link href='/store/product'>
+                  <Link href='/store'>
                     <MenuItem onClick={toggleOpen}>Dashboard Store</MenuItem>
                   </Link>
                 )}

@@ -121,7 +121,6 @@ const ProfileList = () => {
         return;
       }
 
-      // const response = await changeAvatar(token, formData);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles/avatar`, {
         method: 'POST',
         headers: {
@@ -188,6 +187,12 @@ const ProfileList = () => {
 
   useEffect(() => {
     handleGetProfile();
+    const intervalId = setInterval(() => {
+      handleGetProfile();
+    }, 5000);
+    return () => {
+      clearInterval(intervalId);
+    }
   });
 
   useEffect(() => {

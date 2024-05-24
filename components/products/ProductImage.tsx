@@ -1,6 +1,6 @@
 "use client";
 
-import { CartProductType, SelectedImgType } from "@/app/product/[productId]/ProductDetails";
+// import { CartProductType, SelectedImgType } from "@/app/product/[productId]/ProductDetails";
 import Image from "next/image";
 
 interface ProductImageProps {
@@ -20,7 +20,7 @@ const ProductImage: React.FC<ProductImageProps> = ({
         {product.images.map((image: SelectedImgType) => {
           return (
             <div key={image.color} onClick={() => handleColorSelect(image)} className={`relative w-[80%] aspect-square rounded border-teal-300 
-            ${cartProduct.selectedImg.color === image.color? 'border-[1.5px]' : 'border-none'}`}>
+            ${cartProduct.selectedImg.color === image.color ? 'border-[1.5px]' : 'border-none'}`}>
               <Image src={image.image} alt={image.color} fill className="object-contain" />
             </div>
           )

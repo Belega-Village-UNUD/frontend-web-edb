@@ -8,6 +8,7 @@ const nextConfig = {
       "ik.imagekit.io",
       "tailwindui.com",
       "flowbite.com",
+      "images.unsplash.com",
     ],
   },
 };

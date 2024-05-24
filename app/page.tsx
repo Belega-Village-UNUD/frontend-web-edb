@@ -12,7 +12,6 @@ export default function Home() {
 
   const handleGetAllProduct = async () => {
     try {
-      // const responseJson = getAllProducts()
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/guest/all`, {
         method: 'GET',
         headers: {
@@ -22,7 +21,6 @@ export default function Home() {
 
       const responseJson = await response.json();
       setProducts(responseJson.data)
-      // console.log(responseJson)
     } catch (error: any) {
       console.log(error.message)
     }
@@ -32,14 +30,6 @@ export default function Home() {
     handleGetAllProduct()
   }, [])
 
-  useEffect(() => {
-    const clearIsLogin = () => {
-      localStorage.clear()
-    }
-    const intercalId = setInterval(clearIsLogin, 3600000);
-
-    return () => { clearInterval(intercalId) }
-  }, [])
 
   return (
     <div className='p-0'>
@@ -47,13 +37,13 @@ export default function Home() {
         <div>
           <HomeBanner />
         </div>
-        <div className='bg-white'>
+        <div className='bg-green-50'>
           <h2 className="text-xl font-bold text-gray-900 p-5">Customers also bought</h2>
           <div className='grid grid-cols-2 p-4 gap:8 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'>
             {products.length > 0 ? (
               <>
                 {products.map((product: any) => {
-                  return <ProductCard key={product.id} data={product} />
+                  return product.stock > 0 ? <ProductCard key={product.id} data={product} /> : null
                 })}
               </>
             ) : (

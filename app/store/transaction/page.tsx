@@ -1,7 +1,7 @@
 'use client'
 
 import SideBar from "@/components/sidebar/SideBar";
-import ProductListStore from "./ProductList";
+import ProductListStore from "../product/ProductList";
 
 const productStore = () => {
 

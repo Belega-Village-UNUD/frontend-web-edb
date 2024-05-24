@@ -3,8 +3,8 @@
 import Container from "@/components/Container";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import ListRatingNew from "./ListRatingNew";
-import ProductNew from "./ProductNew";
+import ListRating from "./ListRating";
+import ProductList from "./ProductList";
 
 const Product = () => {
   const { productId } = useParams();
@@ -19,7 +19,6 @@ const Product = () => {
         }
       })
       const responseJson = await response.json();
-
       if (responseJson.success === true) {
         setProduct(responseJson.data)
         return
@@ -52,14 +51,11 @@ const Product = () => {
   }, [handleGetProduct])
 
   return (
-    <div className="p-8 bg-white">
+    <div className="p-8 bg-green-50">
       <Container>
-
-        {/* <ProductDetails product={product} /> */}
-        <ProductNew data={product} />
-
+        <ProductList data={product} />
         <div className="flex flex-col mt-20 gap-4">
-          <ListRatingNew product={product} />
+          <ListRating product={product} />
         </div>
       </Container>
     </div>

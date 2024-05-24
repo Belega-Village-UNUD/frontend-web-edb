@@ -11,7 +11,7 @@ const HomeBanner = () => {
   // ];
 
   return (
-    <div className="bg-white">
+    <div className="bg-green-50">
       <div aria-hidden="true" className="relative">
         <Image
           src="https://tailwindui.com/img/ecommerce-images/product-feature-02-full-width.jpg"
@@ -20,7 +20,7 @@ const HomeBanner = () => {
           height={1000}
           className="h-96 w-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-white" />
+        <div className="absolute inset-0 bg-gradient-to-t from-green-50" />
       </div>
 
       <div className="relative mx-auto -mt-12 max-w-7xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
