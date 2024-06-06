@@ -46,7 +46,6 @@ const ProfileList = () => {
       })
 
       const responseJson = await response.json();
-
       if (responseJson.success === true) {
         setValue('name', responseJson.data.profile.name);
         setValue('email', responseJson.data.user.email);
@@ -63,6 +62,10 @@ const ProfileList = () => {
     }
   }
 
+  useEffect(() => {
+    handleGetProfile();
+  });
+
   const handleChangeProfile: SubmitHandler<FieldValues> = async (data) => {
     try {
       setIsLoading(true);
@@ -74,7 +77,6 @@ const ProfileList = () => {
         return;
       }
 
-      // const responseJson = await updateProfile(token, data)
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles`, {
         method: 'PUT',
         headers: {
@@ -94,6 +96,7 @@ const ProfileList = () => {
       if (responseJson.success === true) {
         toast.success(responseJson.message);
         setIsLoading(false);
+        handleGetProfile();
       } else {
         toast.error(responseJson.message);
         setIsLoading(false);
@@ -130,11 +133,15 @@ const ProfileList = () => {
       })
 
       const responseJson = await response.json();
-
-      setAvatarPreview(URL.createObjectURL(file));
-      toast.success(responseJson.message);
-      setIsLoading(false);
-
+      if (responseJson.success === true) {
+        setIsLoading(false);
+        toast.success(responseJson.message);
+        setAvatarPreview(URL.createObjectURL(file));
+        handleGetProfile()
+      } else {
+        setIsLoading(false);
+        toast.error(responseJson.message);
+      }
     } catch (error: any) {
       setIsLoading(false);
       toast.error(error.message);
@@ -184,16 +191,6 @@ const ProfileList = () => {
     setIsModalOpen(true)
   }
   const cancelButtonRef = useRef(null)
-
-  useEffect(() => {
-    handleGetProfile();
-    const intervalId = setInterval(() => {
-      handleGetProfile();
-    }, 5000);
-    return () => {
-      clearInterval(intervalId);
-    }
-  });
 
   useEffect(() => {
     const isLoged = localStorage.getItem('is_login');
@@ -274,19 +271,6 @@ const ProfileList = () => {
               </div>
 
               <div className="col-span-full">
-                {/* <div className="absolute inset-y-0 left-0 flex items-center">
-                    <label htmlFor="country" className="sr-only">
-                      Country
-                    </label>
-                    <select
-                      id="country"
-                      name="country"
-                      autoComplete="country"
-                      className="h-full rounded-md border-0 bg-transparent py-0 px-0 pl-3 pr-1 text-gray-500 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-                    >
-                      <option>ID</option>
-                    </select>
-                  </div> */}
                 <div className="mt-0">
                   <InputForm
                     name='phone'
@@ -300,7 +284,6 @@ const ProfileList = () => {
 
               <div className="col-span-full">
                 <InputForm
-                  // id="description"
                   name='description'
                   type='textarea'
                   register={register}

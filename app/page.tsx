@@ -23,13 +23,13 @@ export default function Home() {
       setProducts(responseJson.data)
     } catch (error: any) {
       console.log(error.message)
+      localStorage.clear()
     }
   }
 
   useEffect(() => {
     handleGetAllProduct()
   }, [])
-
 
   return (
     <div className='p-0'>

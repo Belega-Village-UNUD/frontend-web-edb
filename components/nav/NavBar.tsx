@@ -1,5 +1,6 @@
 "use client"
 
+import { useUsers } from '@/zustand/users';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -11,26 +12,14 @@ import SearchBar from './SearchBar';
 import UserMenu from './UserMenu';
 
 const NavBar = () => {
-  const pathname = usePathname()
-
-  const currentUser = () => {
-    if (typeof window !== 'undefined') {
-      const logged = window.localStorage.getItem('is_login');
-      if (!logged || logged === 'false') { return false; }
-      return true;
-    }
-    return false;
-  }
+  const pathname = usePathname();
+  const [isLogged, setLogged] = useUsers((state) => {
+    return [state.isLogged, state.setLogged]
+  });
 
   useEffect(() => {
-    currentUser();
-    const intervalId = setInterval(() => {
-      currentUser();
-    }, 10000);
-    return () => {
-      clearInterval(intervalId);
-    }
-  });
+    setLogged();
+  }, [setLogged]);
 
   return (
     !DisableNav(pathname) && (
@@ -43,7 +32,7 @@ const NavBar = () => {
               </Link>
               <div className='flex items-center gap-2 md:gap-6 sm:gap-6'>
                 <SearchBar />
-                {currentUser() ? <CartMenu /> : null}
+                {isLogged ? <CartMenu /> : null}
                 <div className='hover:cursor-pointer'>
                   <UserMenu />
                 </div>

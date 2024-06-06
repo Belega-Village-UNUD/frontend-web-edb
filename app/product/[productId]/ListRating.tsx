@@ -106,12 +106,11 @@ const ListRating: React.FC<ListRatingProps> = ({ product }) => {
               If you’ve used this product, share your thoughts with other customers
             </p>
 
-            <a
-              href="#"
+            <span
               className="mt-6 inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 sm:w-auto lg:w-full"
             >
               Write a review
-            </a>
+            </span>
           </div>
         </div>
 

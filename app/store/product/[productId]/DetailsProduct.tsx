@@ -1,15 +1,19 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { PhotoIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { setInterval } from "timers";
 
-const NewProductListStore = () => {
+const DetailsProduct = () => {
   const [type, setType] = useState([])
-  const { register, handleSubmit } = useForm<FieldValues>();
-  const router = useRouter()
+  const { register, handleSubmit, setValue } = useForm<FieldValues>();
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const idProduct = pathname.split('/').pop();
 
   const getToken = useCallback(() => {
     const token = localStorage.getItem('token');
@@ -19,6 +23,39 @@ const NewProductListStore = () => {
     }
     return token;
   }, []);
+
+  const handleGetOneProduct = useCallback(async () => {
+    try {
+      const token = getToken();
+      if (!token) { return; }
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/seller/${idProduct}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      const responseJson = await response.json();
+      console.log(responseJson)
+      if (responseJson.status === 200) {
+        setValue('name', responseJson.data.name_product);
+        setValue('productType', responseJson.data.product_type.id);
+        setValue('description', responseJson.data.desc_product);
+        setValue('price', responseJson.data.price);
+        setValue('stock', responseJson.data.stock);
+        setValue('weight_gr', responseJson.data.weight_gr);
+        setValue('is_preorder', responseJson.data.is_preorder ? 'true' : 'false');
+      } else {
+        console.error(responseJson.message)
+      }
+    } catch (error: any) {
+      console.error(error.message)
+    }
+  }, [getToken, idProduct, setValue])
+
+  useEffect(() => {
+    handleGetOneProduct()
+  }, [handleGetOneProduct])
 
   const handleGetAllType = useCallback(async () => {
     try {
@@ -51,12 +88,14 @@ const NewProductListStore = () => {
     return () => clearInterval(interval)
   }, [handleGetAllType])
 
-  const handleCreateNewProduct: SubmitHandler<FieldValues> = useCallback(async (data) => {
+  const handleUpdateProduct: SubmitHandler<FieldValues> = useCallback(async (data) => {
     try {
+      data.is_preorder = data.is_preorder === 'true';
+      console.log(data)
       const token = getToken();
       if (!token) { return; }
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/seller`, {
-        method: 'POST',
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/seller/${idProduct}`, {
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -68,7 +107,7 @@ const NewProductListStore = () => {
           price: data.price,
           stock: data.stock,
           weight_gr: data.weight_gr,
-          is_preorder: data.is_preorder = data.is_preorder === 'true' ? true : false
+          is_preorder: data.is_preorder
         })
       })
       const responseJson = await response.json();
@@ -81,7 +120,7 @@ const NewProductListStore = () => {
     } catch (error: any) {
       console.log(error.message)
     }
-  }, [getToken, router])
+  }, [getToken, router, idProduct])
 
   return (
     <div className="lg:px-8 sm:px-6">
@@ -101,23 +140,22 @@ const NewProductListStore = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className="font-semibold">Create New Product</BreadcrumbPage>
+              <BreadcrumbPage className="font-semibold">Edit Product</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-
       <div className="lg:-mx-8 sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="flex-1 text-2xl font-bold text-gray-900">Create New Product</h1>
+          <h1 className="flex-1 text-2xl font-bold text-gray-900">Update Product</h1>
           <p className="mt-2 text-sm text-gray-500">
-            Create a new product to be sold in your store
+            Update a product to be sold in your store
           </p>
         </div>
       </div>
       <div className="mt-8 flow-root">
-        <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
-          <form onSubmit={handleSubmit(handleCreateNewProduct)}>
+        <div className="lg:-mx-8 lg:-my-2 sm:-mx-6">
+          <form onSubmit={handleSubmit(handleUpdateProduct)}>
             <div className="md:p-6 bg-white shadow-sm ring-1 ring-gray-900/5 md:rounded-lg">
               <h3 className="text-base font-semibold">Information Product</h3>
 
@@ -172,7 +210,6 @@ const NewProductListStore = () => {
                         {...register('productType')}
                         className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       >
-                        <option value=""></option>
                         {type.map((item: any) => (
                           <option key={item.id} value={item.id}>{item.name}</option>
                         ))}
@@ -264,7 +301,6 @@ const NewProductListStore = () => {
                               {...register('is_preorder')}
                               value='false'
                               type="radio"
-                              defaultChecked
                               className="h-4 w-4 border-gray-300 text-lime-700 focus:text-lime-700"
                             />
                             <label htmlFor="push-no" className="block text-sm font-medium leading-6 text-gray-900">
@@ -291,14 +327,14 @@ const NewProductListStore = () => {
                 </div>
 
                 <div className="flex items-center justify-end gap-x-6">
-                  <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
-                    Cancel
+                  <button type="button" onClick={() => router.push('/store/product')} className="text-sm font-semibold leading-6 text-gray-900">
+                    Back
                   </button>
                   <button
                     type="submit"
                     className="inline-flex justify-center rounded-md bg-lime-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-lime-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-800"
                   >
-                    Confirm Product
+                    Update Product
                   </button>
                 </div>
 
@@ -306,9 +342,9 @@ const NewProductListStore = () => {
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
 
-export default NewProductListStore;
+export default DetailsProduct;

@@ -4,16 +4,15 @@ import { Dialog, Disclosure, DisclosureButton, DisclosurePanel, Menu, Transition
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import {
   Bars3Icon,
-  CalendarIcon,
   ChartPieIcon,
   ChevronRightIcon,
   ClipboardDocumentCheckIcon,
   Cog6ToothIcon,
   DocumentDuplicateIcon,
-  FolderIcon,
   HomeModernIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline'
+import { ShoppingBag, StoreIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -45,17 +44,29 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
     {
       name: 'Product',
       href: '#',
-      icon: ClipboardDocumentCheckIcon,
+      icon: ShoppingBag,
       children: [
         { name: 'My Product', href: '/store/product' },
-        { name: 'Add Product', href: '/store/product/new' }
+        { name: 'Create New Product', href: '/store/product/new' }
       ]
     },
     {
-      name: 'Projects', href: '/store/transaction', icon: FolderIcon
+      name: 'Transaction',
+      href: '/store/transaction',
+      icon: ClipboardDocumentCheckIcon,
+      children: [
+        { name: 'My Transaction', href: '/store/transaction' },
+        { name: 'Cancellation', href: '/store/transaction/cancellation' }
+      ]
     },
     {
-      name: 'Calendar', href: '#', icon: CalendarIcon
+      name: 'Store',
+      href: '#',
+      icon: StoreIcon,
+      children: [
+        { name: 'Store Profile', href: '/store/store' },
+        { name: 'Store Decoration', href: '/store/store/new' }
+      ]
     },
     {
       name: 'Documents', href: '#', icon: DocumentDuplicateIcon
@@ -150,7 +161,7 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                           <ul role="list" className="-mx-2 mt-2 space-y-1">
                             {teams.map((team) => (
                               <li key={team.name}>
-                                <a
+                                <Link
                                   href={team.href}
                                   className={classNames(
                                     team.current
@@ -170,13 +181,13 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                                     {team.initial}
                                   </span>
                                   <span className="truncate">{team.name}</span>
-                                </a>
+                                </Link>
                               </li>
                             ))}
                           </ul>
                         </li>
                         <li className="mt-auto">
-                          <a
+                          <Link
                             href="#"
                             className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-green-100 hover:text-green-700"
                           >
@@ -185,7 +196,7 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                               aria-hidden="true"
                             />
                             Settings
-                          </a>
+                          </Link>
                         </li>
                       </ul>
                     </nav>
@@ -211,20 +222,18 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
                     {navigation.map((item) => {
-                      const splitPath = pathname.split('/').join('/');
-                      const isActive = splitPath === item.href;
                       return (
                         <li key={item.name}>
                           {!item.children ? (
                             <Link href={item.href} key={item.name} className={classNames(
-                              isActive
+                              pathname.endsWith(item.href)
                                 ? 'bg-green-100 text-green-700'
                                 : 'text-gray-700 hover:text-green-700 hover:bg-green-100',
                               'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                             )}>
                               <item.icon
                                 className={classNames(
-                                  isActive ? 'text-green-700' : 'text-gray-400 group-hover:text-green-700',
+                                  pathname.endsWith(item.href) ? 'text-green-700' : 'text-gray-400 group-hover:text-green-700',
                                   'h-6 w-6 shrink-0'
                                 )}
                                 aria-hidden="true"
@@ -237,7 +246,7 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                                 <>
                                   <DisclosureButton
                                     className={classNames(
-                                      isActive ? 'bg-gray-50' : 'hover:bg-gray-50',
+                                      pathname.endsWith(item.href) ? 'bg-gray-50' : 'hover:bg-gray-50',
                                       'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-700'
                                     )}
                                   >
@@ -253,14 +262,13 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                                   </DisclosureButton>
                                   <DisclosurePanel as="ul" className="mt-1">
                                     {item.children.map((subItem) => {
-                                      const isSubActive = pathname.includes(subItem.href);
                                       return (
                                         <li key={subItem.name}>
                                           <Link
                                             href={subItem.href}
                                             key={subItem.name}
                                             className={classNames(
-                                              isSubActive
+                                              pathname.endsWith(subItem.href)
                                                 ? 'bg-green-100 text-green-700'
                                                 : 'text-gray-700 hover:text-green-700 hover:bg-green-100',
                                               'group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-6'
@@ -268,7 +276,7 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                                           >
                                             <div
                                               className={classNames(
-                                                isSubActive ? 'text-green-700' : 'text-gray-400 group-hover:text-green-700',
+                                                pathname.endsWith(subItem.href) ? 'text-green-700' : 'text-gray-400 group-hover:text-green-700',
                                                 'h-6 w-6 shrink-0'
                                               )}
                                               aria-hidden="true"
@@ -293,7 +301,7 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                   <ul role="list" className="-mx-2 mt-2 space-y-1">
                     {teams.map((team) => (
                       <li key={team.name}>
-                        <a
+                        <Link
                           href={team.href}
                           className={classNames(
                             team.current
@@ -313,13 +321,13 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                             {team.initial}
                           </span>
                           <span className="truncate">{team.name}</span>
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
                 </li>
                 <li className="mt-auto">
-                  <a
+                  <Link
                     href="#"
                     className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-green-100 hover:text-green-700"
                   >
@@ -328,7 +336,7 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                       aria-hidden="true"
                     />
                     Settings
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </nav>

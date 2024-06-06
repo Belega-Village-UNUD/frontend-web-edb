@@ -1,13 +1,13 @@
 'use client'
 
 import SideBar from "@/components/sidebar/SideBar";
-import TransactionListStore from "./TransactionList";
+import CancellationList from "./CancellationList";
 
 const productStore = () => {
 
   return (
     <>
-      <SideBar main={<TransactionListStore />} />
+      <SideBar main={<CancellationList />} />
     </>
   )
 }

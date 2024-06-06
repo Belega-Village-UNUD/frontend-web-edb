@@ -6,14 +6,37 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+import { usePersistedUser, useUsers } from "@/zustand/users";
+import { useShallow } from "zustand/react/shallow";
 import Avatar from "../Avatar";
 import BackDrop from "./BackDrop";
 import MenuItem from "./MenuItem";
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [name, setName] = useState();
+  const [isLogged, setLogged, role, handleGetProfile, avatarPreview] = useUsers(
+    useShallow((state) => {
+      return [
+        state.isLogged,
+        state.setLogged,
+        state.role,
+        state.handleGetProfile,
+        state.avatarPreview,
+      ]
+    })
+  )
+  const [name] = usePersistedUser(useShallow((state) => [state.name]))
+
+  useEffect(() => {
+    setLogged()
+  }, [setLogged])
+
+  useEffect(() => {
+    handleGetProfile();
+    setInterval(() => {
+      handleGetProfile();
+    }, 10000);
+  }, [handleGetProfile]);
 
   const router = useRouter()
 
@@ -35,72 +58,11 @@ const UserMenu = () => {
     }
   }
 
-  const currentUser = () => {
-    if (typeof window !== 'undefined') {
-      const logged = localStorage.getItem('is_login')
-      if (!logged || logged === 'false') { return false }
-      return true
-    }
-    return false
-  }
-
-  const currentRole = (): string => {
-    const role = localStorage.getItem('role')
-    if (!role) { return '' }
-    return role
-  }
-
-  const handleGetProfile = async () => {
-    try {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        console.error('Anda belum login')
-        return;
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': `application/json`
-        }
-      })
-
-      const responseJson = await response.json();
-      // console.log(responseJson)
-
-      if (responseJson.success === true) {
-        setAvatarPreview(responseJson.data.profile.avatar_link);
-        setName(responseJson.data.profile.name);
-        return
-      } else {
-        console.error(responseJson.message);
-        localStorage.clear();
-        return
-      }
-
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error(error.message);
-    }
-  }
-
-  useEffect(() => {
-    handleGetProfile();
-    const intervalId = setInterval(() => {
-      handleGetProfile();
-    }, 10000);
-    return () => {
-      clearInterval(intervalId);
-    }
-  });
-
   return (
     <>
       <div className="relative z-30">
 
-        {currentUser() ? (
+        {isLogged ? (
           <div onClick={toggleOpen} className="p-2 flex flex-row items-center rounded-md cursor-pointer hover:border-[1px] hover:border-lime-900 text-lime-900">
 
             {avatarPreview ? (
@@ -123,9 +85,9 @@ const UserMenu = () => {
         {isOpen && (
           <div className="absolute rounded-md shadow-md w-[170px] bg-white overflow-hidden right-0 top-12 text-sm flex flex-col cursor-pointer">
 
-            {currentUser() ? (
+            {isLogged ? (
               <div>
-                {!currentRole().includes('WGVUqKhyoV') ? (
+                {!role.includes('WGVUqKhyoV') ? (
                   <Link href='#'>
                     <MenuItem onClick={toggleOpen}>Register Your Store</MenuItem>
                   </Link>

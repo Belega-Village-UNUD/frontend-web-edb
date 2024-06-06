@@ -2,6 +2,7 @@
 import ButtonConfirm from '@/components/button/ButtonConfirm';
 import SetQuantity from '@/components/products/SetQuantity';
 import CurrencyText from '@/components/text/CurrencyText';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -197,54 +198,34 @@ const CartList = () => {
 
     const selectCHeck = selectedProducts.map(cart => ({ cart_id: cart.cart_id }));
     console.log(selectCHeck);
-    // try {
-    //   const token = getToken();
-    //   if (!token) { return; }
+    try {
+      const token = getToken();
+      if (!token) { return; }
 
-    //   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/checkout`, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Authorization': `Bearer ${token}`,
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(selectedProducts.map(cart => ({ cart_id: cart.cart_id })))
-    //   })
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/checkout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(selectedProducts.map(cart => ({ cart_id: cart.cart_id })))
+      })
 
-    //   const responseJson = await response.json();
-    //   console.log(responseJson);
-    //   if (responseJson.success === true) {
-    //     toast.success(responseJson.message);
-    //     router.push('/buyer/checkout');
-    //   } else {
-    //     toast.error(responseJson.message);
-    //   }
-    // } catch (error: any) {
-    //   console.error(error.message)
-    // }
+      const responseJson = await response.json();
+      console.log(responseJson);
+      if (responseJson.success === true) {
+        toast.success(responseJson.message);
+        router.push('/buyer/checkout');
+      } else {
+        toast.error(responseJson.message);
+      }
+    } catch (error: any) {
+      console.error(error.message)
+    }
   }
 
   return (
     <div className="mx-auto max-w-7xl pt-10 lg:max-w-7xl md:max-w-5xl md:px-6 sm:max-w-xl sm:px-2">
-
-      <dialog id="alertCheckout" className="modal">
-        <p className='sr-only'>modal of alert checkbox</p>
-
-        <div className="modal-box">
-          <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-          </form>
-          <h3 className="font-bold text-2xl text-red-600">ATTENTION!</h3>
-          <p className="py-4 font-medium text-lg mb-8">Are you serious to checkout product?</p>
-          <div className='flex gap-2 justify-between'>
-            <form method='dialog' className='flex-grow'>
-              <ButtonConfirm label='Cancel' outline />
-            </form>
-            <div className='flex-grow'>
-              <ButtonConfirm label='Checkout' onClick={handleCheckout} />
-            </div>
-          </div>
-        </div>
-      </dialog>
 
       <div className="max-w-7xl mb-6 sm:px-2">
         <div className="max-w-2xl lg:max-w-4xl">
@@ -364,23 +345,25 @@ const CartList = () => {
             <p className='pb-2 pl-2 text-lime-700 font-bold text-xl'>
               <CurrencyText amount={grandTotal} />
             </p>
-            <ButtonConfirm
-              label={isLoading ? '' : 'Checkout'}
-              onClick={() => {
-                const element = document.getElementById('alertCheckout') as HTMLDialogElement;
-                if (element) {
-                  element.showModal();
-                }
-              }}
-            />
-            {/* <Link href="/buyer/checkout">
-              <button
-                type="submit"
-                className="flex-shrink-0 px-4 py-2 rounded-md border border-transparent bg-lime-900 text-sm font-medium text-white shadow-sm hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-              >
-                View Cart Bag
-              </button>
-            </Link> */}
+            <Dialog>
+              <DialogTrigger asChild >
+                <ButtonConfirm label='Checkout' />
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="font-bold text-2xl text-red-600">Attention !</DialogTitle>
+                  <DialogDescription className="py-4 font-medium text-lg mb-8">
+                    Are you serious to delete your product?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="sm:justify-start">
+                  <DialogClose asChild>
+                    <ButtonConfirm label='Cancel' outline />
+                  </DialogClose>
+                  <ButtonConfirm label='Let`s Go..' onClick={handleCheckout} />
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
 
         </div>

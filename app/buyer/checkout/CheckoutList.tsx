@@ -1,5 +1,5 @@
+import CurrencyText from "@/components/text/CurrencyText";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 const products = [
   {
@@ -47,7 +47,7 @@ const CheckoutList = () => {
 
         <div className='p-4 text-end text-gray-300 font-medium grid grid-cols-6'>
           <div className='col-span-3 grid justify-self-start'>
-            <p className="text-slate-700 text-lg font-semibold">Product Ordered</p>
+            <p className="text-slate-700 text-lg font-medium">Product Ordered</p>
           </div>
           <p>Unit Price</p>
           <p>Quantity</p>
@@ -55,7 +55,7 @@ const CheckoutList = () => {
         </div>
 
         <div className="px-4 py-2">
-          <h4 className="text-lime-800 text-xl font-semibold">Terawan Store</h4>
+          <h4 className="text-lime-800 text-base font-medium">Terawan Store</h4>
         </div>
 
         <div className="grid border-b border-gray-200">
@@ -87,8 +87,8 @@ const CheckoutList = () => {
         </div>
 
         <div className="px-4 py-2 grid justify-items-stretch grid-cols-2">
-          <h4 className="">Total</h4>
-          <h4 className="justify-self-end text-lime-800 text-xl font-semibold">2198391238</h4>
+          <h4 className="text-lime-800 text-lg font-normal">Total</h4>
+          <h4 className="justify-self-end text-lime-800 text-2xl font-medium"><CurrencyText amount={2500000} /></h4>
         </div>
       </div>
 
