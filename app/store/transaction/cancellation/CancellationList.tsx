@@ -9,7 +9,6 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -40,158 +39,68 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { format } from "date-fns"
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 
-// const data: Payment[] = [
-//   {
-//     id: "m5gr84i9",
-//     transactionId: "m5gr84i9",
-//     orderDate: "2021-09-01",
-//     amount: 316,
-//     status: "success",
-//     email: "ken99@yahoo.com",
-//   },
-//   {
-//     id: "3u1reuv4",
-//     transactionId: "3u1reuv4",
-//     orderDate: "2021-09-02",
-//     amount: 242,
-//     status: "success",
-//     email: "Abe45@gmail.com",
-//   },
-//   {
-//     id: "derv1ws0",
-//     transactionId: "derv1ws0",
-//     orderDate: "2021-09-03",
-//     amount: 837,
-//     status: "processing",
-//     email: "Monserrat44@gmail.com",
-//   },
-//   {
-//     id: "5kma53ae",
-//     transactionId: "5kma53ae",
-//     orderDate: "2021-09-04",
-//     amount: 874,
-//     status: "success",
-//     email: "Silas22@gmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-05",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-06",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-06",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-06",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-06",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-06",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-06",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-06",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-//   {
-//     id: "bhqecj4p",
-//     transactionId: "bhqecj4p",
-//     orderDate: "2021-09-06",
-//     amount: 721,
-//     status: "failed",
-//     email: "carmella@hotmail.com",
-//   },
-// ]
-
-type Payment = {
+type Transaction = {
   id: string
   transactionId: string
-  orderDate: string
+  createdAt: string
   total_amount: number
   status: "pending" | "processing" | "success" | "failed"
-  email: string
+  user: {
+    email: string
+  }
 }
 
-export const columns: ColumnDef<Payment>[] = [
+type ApiResponse = {
+  success: boolean
+  message: string
+  data: Transaction[]
+}
+
+export const columns: ColumnDef<Transaction>[] = [
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    id: "index",
+    header: "No.",
+    cell: ({ row }) => <div>{row.index + 1}</div>,
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: "id",
+    accessorKey: "Transaction ID",
     header: "Transaction ID",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("id")}</div>
+      // <div className="capitalize">{row.getValue("id")}</div>
+      <div className="capitalize">{row.original.id}</div>
     ),
   },
   {
-    accessorKey: "createdAt",
+    accessorKey: "Order Date",
     header: ({ column }) => {
       return (
         <Button
@@ -204,7 +113,7 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("createdAt")}</div>,
+    cell: ({ row }) => <div className="lowercase">{format(new Date(row.original.createdAt), 'MMMM dd, yyyy')}</div>,
   },
   {
     accessorKey: "status",
@@ -214,7 +123,7 @@ export const columns: ColumnDef<Payment>[] = [
     ),
   },
   {
-    accessorKey: "email",
+    accessorKey: "Email",
     header: ({ column }) => {
       return (
         <Button
@@ -227,13 +136,13 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => <div className="lowercase">{row.original.user.email}</div>,
   },
   {
-    accessorKey: "total_amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "Total Amount",
+    header: () => <div className="text-right">Total Amount</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("total_amount"))
+      const amount = parseFloat(row.original.total_amount.toString())
 
       return <div className="text-right font-medium"><CurrencyText amount={amount} /></div>
     },
@@ -278,7 +187,7 @@ const CancellationList = () => {
     useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const [transactions, setTransactions] = useState<Payment[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [email, setEmail] = useState("")
 
   const getToken = useCallback(() => {
@@ -302,29 +211,20 @@ const CancellationList = () => {
         }
       })
 
-      const responseJson = await response.json();
-      console.log(responseJson.data)
-      setTransactions(responseJson.data)
+      const responseJson: ApiResponse = await response.json();
 
-      if (responseJson && responseJson.data) {
-        let transactions = responseJson.data;
-
-        if (responseJson.data.user && responseJson.data.user.email) {
-          const email = responseJson.data.user.email;
-
-          transactions = transactions.map((transaction: any) => ({
-            ...transaction, // Menyalin semua atribut yang ada
-            userEmail: email // Menambahkan atau memodifikasi atribut email
-          }));
-
-          // Melakukan console.log untuk setiap transaksi yang sudah dimodifikasi
-          transactions.forEach((transaction: any) =>
-            console.log(transaction)
-          );
-        }
-
-        setTransactions(transactions);
+      if (responseJson.success === true) {
+        let emails: string[] = []
+        responseJson.data.map((item: Transaction) => {
+          const mail = item.user.email
+          emails.push(mail)
+        })
+        setEmail(emails[0])
+        setTransactions(responseJson.data)
+      } else {
+        console.log(responseJson.message)
       }
+
     } catch (error: any) {
       console.log(error.message)
     }
@@ -332,10 +232,6 @@ const CancellationList = () => {
 
   useEffect(() => {
     handleGetAllTransaction()
-    const interval = setInterval(() => {
-      handleGetAllTransaction()
-    }, 5000)
-    return () => clearInterval(interval)
   }, [handleGetAllTransaction])
 
   const table = useReactTable({

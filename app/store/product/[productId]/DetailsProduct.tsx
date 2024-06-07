@@ -145,10 +145,10 @@ const DetailsProduct = () => {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="lg:-mx-8 sm:flex sm:items-center">
+      <div className="lg:-mx-8 lg:mb-2 sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="flex-1 text-2xl font-bold text-gray-900">Update Product</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="text-sm text-gray-500">
             Update a product to be sold in your store
           </p>
         </div>
