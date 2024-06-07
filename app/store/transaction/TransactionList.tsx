@@ -61,7 +61,6 @@ const TransactionListStore = () => {
       })
 
       const responseJson = await response.json();
-      console.log(responseJson.data)
       setTransactions(responseJson.data)
     } catch (error: any) {
       console.log(error.message)
@@ -72,7 +71,7 @@ const TransactionListStore = () => {
     handleGetAllTransaction()
     const interval = setInterval(() => {
       handleGetAllTransaction()
-    }, 5000)
+    }, 10000)
     return () => clearInterval(interval)
   }, [handleGetAllTransaction])
 

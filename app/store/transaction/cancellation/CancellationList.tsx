@@ -1,4 +1,5 @@
 "use client"
+import ButtonConfirm from "@/components/button/ButtonConfirm"
 import CurrencyText from "@/components/text/CurrencyText"
 import {
   Breadcrumb,
@@ -9,6 +10,7 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -37,19 +39,21 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
+  useReactTable
 } from "@tanstack/react-table"
 import { format } from "date-fns"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Copy, MoreHorizontal, PencilIcon, SquareCheckBig, SquareX } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import toast from "react-hot-toast"
 
 type Transaction = {
   id: string
   transactionId: string
   createdAt: string
   total_amount: number
-  status: "pending" | "processing" | "success" | "failed"
+  status: "PENDING" | "PAYABLE" | "SUCCESS" | "CANCEL"
   user: {
     email: string
   }
@@ -61,7 +65,7 @@ type ApiResponse = {
   data: Transaction[]
 }
 
-export const columns: ColumnDef<Transaction>[] = [
+const columns: ColumnDef<Transaction>[] = [
   // {
   //   id: "select",
   //   header: ({ table }) => (
@@ -86,21 +90,27 @@ export const columns: ColumnDef<Transaction>[] = [
   // },
   {
     id: "index",
-    header: "No.",
+    header: "No",
     cell: ({ row }) => <div>{row.index + 1}</div>,
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: "Transaction ID",
+    id: "Transaction ID",
+    accessorKey: "transactionId",
     header: "Transaction ID",
     cell: ({ row }) => (
-      // <div className="capitalize">{row.getValue("id")}</div>
-      <div className="capitalize">{row.original.id}</div>
+      <div className="flex gap-[2px]">{row.original.id}
+        <Copy className="w-2 h-2 opacity-50" onClick={() => {
+          navigator.clipboard.writeText(row.original.id)
+          toast.success('Copied to clipboard!')
+        }} />
+      </div>
     ),
   },
   {
-    accessorKey: "Order Date",
+    id: "Order Date",
+    accessorKey: "createdAt",
     header: ({ column }) => {
       return (
         <Button
@@ -113,17 +123,15 @@ export const columns: ColumnDef<Transaction>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{format(new Date(row.original.createdAt), 'MMMM dd, yyyy')}</div>,
+    cell: ({ row }) =>
+      <div className="capitalize">
+        {format(new Date(row.original.createdAt), 'MMMM dd, yyyy')}
+      </div>
+    ,
   },
   {
+    id: "Status",
     accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "Email",
     header: ({ column }) => {
       return (
         <Button
@@ -131,7 +139,24 @@ export const columns: ColumnDef<Transaction>[] = [
           className="-px-2"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="capitalize">{row.original.status}</div>,
+  },
+  {
+    id: "Customer",
+    accessorKey: "user.email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="-px-2"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Customer
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -139,7 +164,8 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => <div className="lowercase">{row.original.user.email}</div>,
   },
   {
-    accessorKey: "Total Amount",
+    id: "Total Amount",
+    accessorKey: "total_amount",
     header: () => <div className="text-right">Total Amount</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.original.total_amount.toString())
@@ -152,27 +178,104 @@ export const columns: ColumnDef<Transaction>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original
+      const [activeDialog, setActiveDialog] = useState('');
+      const router = useRouter()
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Dialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-24">
+              <DropdownMenuLabel>Action</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push(`/store/transaction/${payment.id}`)
+                }}
+                className="cursor-pointer items-center"
+              >
+                <PencilIcon className="w-4 h-4 mr-2" />
+                <span>Detail</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-lime-600 cursor-pointer" onClick={() => setActiveDialog('confirm')}>
+                <DialogTrigger>
+                  <div className="flex items-center" >
+                    <SquareCheckBig className="w-4 h-4 mr-2" />
+                    <span>Confirm</span>
+                  </div>
+                </DialogTrigger>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-500 cursor-pointer" onClick={() => setActiveDialog('decline')}>
+                <DialogTrigger>
+                  <div className="flex items-center">
+                    <SquareX className="w-4 h-4 mr-2" />
+                    <span>Decline</span>
+                  </div>
+                </DialogTrigger>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {activeDialog === 'confirm' && (
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="font-bold text-2xl text-red-600">Attention !</DialogTitle>
+                <DialogDescription className="py-4 font-medium text-lg mb-8">
+                  Are you serious to confirm transaction?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="sm:justify-start">
+                <DialogClose asChild>
+                  <ButtonConfirm label='Cancel' outline />
+                </DialogClose>
+                {/* <ButtonConfirm label='Confirm' onClick={() => { handleConfirmTransaction(transaction.id) }} /> */}
+                <ButtonConfirm label='Confirm' onClick={() => { handleConfirmTransaction(payment.id) }} />
+              </DialogFooter>
+            </DialogContent>
+          )}
+          {activeDialog === 'decline' && (
+            <DialogContent className="sm:max-w-md" accessKey="decline">
+              <DialogHeader>
+                <DialogTitle className="font-bold text-2xl text-red-600">Attention !</DialogTitle>
+                <DialogDescription className="py-4 font-medium text-lg mb-8">
+                  Are you serious to decline transaction?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="sm:justify-start">
+                <DialogClose asChild>
+                  <ButtonConfirm label='Cancel' outline />
+                </DialogClose>
+                {/* <ButtonConfirm label='Decline' onClick={() => handleDeclineTransaction(transaction.id)} /> */}
+                <ButtonConfirm label='Decline' onClick={() => { }} />
+              </DialogFooter>
+            </DialogContent>
+          )}
+        </Dialog>
+
+        // <DropdownMenu>
+        //   <DropdownMenuTrigger asChild>
+        //     <Button variant="ghost" className="h-8 w-8 p-0">
+        //       <span className="sr-only">Open menu</span>
+        //       <MoreHorizontal className="h-4 w-4" />
+        //     </Button>
+        //   </DropdownMenuTrigger>
+        //   <DropdownMenuContent align="end">
+        //     <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        //     <DropdownMenuItem
+        //       onClick={() => navigator.clipboard.writeText(payment.id)}
+        //     >
+        //       Copy payment ID
+        //     </DropdownMenuItem>
+        //     <DropdownMenuSeparator />
+        //     <DropdownMenuItem>View customer</DropdownMenuItem>
+        //     <DropdownMenuItem>View payment details</DropdownMenuItem>
+        //   </DropdownMenuContent>
+        // </DropdownMenu>
       )
     },
   },
@@ -180,15 +283,13 @@ export const columns: ColumnDef<Transaction>[] = [
 
 const CancellationList = () => {
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [email, setEmail] = useState("")
+  const [newEmail, setNewEmail] = useState("")
+  const [activeDialog, setActiveDialog] = useState('');
 
   const getToken = useCallback(() => {
     const token = localStorage.getItem('token');
@@ -219,7 +320,7 @@ const CancellationList = () => {
           const mail = item.user.email
           emails.push(mail)
         })
-        setEmail(emails[0])
+        setNewEmail(emails[0])
         setTransactions(responseJson.data)
       } else {
         console.log(responseJson.message)
@@ -233,6 +334,33 @@ const CancellationList = () => {
   useEffect(() => {
     handleGetAllTransaction()
   }, [handleGetAllTransaction])
+
+  const handleConfirmTransaction = useCallback(async (id: string) => {
+    //   console.log('confirm', id)
+    // }, [])
+    try {
+      const token = getToken();
+      if (!token) { return; }
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/transaction/confirm/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      const responseJson = await response.json();
+      console.log(responseJson)
+      if (responseJson.status === 200) {
+        toast.success(responseJson.message);
+        setActiveDialog('')
+      } else {
+        toast.error(responseJson.message)
+        setActiveDialog('')
+      }
+    } catch (error: any) {
+      console.log(error.message)
+    }
+  }, [getToken])
 
   const table = useReactTable({
     data: transactions,
@@ -273,9 +401,9 @@ const CancellationList = () => {
 
       <div className="lg:px-8 lg:mb-2 sm:flex sm:items-center">
         <div className="lg:-mx-8 sm:flex-auto">
-          <h1 className="flex-1 text-2xl font-bold text-gray-900">Cancellation</h1>
+          <h1 className="flex-1 text-2xl font-bold text-gray-900">My Transaction</h1>
           <p className="text-sm text-gray-500">
-            List your Cancellation Transaction Store
+            List your Transaction Store
           </p>
         </div>
       </div>
@@ -283,9 +411,9 @@ const CancellationList = () => {
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("Customer")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("Customer")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
