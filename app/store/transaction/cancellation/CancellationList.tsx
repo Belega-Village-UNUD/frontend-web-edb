@@ -101,7 +101,7 @@ const columns: ColumnDef<Transaction>[] = [
     header: "Transaction ID",
     cell: ({ row }) => (
       <div className="flex gap-[2px]">{row.original.id}
-        <Copy className="w-2 h-2 opacity-50" onClick={() => {
+        <Copy className="w-2 h-2 opacity-50 cursor-pointer" onClick={() => {
           navigator.clipboard.writeText(row.original.id)
           toast.success('Copied to clipboard!')
         }} />
@@ -115,7 +115,7 @@ const columns: ColumnDef<Transaction>[] = [
       return (
         <Button
           variant="ghost"
-          className="-px-2"
+          className="-px-2 font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Order Date
@@ -136,7 +136,7 @@ const columns: ColumnDef<Transaction>[] = [
       return (
         <Button
           variant="ghost"
-          className="-px-2"
+          className="-px-2 font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Status
@@ -153,7 +153,7 @@ const columns: ColumnDef<Transaction>[] = [
       return (
         <Button
           variant="ghost"
-          className="-px-2"
+          className="-px-2 font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Customer
@@ -451,7 +451,7 @@ const CancellationList = () => {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="font-semibold">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
