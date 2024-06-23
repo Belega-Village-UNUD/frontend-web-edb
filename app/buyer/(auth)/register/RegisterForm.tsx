@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import ButtonConfirm from "@/components/button/ButtonConfirm";
 import InputAuth from "@/components/inputs/InputAuth";
@@ -29,7 +29,6 @@ const RegisterForm = () => {
       localStorage.clear();
       setIsLoading(true);
 
-      // const responseJson = await postRegister(data);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: 'POST',
         headers: {
@@ -39,16 +38,15 @@ const RegisterForm = () => {
       })
 
       const responseJson = await response.json();
-
+      console.log(responseJson)
       if (responseJson.success === true) {
-        await localStorage.setItem('token', responseJson.data.token);
-
+        setIsLoading(false);
         toast.success(responseJson.message);
+        localStorage.setItem('token', responseJson.data.token);
         router.push('/buyer/verif');
-        setIsLoading(false);
       } else if (responseJson.success === false) {
-        toast.error(responseJson.message);
         setIsLoading(false);
+        toast.error(responseJson.message);
       }
 
     } catch (error: any) {
@@ -59,10 +57,6 @@ const RegisterForm = () => {
 
   useEffect(() => {
     setPassword(getValues('password'));
-
-    const onAuthSuccess = () => {
-      router.push('/');
-    };
   }, [getValues, router])
 
   return (

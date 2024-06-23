@@ -35,7 +35,7 @@ const InputForm: React.FC<InputProps> = ({
 
   return (
     <div className="sm:col-span-4">
-      <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+      <label htmlFor="email" className="block text-sm font-semibold leading-6 text-gray-900">
         {label}
       </label>
 

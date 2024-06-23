@@ -11,7 +11,7 @@ import {
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useCallback, useState } from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -82,6 +82,7 @@ const ProductList: React.FC<ProductDetailsProps> = ({ data }) => {
       })
 
       const responseJson = await response.json()
+      console.log(responseJson)
       if (responseJson.success) {
         toast.success(responseJson.message)
       } else {

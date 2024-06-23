@@ -6,7 +6,7 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import ButtonConfirm from "@/components/button/ButtonConfirm";
 import InputAuth from "@/components/inputs/InputAuth";
 import Heading from "@/components/products/Heading";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface ForgetFormProps {
   onForgetFormSubmit: () => void;
@@ -26,7 +26,6 @@ const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
       localStorage.clear();
       setIsLoading(true);
 
-      // const responseJson = await postForgotPassword(data);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/password/forgot`, {
         method: 'POST',
         headers: {

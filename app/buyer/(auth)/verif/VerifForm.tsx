@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import ButtonConfirm from "@/components/button/ButtonConfirm";
 import InputAuth from "@/components/inputs/InputAuth";

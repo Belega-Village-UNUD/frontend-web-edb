@@ -1,5 +1,4 @@
 "use client"
-import ButtonConfirm from "@/components/button/ButtonConfirm"
 import CurrencyText from "@/components/text/CurrencyText"
 import {
   Breadcrumb,
@@ -10,15 +9,13 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog } from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
@@ -42,11 +39,11 @@ import {
   useReactTable
 } from "@tanstack/react-table"
 import { format } from "date-fns"
-import { ArrowUpDown, ChevronDown, Copy, MoreHorizontal, PencilIcon, SquareCheckBig, SquareX } from "lucide-react"
+import { ArrowUpDown, Copy, Filter, MoreHorizontal, PencilIcon, Search } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-import toast from "react-hot-toast"
+import { toast } from "sonner"
 
 type Transaction = {
   id: string
@@ -66,37 +63,16 @@ type ApiResponse = {
 }
 
 const columns: ColumnDef<Transaction>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
     id: "index",
     header: "No",
-    cell: ({ row }) => <div>{row.index + 1}</div>,
+    cell: ({ row }) => <div className="text-center font-semibold">{row.index + 1}</div>,
     enableSorting: false,
     enableHiding: false,
   },
   {
     id: "Transaction ID",
+    enableHiding: false,
     accessorKey: "transactionId",
     header: "Transaction ID",
     cell: ({ row }) => (
@@ -132,18 +108,7 @@ const columns: ColumnDef<Transaction>[] = [
   {
     id: "Status",
     accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="-px-2 font-semibold"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Status
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: "Status",
     cell: ({ row }) => <div className="capitalize">{row.original.status}</div>,
   },
   {
@@ -176,108 +141,6 @@ const columns: ColumnDef<Transaction>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
-      const [activeDialog, setActiveDialog] = useState('');
-      const router = useRouter()
-
-      return (
-        <Dialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-24">
-              <DropdownMenuLabel>Action</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  router.push(`/store/transaction/${payment.id}`)
-                }}
-                className="cursor-pointer items-center"
-              >
-                <PencilIcon className="w-4 h-4 mr-2" />
-                <span>Detail</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-lime-600 cursor-pointer" onClick={() => setActiveDialog('confirm')}>
-                <DialogTrigger>
-                  <div className="flex items-center" >
-                    <SquareCheckBig className="w-4 h-4 mr-2" />
-                    <span>Confirm</span>
-                  </div>
-                </DialogTrigger>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-500 cursor-pointer" onClick={() => setActiveDialog('decline')}>
-                <DialogTrigger>
-                  <div className="flex items-center">
-                    <SquareX className="w-4 h-4 mr-2" />
-                    <span>Decline</span>
-                  </div>
-                </DialogTrigger>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {activeDialog === 'confirm' && (
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="font-bold text-2xl text-red-600">Attention !</DialogTitle>
-                <DialogDescription className="py-4 font-medium text-lg mb-8">
-                  Are you serious to confirm transaction?
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="sm:justify-start">
-                <DialogClose asChild>
-                  <ButtonConfirm label='Cancel' outline />
-                </DialogClose>
-                {/* <ButtonConfirm label='Confirm' onClick={() => { handleConfirmTransaction(transaction.id) }} /> */}
-                <ButtonConfirm label='Confirm' onClick={() => { handleConfirmTransaction(payment.id) }} />
-              </DialogFooter>
-            </DialogContent>
-          )}
-          {activeDialog === 'decline' && (
-            <DialogContent className="sm:max-w-md" accessKey="decline">
-              <DialogHeader>
-                <DialogTitle className="font-bold text-2xl text-red-600">Attention !</DialogTitle>
-                <DialogDescription className="py-4 font-medium text-lg mb-8">
-                  Are you serious to decline transaction?
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="sm:justify-start">
-                <DialogClose asChild>
-                  <ButtonConfirm label='Cancel' outline />
-                </DialogClose>
-                {/* <ButtonConfirm label='Decline' onClick={() => handleDeclineTransaction(transaction.id)} /> */}
-                <ButtonConfirm label='Decline' onClick={() => { }} />
-              </DialogFooter>
-            </DialogContent>
-          )}
-        </Dialog>
-
-        // <DropdownMenu>
-        //   <DropdownMenuTrigger asChild>
-        //     <Button variant="ghost" className="h-8 w-8 p-0">
-        //       <span className="sr-only">Open menu</span>
-        //       <MoreHorizontal className="h-4 w-4" />
-        //     </Button>
-        //   </DropdownMenuTrigger>
-        //   <DropdownMenuContent align="end">
-        //     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        //     <DropdownMenuItem
-        //       onClick={() => navigator.clipboard.writeText(payment.id)}
-        //     >
-        //       Copy payment ID
-        //     </DropdownMenuItem>
-        //     <DropdownMenuSeparator />
-        //     <DropdownMenuItem>View customer</DropdownMenuItem>
-        //     <DropdownMenuItem>View payment details</DropdownMenuItem>
-        //   </DropdownMenuContent>
-        // </DropdownMenu>
-      )
-    },
   },
 ]
 
@@ -290,6 +153,7 @@ const CancellationList = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [newEmail, setNewEmail] = useState("")
   const [activeDialog, setActiveDialog] = useState('');
+  const router = useRouter()
 
   const getToken = useCallback(() => {
     const token = localStorage.getItem('token');
@@ -300,7 +164,7 @@ const CancellationList = () => {
     return token;
   }, []);
 
-  const handleGetAllTransaction = useCallback(async () => {
+  const handleGetCancelTransaction = useCallback(async () => {
     try {
       const token = getToken()
       if (!token) { return; }
@@ -313,15 +177,16 @@ const CancellationList = () => {
       })
 
       const responseJson: ApiResponse = await response.json();
-
+      console.log(responseJson.data)
       if (responseJson.success === true) {
         let emails: string[] = []
-        responseJson.data.map((item: Transaction) => {
+        let filteredData = responseJson.data.filter((item: Transaction) => item.status === 'CANCEL')
+        filteredData.map((item: Transaction) => {
           const mail = item.user.email
           emails.push(mail)
         })
         setNewEmail(emails[0])
-        setTransactions(responseJson.data)
+        setTransactions(filteredData)
       } else {
         console.log(responseJson.message)
       }
@@ -332,35 +197,8 @@ const CancellationList = () => {
   }, [getToken])
 
   useEffect(() => {
-    handleGetAllTransaction()
-  }, [handleGetAllTransaction])
-
-  const handleConfirmTransaction = useCallback(async (id: string) => {
-    //   console.log('confirm', id)
-    // }, [])
-    try {
-      const token = getToken();
-      if (!token) { return; }
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/transaction/confirm/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      const responseJson = await response.json();
-      console.log(responseJson)
-      if (responseJson.status === 200) {
-        toast.success(responseJson.message);
-        setActiveDialog('')
-      } else {
-        toast.error(responseJson.message)
-        setActiveDialog('')
-      }
-    } catch (error: any) {
-      console.log(error.message)
-    }
-  }, [getToken])
+    handleGetCancelTransaction()
+  }, [handleGetCancelTransaction])
 
   const table = useReactTable({
     data: transactions,
@@ -409,18 +247,22 @@ const CancellationList = () => {
       </div>
 
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("Customer")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("Customer")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        <div className="relative">
+          <Search className="absolute top-3 left-0 ml-2 h-4 w-4 opacity-60" />
+          <Input
+            placeholder="Filter emails..."
+            value={(table.getColumn("Customer")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("Customer")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm pl-8"
+          />
+        </div>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
+              Filter <Filter className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -473,10 +315,30 @@ const CancellationList = () => {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {cell.column.id === 'actions' ? (
+                        <Dialog>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-24">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  router.push(`/store/transaction/${row.original.id}`)
+                                }}
+                                className="cursor-pointer items-center"
+                              >
+                                <PencilIcon className="w-4 h-4 mr-2" />
+                                <span>Detail</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </Dialog>
+                      ) : (flexRender(cell.column.columnDef.cell, cell.getContext()
+                      ))}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -496,8 +358,8 @@ const CancellationList = () => {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          Showing 1 to {table.getPaginationRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s).
         </div>
         <div className="space-x-2">
           <Button

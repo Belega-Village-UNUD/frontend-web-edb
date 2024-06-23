@@ -7,7 +7,7 @@ import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface CartItem {
   cart_id: string;
@@ -161,13 +161,13 @@ const CartList = () => {
       setSelectedProducts(preCarts => preCarts.filter(preCart => preCart.cart_id !== cart_id));
     }
   };
-
-  useEffect(() => {
-    const total = selectedProducts.reduce((total: any, product: any) => {
-      return total + calculateTotal(product.product_price, product.product_qty);
-    }, 0);
-    setGrandTotal(total);
-  }, [selectedProducts]);
+  -
+    useEffect(() => {
+      const total = selectedProducts.reduce((total: any, product: any) => {
+        return total + calculateTotal(product.product_price, product.product_qty);
+      }, 0);
+      setGrandTotal(total);
+    }, [selectedProducts]);
 
   const totalProducts = selectedProducts.length;
   const calculateTotal = (price: number, qty: number) => {

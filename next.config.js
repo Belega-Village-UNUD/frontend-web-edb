@@ -9,6 +9,7 @@ const nextConfig = {
       "tailwindui.com",
       "flowbite.com",
       "images.unsplash.com",
+      "github.com",
     ],
   },
 };

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 import Footer from '@/components/footer/Footer';
@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="id">
       <body className={`${poppins.className} text-slate-700`}>
         <div className='flex flex-col min-h-screen bg-green-50'>
-          <Toaster />
+          <Toaster richColors />
           <NavBar />
           <main className='flew-grow'>{children}</main>
           <Footer />

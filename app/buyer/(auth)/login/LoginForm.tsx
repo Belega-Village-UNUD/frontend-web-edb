@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import ButtonConfirm from "@/components/button/ButtonConfirm";
 import InputAuth from "@/components/inputs/InputAuth";
@@ -26,7 +26,6 @@ const LoginForm = () => {
       setIsLoading(true);
       localStorage.clear();
 
-      // const responseJson = await postLogin(data);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -44,7 +43,7 @@ const LoginForm = () => {
         setIsLoading(false);
 
         if (responseJson.data.payload.is_verified === false) {
-          toast("Akun anda belum diverifikasi, silahkan cek email anda", { icon: '❗' });
+          toast.warning("Akun anda belum diverifikasi, silahkan cek email anda");
           const token = localStorage.getItem('token');
 
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/otp`, {

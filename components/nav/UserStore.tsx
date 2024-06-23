@@ -6,37 +6,44 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { usePersistedUser, useUsers } from "@/zustand/users";
+import { usePersistedStore, useStore } from "@/zustand/stores";
+import { useUsers } from "@/zustand/users";
 import { useShallow } from "zustand/react/shallow";
 import Avatar from "../Avatar";
 import BackDrop from "./BackDrop";
 import MenuItem from "./MenuItem";
 
-const UserMenu = () => {
+const UserStore = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLogged, setLogged, role, handleGetProfile, avatarPreview] = useUsers(
+  const [isLogged, setLogged, role] = useUsers(
     useShallow((state) => {
       return [
         state.isLogged,
         state.setLogged,
         state.role,
-        state.handleGetProfile,
-        state.avatarPreview,
       ]
     })
   )
-  const [name] = usePersistedUser(useShallow((state) => [state.name]))
+  const [name] = usePersistedStore(useShallow((state) => [state.name]))
+  const [avatarPreview, handleGetStoreProfile] = useStore(
+    useShallow((state) => {
+      return [
+        state.avatarPreview,
+        state.handleGetStoreProfile,
+      ]
+    })
+  )
 
   useEffect(() => {
     setLogged()
   }, [setLogged])
 
   useEffect(() => {
-    handleGetProfile();
+    handleGetStoreProfile();
     setInterval(() => {
-      handleGetProfile();
+      handleGetStoreProfile();
     }, 10000);
-  }, [handleGetProfile]);
+  }, [handleGetStoreProfile]);
 
   const router = useRouter()
 
@@ -63,7 +70,7 @@ const UserMenu = () => {
       <div className="relative z-30">
 
         {isLogged ? (
-          <div onClick={toggleOpen} className="p-2 flex flex-row items-center rounded-md cursor-pointer hover:border hover:border-lime-900 text-lime-900">
+          <div onClick={toggleOpen} className="p-2 flex flex-row items-center rounded-md cursor-pointer hover:border-[1px] hover:border-lime-900 text-lime-900">
 
             {avatarPreview ? (
               <Avatar width={30} height={30} size={30} src={avatarPreview} />
@@ -87,22 +94,11 @@ const UserMenu = () => {
 
             {isLogged ? (
               <div>
-                {!role.includes('WGVUqKhyoV') ? (
-                  <Link href='/store/register'>
-                    <MenuItem onClick={toggleOpen}>Register Your Store</MenuItem>
-                  </Link>
-                ) : (
-                  <Link href='/store'>
-                    <MenuItem onClick={toggleOpen}>Dashboard Store</MenuItem>
+                {role.includes('WGVUqKhyoV') && (
+                  <Link href='/'>
+                    <MenuItem onClick={toggleOpen}>Go to Buyer Page</MenuItem>
                   </Link>
                 )}
-                <hr className="border-t border-gray-300" />
-                <Link href="/buyer/history">
-                  <MenuItem onClick={toggleOpen}>History Orders</MenuItem>
-                </Link>
-                <Link href="/buyer/profile">
-                  <MenuItem onClick={toggleOpen}>Your Profile</MenuItem>
-                </Link>
                 <hr className="border-t border-gray-300" />
                 <MenuItem className="text-red-500 font-bold" onClick={() => {
                   handleSignOut()
@@ -129,4 +125,4 @@ const UserMenu = () => {
   );
 }
 
-export default UserMenu;
+export default UserStore;

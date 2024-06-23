@@ -17,7 +17,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Fragment, useState } from 'react'
-import UserMenu from '../nav/UserMenu'
+import UserStore from '../nav/UserStore'
 
 
 const teams = [
@@ -64,7 +64,7 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
       href: '#',
       icon: StoreIcon,
       children: [
-        { name: 'Store Profile', href: '/store/store' },
+        { name: 'Store Profile', href: '/store/profile' },
         { name: 'Store Decoration', href: '/store/store/new' }
       ]
     },
@@ -207,10 +207,8 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
           </Dialog>
         </Transition.Root>
 
-        {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
 
-          {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center mt-4">
               <Link href="/" className='relative rounded-full overflow-hidden '>
@@ -381,7 +379,7 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative">
-                  <UserMenu />
+                  <UserStore />
                 </Menu>
               </div>
             </div>
