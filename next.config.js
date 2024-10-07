@@ -1,13 +1,16 @@
 /** @type {import('next').NextConfig} */
 
-//const {parse: parseEnv} = require('dotenv').config();
-
 const nextConfig = {
   images: {
-    domains: ["firebasestorage.googleapis.com", "lh3.googleusercontent.com"],
-  },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    domains: [
+      "firebasestorage.googleapis.com",
+      "lh3.googleusercontent.com",
+      "ik.imagekit.io",
+      "tailwindui.com",
+      "flowbite.com",
+      "images.unsplash.com",
+      "github.com",
+    ],
   },
 };
 

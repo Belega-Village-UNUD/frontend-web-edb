@@ -4,119 +4,113 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-import axios from "axios";
-import toast from "react-hot-toast";
-import Button from "../../../components/Button";
-import Input from "../../../components/inputs/Input";
-import Heading from "../../../components/products/Heading";
+import ButtonConfirm from "@/components/button/ButtonConfirm";
+import InputAuth from "@/components/inputs/InputAuth";
+import Heading from "@/components/products/Heading";
+import { usePersistedUser } from "@/zustand/users";
+import { useShallow } from "zustand/react/shallow";
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FieldValues>({
+  const [token, is_login] = usePersistedUser((state) => [state.token, state.is_login]);
+  const [setToken, setIsLogin, setIsStore, setExistStore] = usePersistedUser(
+    useShallow((state) => {
+      return [
+        state.setToken,
+        state.setIsLogin,
+        state.setIsStore,
+        state.setExistStore,
+      ]
+    })
+  )
+
+  const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
     defaultValues: {
       email: "",
       password: "",
     },
-  });
+  })
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       setIsLoading(true);
-      localStorage.clear();
 
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
-      const response = await axios.post(url, data);
-      console.log(
-        "🚀 ~ file: LoginForm.tsx:36 ~ constonSubmit:SubmitHandler<FieldValues>= ~ response:",
-        response
-      );
-      const responseData = response.data.data;
-      const responsePayload = responseData.payload;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      const responseJson = await response.json();
 
-      if (responseData.token !== null) {
-        // localStorage.setItem('email', responsePayload.email);
-        localStorage.setItem("token", responseData.token);
-        // localStorage.setItem('is_verified', responsePayload.is_verified);
-        localStorage.setItem("is_login", "true");
+      if (responseJson.success === true) {
+        setToken(responseJson.data.token);
+        setIsLogin(true);
+        setIsStore(responseJson.data.payload.is_store);
+        setExistStore(responseJson.data.payload.exist_store);
+        toast.success(responseJson.message);
+        setIsLoading(false);
 
-        if (responsePayload.is_verified === false) {
-          toast("Akun anda belum diverifikasi, silahkan cek email anda", {
-            icon: "❗",
-          });
-          router.push("/buyer/verif");
-          return;
+        if (responseJson.data.payload.is_verified === false) {
+          toast.warning("Akun anda belum diverifikasi, silahkan cek email anda");
+
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/otp`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          })
+
+          const responseJson = await response.json();
+
+          if (responseJson.success === true) {
+            toast.success(responseJson.message);
+          }
+          router.push('/buyer/verif');
+          setIsLoading(false);
+          return
         }
 
-        toast.success("Login berhasil");
-        router.push("/");
-        setIsLoading(false);
+        router.push('/');
+        return
       }
-    } catch (error: any) {
-      toast.error(error.response.data.message);
+
+      toast.error(responseJson.message);
       setIsLoading(false);
+
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error(error.message);
     }
-  };
+  }
 
   useEffect(() => {
-    const isLoged = localStorage.getItem("is_login");
-    if (isLoged === "true") {
-      router.push("/");
+    if (is_login === true) {
+      router.push('/');
     }
-  }, [router]);
+
+  }, [is_login, router]);
 
   return (
     <>
-      <Heading title="Masuk dengan email" />
-      {/* <Button outline label="Log In with Google" icon={AiOutlineGoogle} onClick={() => { }} /> */}
+      <Heading title="Log in with Email" />
       <hr className="bg-slate-300 w-full h-px" />
       <p className="text-base">
-        Belum punya akun?{" "}
-        <Link
-          href="/buyer/register"
-          className="text-lime-500 hover:text-lime-700 hover:underline"
-        >
-          Daftar
-        </Link>
+        Don`t have an account?
+        <Link href='/buyer/register' className="text-lime-500 hover:text-lime-700 hover:underline"> Register</Link>
       </p>
-      <Input
-        id="email"
-        label="Email"
-        type="email"
-        disable={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-      <Input
-        id="password"
-        label="Password"
-        disable={isLoading}
-        register={register}
-        errors={errors}
-        type="password"
-        required
-      />
-      <Button
-        outline
-        label={isLoading ? "Loading" : "Masuk"}
-        onClick={handleSubmit(onSubmit)}
-      />
-      <Link
-        href="/buyer/reset"
-        className="text-lime-500 hover:text-lime-700 hover:underline"
-      >
-        Lupa Password?
-      </Link>
+      <InputAuth name="email" label="Email" type="email" disable={isLoading} register={register} errors={errors} required />
+      <InputAuth name="password" label="Password" disable={isLoading} register={register} errors={errors} type="password" required />
+      <ButtonConfirm outline label={isLoading ? '' : 'Log in'} loading={isLoading} onClick={handleSubmit(onSubmit)} />
+      <Link href='/buyer/reset' className="text-lime-500 hover:text-lime-700 hover:underline">Forgot your password?</Link>
     </>
   );
-};
+}
 
 export default LoginForm;

@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import Container from "@/app/components/Container";
-import FormWrap from "@/app/components/FormWrap";
+import Container from "@/components/Container";
+import FormWrap from "@/components/FormWrap";
 import ForgetForm from "./ForgotForm";
 import ResetForm from "./ResetForm";
 import VerifyToken from "./VerifyToken";

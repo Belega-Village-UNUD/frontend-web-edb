@@ -1,10 +1,9 @@
-import Link from "next/link";
-import Container from "../../../components/Container";
-import FormWrap from "../../../components/FormWrap";
+import Container from "@/components/Container";
+import FormWrap from "@/components/FormWrap";
 import VerifForm from "./VerifForm";
 
 const Verif = () => {
-  return (  
+  return (
     <Container>
       <FormWrap>
         <VerifForm />
