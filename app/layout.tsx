@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
 import Footer from "@/components/footer/Footer";
 import NavBar from "@/components/nav/NavBar";
 import Providers from "@/components/Providers";
-
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "700"] });
 
 export const metadata: Metadata = {
   title: "B-Commerce",
@@ -21,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={`${poppins.className} text-slate-700`}>
+      <body className={` text-slate-700`}>
         <Providers>
           <div className="flex flex-col min-h-screen bg-green-50">
             <Toaster richColors />
