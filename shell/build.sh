@@ -18,7 +18,7 @@ echo "Performing build for staging" $BRANCH;
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]; then
     echo "this branch is not up to date"
     git checkout $BRANCH;
-    git fetch --dry-run;
+    git fetch --dry-run origin $BRANCH;
 fi
 
 git pull origin $BRANCH;
@@ -31,7 +31,7 @@ fi
 set -x
 docker image prune -f;
 
-docker build . --file docker/service/Dockerfile \
+docker build . \
   -t ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA \
   -t ghcr.io/belega-village-unud/frontend-web-edb:$BRANCH
 
