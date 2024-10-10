@@ -11,12 +11,22 @@ if [ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]; then
     git fetch --dry-run;
 fi
 
-docker service update --force --image ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA frontend_web_app
+docker service ls | grep "frontend_web_app"
 
 if [ $? -ne 0 ]; then
-    echo "Error in deploying $BRANCH of Backend Belega Service"
-    exit 1
+  docker service create --name frontend_web_app --publish published=3000,target=3000 ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA
+  if [ $? -ne 0 ]; then
+      echo "Error in deploying $BRANCH of Backend Belega Service"
+      exit 1
+  fi
+else
+  docker service update --force --image ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA frontend_web_app
+  if [ $? -ne 0 ]; then
+      echo "Error in deploying $BRANCH of Backend Belega Service"
+      exit 1
+  fi
 fi
+
 
 echo "Successfully deploy the image for ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA on service frontend_web_app"
 
