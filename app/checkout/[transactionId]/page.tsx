@@ -1,18 +1,18 @@
 "use client";
+import Container from "@/components/Container";
+import Loading from "@/components/Loading";
+import { Button } from "@/components/ui/button";
+import { formatePrice } from "@/utils/formatPrice";
+import { usePersistedUser } from "@/zustand/users";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import Loading from "@/components/Loading";
-import { formatePrice } from "@/utils/formatPrice";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import CheckoutLIst from "./checkoutLIst";
 import Payment from "./payment";
-import Container from "@/components/Container";
-import { usePersistedUser } from "@/zustand/users";
 import Shipping from "./shipping";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { toast } from "sonner";
 
 interface checkoutProps {
   params: { transactionId: string };
@@ -242,7 +242,7 @@ export default function Page({ params }: checkoutProps) {
         <div className="w-full  border-t border-b border-gray-200 px-5 py-6 text-gray-800">
           <div className="w-full ">
             <div className="-mx-3 md:flex items-start gap-4">
-              <div className="px-3 md:w-7/12 lg:pr-10 bg-white py-6 border border-gray-200 rounded-md">
+              <div className="p-6 md:w-7/12 bg-white border border-gray-200 rounded-md shadow-md">
                 <div className="w-full mx-auto text-gray-800 font-light mb-6 border-b border-gray-200 pb-6 space-y-4 ">
                   {dataCheckout?.cart_details.map((cart: any) => (
                     <CheckoutLIst
@@ -262,17 +262,15 @@ export default function Page({ params }: checkoutProps) {
                         </div>
                         <div className="pl-3">
                           <span className="font-semibold">
-                            {`${
-                              dataStatusShipping?.carts_details[0]?.shipping?.code
-                                ?.charAt(0)
-                                .toUpperCase() +
+                            {`${dataStatusShipping?.carts_details[0]?.shipping?.code
+                              ?.charAt(0)
+                              .toUpperCase() +
                               dataStatusShipping?.carts_details[0]?.shipping?.code
                                 ?.slice(1)
                                 .toLowerCase()
-                            } (${
-                              dataStatusShipping?.carts_details[0]?.shipping
+                              } (${dataStatusShipping?.carts_details[0]?.shipping
                                 ?.service
-                            })`}
+                              })`}
                           </span>
                         </div>
                       </div>
@@ -318,7 +316,7 @@ export default function Page({ params }: checkoutProps) {
                   />
                 ) : null}
                 {dataCheckout?.redirect_url &&
-                dataCheckout.status != "SUCCESS" ? (
+                  dataCheckout.status != "SUCCESS" ? (
                   <div className="flex flex-col gap-2">
                     <Link
                       href={dataCheckout?.redirect_url}
@@ -339,7 +337,7 @@ export default function Page({ params }: checkoutProps) {
                 ) : null}
 
                 {dataCheckout.status == "SUCCESS" &&
-                dataStatusShipping?.carts_details[0]?.arrival_shipping_status ==
+                  dataStatusShipping?.carts_details[0]?.arrival_shipping_status ==
                   "SHIPPED" ? (
                   <div className="flex flex-col gap-2">
                     <Button
@@ -353,7 +351,7 @@ export default function Page({ params }: checkoutProps) {
                 ) : null}
 
                 {dataCheckout.status == "SUCCESS" &&
-                dataStatusShipping?.carts_details[0]?.arrival_shipping_status !=
+                  dataStatusShipping?.carts_details[0]?.arrival_shipping_status !=
                   "SHIPPED" ? (
                   <p className="text-center w-full mx-auto border border-transparent bg-green hover:bg-gray-600 bg-gray-500 focus:bg-gray-600 text-white rounded-md px-3 py-3 justify-center items-center flex font-semibold ">
                     {dataStatusShipping?.carts_details[0]

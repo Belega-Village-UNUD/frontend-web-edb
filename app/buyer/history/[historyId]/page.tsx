@@ -5,12 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 
+import Container from "@/components/Container";
+import Invoice from "@/components/Invoice";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import Invoice from "@/components/Invoice";
-import Container from "@/components/Container";
-import { FaDownload } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { FaDownload } from "react-icons/fa";
 
 interface historyProps {
   params: {
@@ -112,18 +112,17 @@ function Page({ params }: historyProps) {
           onClick={() => {
             downloadPDF();
           }}
-          className={`flex items-center justify-center rounded-md border px-2.5 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 space-x-3 ${
-            order?.status === "SUCCESS"
-              ? "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-              : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-          }`}
+          className={`flex items-center justify-center rounded-md border px-2.5 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 space-x-3 ${order?.status === "SUCCESS"
+            ? "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+            }`}
         >
           <FaDownload />
           <span>Download Invoice</span>
         </button>
       </div>
-      <div className="flex flex-col items-center">
-        {/* to do blm perbaiki payment history section pembayarna pake apa dll */}
+      <div className="flex flex-col items-center bg-gray-100 p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Invoice Details</h2>
         <Invoice
           totalPrice={order?.total_amount}
           ref={invoiceRef}
@@ -143,7 +142,7 @@ function Page({ params }: historyProps) {
             personName: order?.cart_details[0]?.product?.store?.name,
             country: "Bali",
             city: "Gianyar",
-            postal: "90001 ",
+            postal: "90001",
             address: "456 Another St",
             phone: "987-654-3210",
             email: order?.cart_details[0]?.product?.store?.user?.email,
@@ -163,6 +162,10 @@ function Page({ params }: historyProps) {
           imageUrl={order?.cart_details[0]?.product?.images[0]}
           shippingCost={dataStatusShipping?.carts_details[0]?.shipping?.costs}
         />
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">Thank you for your purchase!</p>
+          <p className="text-sm text-gray-600">If you have any questions, please contact us.</p>
+        </div>
       </div>
     </Container>
   );

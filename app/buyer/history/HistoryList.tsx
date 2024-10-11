@@ -150,60 +150,59 @@ const HistoryList = () => {
   }
 
   const statusColors = {
-    PAYABLE: "bg-purple-400",
+    PAYABLE: "bg-yellow-400",
     SUCCESS: "bg-green-400",
-    PENDING: "bg-yellow-400",
+    PENDING: "bg-gray-400",
     PACKING: "bg-gray-400",
     ARRIVED: "bg-blue-400",
     SHIPPED: "bg-amber-600",
   };
 
   return (
-    <div className="py-10">
-      <div className="mx-auto max-w-7xl sm:px-2 lg:px-8">
-        <div className="mx-auto max-w-2xl px-4 lg:max-w-4xl lg:px-0">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            Order history
+    <div className="py-12">
+      <div className="mx-auto max-w-7xl sm:px-4 lg:px-10">
+        <div className="mx-auto max-w-2xl px-6 lg:max-w-4xl lg:px-0">
+          <h1 className="text-3xl font-extrabold tracking-tight text-green-900 sm:text-4xl">
+            Order History
           </h1>
-          <p className="mt-2 text-sm text-gray-500">
-            Check the status of recent orders, manage returns, and discover
-            similar products.
+          <p className="mt-3 text-base text-green-600">
+            Check the status of recent orders, manage returns, and discover similar products.
           </p>
         </div>
       </div>
 
-      <section aria-labelledby="recent-heading" className="mt-4">
+      <section aria-labelledby="recent-heading" className="mt-6">
         <h2 id="recent-heading" className="sr-only">
           Recent orders
         </h2>
 
-        <div className="mx-auto max-w-7xl sm:px-2 lg:px-8 ">
-          <div className="mx-auto max-w-2xl space-y-8 sm:px-4 lg:max-w-4xl lg:px-0">
-            <div className="flex space-x-4">
+        <div className="mx-auto max-w-7xl sm:px-4 lg:px-10">
+          <div className="mx-auto max-w-2xl space-y-10 sm:px-6 lg:max-w-4xl lg:px-0">
+            <div className="flex space-x-6">
               {statusCounts &&
                 typeof statusCounts === "object" &&
                 !Array.isArray(statusCounts) ? (
                 Object.entries(statusCounts).map(([status, count]: any) => (
                   <div
                     key={status}
-                    className={`flex flex-col items-center p-4 rounded ${
+                    className={`flex flex-col items-center p-5 rounded-lg shadow-md ${
                       // @ts-ignore
                       statusColors[status] || "bg-gray-200"
                       }`}
                   >
-                    <span className="font-bold">{count}</span>
-                    <span className="text-gray-700">
+                    <span className="font-bold text-lg">{count}</span>
+                    <span className="text-gray-800 capitalize">
                       {status.toLowerCase()}
                     </span>
                   </div>
                 ))
               ) : (
-                <div className="text-gray-500">No status counts available.</div>
+                <div className="text-gray-600">No status counts available.</div>
               )}
             </div>
 
             <Select onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[280px]">
+              <SelectTrigger className="w-[300px] border border-indigo-300 rounded-md shadow-sm">
                 <SelectValue placeholder="Select status order" />
               </SelectTrigger>
               <SelectContent>
@@ -218,37 +217,37 @@ const HistoryList = () => {
               filteredOrders?.map((order: any) => (
                 <div
                   key={order.id}
-                  className="border-b border-t border-gray-200 bg-white shadow-sm sm:rounded-lg sm:border"
+                  className="border-b border-t border-gray-300 bg-white shadow-lg sm:rounded-lg sm:border"
                 >
                   <h3 className="sr-only">
                     Order placed on{" "}
                     <time dateTime={order.createdAt}>{order.createdAt}</time>
                   </h3>
 
-                  <div className="flex items-center border-b border-gray-200 p-4">
+                  <div className="flex items-center border-b border-gray-300 p-5">
                     <dl className="flex flex-row justify-between w-full ">
-                      <div className="flex-row flex gap-4 w-full">
+                      <div className="flex-row flex gap-6 w-full">
                         <div>
-                          <dt className="font-medium text-gray-900">
+                          <dt className="font-semibold text-green-900">
                             Order number
                           </dt>
-                          <dd className="mt-1 text-gray-500">{order.id}</dd>
+                          <dd className="mt-1 text-green-600">{order.id}</dd>
                         </div>
                         <div className="hidden sm:block">
-                          <dt className="font-medium text-gray-900">
+                          <dt className="font-semibold text-green-900">
                             Date placed
                           </dt>
-                          <dd className="mt-1 text-gray-500">
+                          <dd className="mt-1 text-green-600">
                             <time dateTime={order.createdAt}>
                               {formatReadableDate(order.createdAt)}
                             </time>
                           </dd>
                         </div>
                         <div>
-                          <dt className="font-medium text-gray-900">
+                          <dt className="font-semibold text-green-900">
                             Total amount
                           </dt>
-                          <dd className="mt-1 font-medium text-gray-900">
+                          <dd className="mt-1 font-semibold text-green-900">
                             <CurrencyText
                               amount={order.total_amount}
                               className="text-center py-20 text-sm font-medium text-slate-700"
@@ -261,7 +260,7 @@ const HistoryList = () => {
                           <div className="flex flex-1 justify-center">
                             <Link
                               href={`/checkout/${order?.id}`}
-                              className="whitespace-nowrap text-white bg-indigo-600 px-3 py-1 rounded-sm text-sm"
+                              className="whitespace-nowrap text-white bg-indigo-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-indigo-700"
                             >
                               Pay
                             </Link>
@@ -292,7 +291,7 @@ const HistoryList = () => {
                           leaveFrom="transform opacity-100 scale-100"
                           leaveTo="transform opacity-0 scale-95"
                         >
-                          <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-bottom-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <Menu.Items className="absolute right-0 z-10 mt-2 w-44 origin-bottom-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                             <div className="py-1">
                               <Menu.Item>
                                 {({ active }) => (
@@ -329,39 +328,16 @@ const HistoryList = () => {
                         </Transition>
                       </Menu>
                     )}
-
-                    {/* <div className="hidden lg:col-span-2 lg:flex lg:items-center lg:justify-end lg:space-x-4">
-                      {order.status !== "CANCEL" &&
-                        order.status !== "PAYABLE" &&
-                        order.status !== "PENDING" && (
-                          <>
-                            <Link
-                              href={`/buyer/history/${order?.id}`}
-                              className=""
-                            >
-                              <span>Shipping</span>
-                              <span className="sr-only">{order.id}</span>
-                            </Link>
-                            <Link
-                              href={`/buyer/history/${order?.id}`}
-                              className="flex items-center justify-center rounded-md border border-gray-300 text-white px-2.5 py-2 text-sm font-medium shadow-sm hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 bg-green-700"
-                            >
-                              <span>Invoice</span>
-                              <span className="sr-only">{order.id}</span>
-                            </Link>
-                          </>
-                        )}
-                    </div> */}
                   </div>
 
                   {/* Products */}
                   <h4 className="sr-only">Items</h4>
-                  <ul role="list" className="divide-y divide-gray-200">
+                  <ul role="list" className="divide-y divide-gray-300">
                     {order.cart_details.map((cart_detail: any, index: any) => (
-                      <li key={index} className="p-4 sm:p-6">
+                      <li key={index} className="p-5 sm:p-7">
                         {cart_detail?.product ? (
                           <div className="flex items-center sm:items-start">
-                            <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-40 sm:w-40">
+                            <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-44 sm:w-44">
                               <Image
                                 src={
                                   cart_detail?.product?.images[0] ||
@@ -373,14 +349,14 @@ const HistoryList = () => {
                                 className="h-full w-full object-cover object-center"
                               />
                             </div>
-                            <div className="ml-6 flex-1 text-sm">
-                              <div className="font-medium text-gray-900 sm:flex sm:justify-between">
+                            <div className="ml-8 flex-1 text-sm">
+                              <div className="font-medium text-green-900 sm:flex sm:justify-between">
                                 <h5>{cart_detail?.product?.name_product}</h5>
                                 <div>
                                   <span className="text-gray-600">{`(x${cart_detail.qty}) `}</span>
                                   <CurrencyText
                                     amount={cart_detail?.product?.price}
-                                    className="text-center  text-sm font-medium text-slate-700"
+                                    className="text-center text-sm font-medium text-slate-700"
                                   />
                                 </div>
                               </div>
@@ -391,7 +367,7 @@ const HistoryList = () => {
                           </div>
                         ) : null}
 
-                        <div className="mt-6 sm:flex sm:justify-between">
+                        <div className="mt-8 sm:flex sm:justify-between">
                           <div className="flex items-center">
                             {order.status === "SUCCESS" &&
                               order?.cart_details[0]?.arrival_shipping_status ==
@@ -473,12 +449,12 @@ const HistoryList = () => {
                             </time>
                           </div>
 
-                          <div className="mt-6 flex items-center space-x-4 divide-x divide-gray-200 border-t border-gray-200 pt-4 text-sm font-medium sm:ml-4 sm:mt-0 sm:border-none sm:pt-0">
+                          <div className="mt-8 flex items-center space-x-5 divide-x divide-gray-300 border-t border-gray-300 pt-5 text-sm font-medium sm:ml-5 sm:mt-0 sm:border-none sm:pt-0">
                             {order.status === "SUCCESS" && (
                               <div className="flex flex-1 justify-center">
                                 <Link
                                   href={`/transaction/${order.id}/product/${order?.cart_details[0]?.product?.id}/rate`}
-                                  className="whitespace-nowrap text-white bg-blue-500 px-3 py-1 rounded-sm"
+                                  className="whitespace-nowrap text-white bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
                                 >
                                   Rate Product
                                 </Link>
@@ -487,25 +463,24 @@ const HistoryList = () => {
                             <div className="flex flex-1 justify-center">
                               <Link
                                 href={`/product/${order?.cart_details[0]?.product?.id}`}
-                                className="whitespace-nowrap text-white bg-lime-700 px-3 py-1 rounded-sm"
+                                className="whitespace-nowrap text-white bg-lime-700 px-4 py-2 rounded-md shadow-md hover:bg-lime-800"
                               >
-                                View product
+                                View Product
                               </Link>
                             </div>
 
-                            <div className="flex flex-1 justify-center pl-4">
+                            <div className="flex flex-1 justify-center pl-5">
                               <button
-                                className="text-white bg-green-600 px-3 py-1 rounded-sm w-24"
+                                className="text-white bg-green-600 px-4 py-2 rounded-md shadow-md hover:bg-green-700"
                                 type="submit"
                                 onClick={(event: any) =>
                                   handleCheckout(
                                     event,
-                                    // order?.cart_details?.id
                                     order?.cart_details[0]?.product?.id
                                   )
                                 }
                               >
-                                Buy again
+                                Buy Again
                               </button>
                             </div>
                           </div>
@@ -516,8 +491,8 @@ const HistoryList = () => {
                 </div>
               ))
             ) : (
-              <div className="bg-white py-4 px-4 flex justify-center items-center h-52 rounded-lg">
-                <h3>No data found</h3>
+              <div className="bg-white py-6 px-6 flex justify-center items-center h-56 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-700">No data found</h3>
               </div>
             )}
           </div>

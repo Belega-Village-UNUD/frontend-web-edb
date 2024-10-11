@@ -118,71 +118,93 @@ function Payment({ dataCheckout, profile, shipping }: PaymentProps) {
 
   return (
     <div className="px-3 md:w-5/12">
-      <div className="w-full mx-auto rounded-lg bg-white border border-gray-200 p-3 text-gray-800 font-light mb-2">
-        <div className="w-full flex mb-3 items-center">
-          <div className="w-32">
+      {/* <div className="w-full mx-auto rounded-lg bg-white border border-gray-200 p-6 text-gray-800 font-light mb-2">
+        <div className="w-full flex mb-3 items-center justify-between">
+          <div className="w-32 text-left">
             <span className="text-gray-600 font-semibold">Order Number</span>
           </div>
-          <div className="flex-grow pl-3">
+          <div className="flex-grow pl-3 text-right">
             <span>{dataCheckout?.id}</span>
           </div>
         </div>
-        <div className="w-full flex mb-3 items-center">
-          <div className="w-32">
+        <div className="w-full flex mb-3 items-center justify-between">
+          <div className="w-32 text-left">
             <span className="text-gray-600 font-semibold">Name</span>
           </div>
-          <div className="flex-grow pl-3">
+          <div className="flex-grow pl-3 text-right">
             <span>{profile?.name}</span>
           </div>
         </div>
-        <div className="w-full flex mb-3 items-center">
-          <div className="w-32">
+        <div className="w-full flex mb-3 items-center justify-between">
+          <div className="w-32 text-left">
             <span className="text-gray-600 font-semibold">Email</span>
           </div>
-          <div className="flex-grow pl-3">
+          <div className="flex-grow pl-3 text-right">
             <span>{dataCheckout?.cart_details[0]?.user?.email}</span>
           </div>
         </div>
-        <div className="w-full flex mb-3 items-center">
-          <div className="w-32">
+        <div className="w-full flex mb-3 items-center justify-between">
+          <div className="w-32 text-left">
             <span className="text-gray-600 font-semibold">Address</span>
           </div>
-          <div className="flex-grow pl-3">
+          <div className="flex-grow pl-3 text-right">
             <span>{profile?.address}</span>
           </div>
         </div>
-        <div className="w-full flex mb-3 items-center">
-          <div className="w-32">
+        <div className="w-full flex mb-3 items-center justify-between">
+          <div className="w-32 text-left">
             <span className="text-gray-600 font-semibold">Province</span>
           </div>
-          <div className="flex-grow pl-3">
+          <div className="flex-grow pl-3 text-right">
             <span>{shipping[0]?.destination?.province}</span>
           </div>
         </div>
-        <div className="w-full flex mb-3 items-center">
-          <div className="w-32">
+        <div className="w-full flex mb-3 items-center justify-between">
+          <div className="w-32 text-left">
             <span className="text-gray-600 font-semibold">City</span>
           </div>
-          <div className="flex-grow pl-3">
+          <div className="flex-grow pl-3 text-right">
             <span>{shipping[0]?.destination?.city_name}</span>
           </div>
         </div>
-        <div className="w-full flex mb-3 items-center">
-          <div className="w-32">
+        <div className="w-full flex mb-3 items-center justify-between">
+          <div className="w-32 text-left">
             <span className="text-gray-600 font-semibold">Postal Code</span>
           </div>
-          <div className="flex-grow pl-3">
+          <div className="flex-grow pl-3 text-right">
             <span>{shipping[0]?.destination?.postal_code}</span>
           </div>
         </div>
-        <div className="w-full flex mb-3 items-center">
-          <div className="w-32">
+        <div className="w-full flex mb-3 items-center justify-between">
+          <div className="w-32 text-left">
             <span className="text-gray-600 font-semibold">Phone</span>
           </div>
-          <div className="flex-grow pl-3">
+          <div className="flex-grow pl-3 text-right">
             <span>{profile?.phone}</span>
           </div>
         </div>
+      </div> */}
+
+      <div className="w-full mx-auto rounded-lg bg-white border border-gray-200 p-6 text-gray-800 font-light mb-2 shadow-md">
+        {[
+          { label: "Order Number", value: dataCheckout?.id },
+          { label: "Name", value: profile?.name },
+          { label: "Email", value: dataCheckout?.cart_details[0]?.user?.email },
+          { label: "Address", value: profile?.address },
+          { label: "Province", value: shipping[0]?.destination?.province },
+          { label: "City", value: shipping[0]?.destination?.city_name },
+          { label: "Postal Code", value: shipping[0]?.destination?.postal_code },
+          { label: "Phone", value: profile?.phone },
+        ].map((item, index) => (
+          <div key={index} className="w-full flex mb-3 items-center justify-between">
+            <div className="w-32 text-left">
+              <span className="text-gray-600 font-semibold">{item.label}</span>
+            </div>
+            <div className="flex-grow pl-3 text-right">
+              <span>{item.value}</span>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* <div className="w-full mx-auto rounded-lg bg-white border border-gray-200 p-3 text-gray-800 font-light mb-2 ">

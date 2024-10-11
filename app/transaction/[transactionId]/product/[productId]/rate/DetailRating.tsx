@@ -1,11 +1,6 @@
 "use client";
 
-import { usePersistedUser } from "@/zustand/users";
-import { Tab } from "@headlessui/react";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "sonner";
-import Rating from "./Rating";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,13 +10,18 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { usePersistedUser } from "@/zustand/users";
+import { Tab } from "@headlessui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import Rating from "./Rating";
 
 interface ProductDetailsProps {
   data: any;
@@ -86,7 +86,7 @@ const DetailRating: React.FC<ProductDetailsProps> = ({
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-gray-50 min-h-screen flex items-center justify-center">
       <main className="mx-auto max-w-7xl sm:px-6 sm:pt-16 lg:p-8">
         <div className="mx-auto max-w-2xl lg:max-w-none">
           <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
@@ -98,7 +98,7 @@ const DetailRating: React.FC<ProductDetailsProps> = ({
                     "https://flowbite.com/docs/images/examples/image-1@2x.jpg"
                   }
                   alt={"more image"}
-                  className="object-cover object-center sm:rounded-lg"
+                  className="object-cover object-center sm:rounded-lg transition-transform duration-300 hover:scale-110 shadow-lg"
                   width={1000}
                   height={1000}
                 />
@@ -106,25 +106,27 @@ const DetailRating: React.FC<ProductDetailsProps> = ({
             </Tab.Group>
 
             <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-              <h1 className="text-2xl font-medium tracking-tight text-gray-900">
+              <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
                 {data.name_product} {""}
                 {data.is_preorder && (
-                  <span className="text- text-red-600">(Preorder)</span>
+                  <span className="text-red-600">(Preorder)</span>
                 )}
               </h1>
-              <h2>How About the quality of the product?</h2>
+              <h2 className="mt-4 text-xl font-semibold text-gray-700">
+                How About the Quality of the Product?
+              </h2>
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4 mt-4"
+                  className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-8 mt-8"
                 >
                   <FormField
                     control={form.control}
                     name="rate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-semibold">Rating</FormLabel>
-                        <FormDescription>
+                        <FormLabel className="font-semibold text-gray-800">Rating</FormLabel>
+                        <FormDescription className="text-gray-600">
                           Please rate the product from 1 to 5.
                         </FormDescription>
                         <FormControl>
@@ -142,13 +144,13 @@ const DetailRating: React.FC<ProductDetailsProps> = ({
                     name="review"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-semibold">Review</FormLabel>
-                        <FormDescription>
+                        <FormLabel className="font-semibold text-gray-800">Review</FormLabel>
+                        <FormDescription className="text-gray-600">
                           Share your thoughts about the product.
                         </FormDescription>
                         <FormControl className="mt-3.5">
                           <Textarea
-                            className="min-h-32"
+                            className="min-h-32 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
                             {...field}
                             value={field.value ?? ""}
                             placeholder="Write your review here"
@@ -163,8 +165,8 @@ const DetailRating: React.FC<ProductDetailsProps> = ({
                     loadingText="Saving"
                     isLoading={isPending}
                     type="submit"
-                    size="sm"
-                    className="bg-lime-900 text-white"
+                    size="lg"
+                    className="bg-green-700 text-white hover:bg-green-500 transition-transform duration-300 transform hover:scale-105"
                   >
                     Save Product
                   </Button>

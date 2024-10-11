@@ -1,7 +1,7 @@
-import React, { forwardRef } from "react";
-import { formatReadableDate } from "@/utils/utils";
-import CurrencyText from "./text/CurrencyText";
 import { formatRupiah } from "@/lib/utils";
+import { formatReadableDate } from "@/utils/utils";
+import { forwardRef } from "react";
+import CurrencyText from "./text/CurrencyText";
 
 // Define the interfaces for the props
 interface Item {
@@ -77,20 +77,8 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
         id="invoice-content"
         ref={ref}
       >
-        <header className="flex flex-col items-center px-8 pt-20 text-lg text-center bg-white border-t-8 border-green-700 md:block lg:block xl:block print:block md:items-start lg:items-start xl:items-start print:items-start md:text-left lg:text-left xl:text-left print:text-left print:pt-8 print:px-2 md:relative lg:relative xl:relative print:relative ">
-          {/* <Image
-            className="w-3/6 h-auto md:w-1/4 lg:ml-12 xl:ml-12 print:px-0 print:py-0"
-            src={
-              imageUrl
-                ? `${imageUrl}`
-                : `https://flowbite.com/docs/images/examples/image-1@2x.jpg`
-            }
-            alt="Company Logo"
-            width={200}
-            height={100}
-          /> */}
-
-          <div className="flex flex-row  mb-2 ml-0 text-2xl font-bold md:text-3xl lg:text-4xl xl:text-4xl print:text-2xl lg:ml-12 xl:ml-12 mt-10">
+        <header className="flex flex-col items-center px-8 pt-20 text-lg text-center bg-white border-t-8 border-green-700 md:block lg:block xl:block print:block md:items-start lg:items-start xl:items-start print:items-start md:text-left lg:text-left xl:text-left print:text-left print:pt-8 print:px-2 md:relative lg:relative xl:relative print:relative">
+          <div className="flex flex-row mb-2 ml-0 text-2xl font-bold md:text-3xl lg:text-4xl xl:text-4xl print:text-2xl lg:ml-12 xl:ml-12 mt-10">
             INVOICE
             <div className="text-green-700">
               <span className="mr-4 text-sm">■ </span> #
@@ -103,7 +91,7 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
             <span>Order date: {formatReadableDate(orderDate)}</span>
             <span>Paid date: {formatReadableDate(paidDate)}</span>
           </div>
-          <div className="px-8 py-2 mt-16 text-3xl font-bold text-green-700 border-4 border-green-700 border-dotted md:absolute md:right-0 md:top-0 md:mr-12 lg:absolute lg:right-0 lg:top-0 xl:absolute xl:right-0 xl:top-0 print:absolute print:right-0 print:top-0 lg:mr-20 xl:mr-20 print:mr-2 print:mt-8">
+          <div className="px-8 py-2 mt-16 text-3xl font-bold text-green-700 border-4 border-green-700 border-dotted md:absolute md:right-0 md:top-0 md:mr-12 lg:absolute lg:right-0 lg:top-0 xl:absolute xl:right-0 xl:top-0 print:absolute print:right-0 print:top-0 lg:mr-20 xl:mr-12 print:mr-2 print:mt-8 whitespace-nowrap">
             PAID
           </div>
           <div className="flex flex-col m-12 text-center lg:m-12 md:flex-none md:text-left md:relative md:m-0 md:mt-16 lg:flex-none lg:text-left lg:relative xl:flex-none xl:text-left xl:relative print:flex-none print:text-left print:relative print:m-0 print:mt-6 print:text-sm">
@@ -112,33 +100,17 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
               <span id="company-name" className="font-medium">
                 {from.companyName}
               </span>
-              {/* <span id="company-country">
-                <FaRegFlag /> {from.country}
-              </span> */}
-              {/* <div className="flex-row">
-                <span id="c-city">{from.city}</span>,
-                <span id="c-postal"> Bali</span>
-              </div> */}
-              {/* <span id="company-address">{from.address}</span>
-              <span id="company-phone">{from.phone}</span> */}
               <span id="company-mail">{from.email}</span>
             </div>
             <div className="flex flex-col md:absolute md:right-0 md:text-right lg:absolute lg:right-0 lg:text-right print:absolute print:right-0 print:text-right">
               <span className="font-extrabold">TO</span>
-
               <span id="person-name" className="font-medium">
                 {to.personName}
               </span>
-              {/* <span id="person-country">
-                <FaRegFlag /> {to.country}
-              </span> */}
               <div className="flex-row">
                 <span id="p-city">{to.city}</span>,
                 <span id="p-postal"> Bali</span>
-                {/* <span id="p-postal">{to.postal}</span> */}
               </div>
-              {/* <span id="person-address">{to.address}</span> */}
-              {/* <span id="person-phone">{to.phone}</span> */}
               <span id="person-mail">{to.email}</span>
             </div>
           </div>
