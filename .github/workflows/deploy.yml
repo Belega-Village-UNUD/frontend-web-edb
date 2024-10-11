@@ -42,8 +42,7 @@ jobs:
           user: ${{ secrets.CE_USER }}
           command: |-
             cd $(pwd)/${{ env.REPO }}
-            git checkout staging
-            git fetch --dry-run
+            git switch staging
             git pull origin staging
             bash ./shell/build.sh staging ${{ env.COMMIT_SHA }}
 
