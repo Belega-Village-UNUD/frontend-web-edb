@@ -12,7 +12,7 @@ import { usePersistedUser } from "@/zustand/users";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -195,11 +195,10 @@ const NewProductListStore = () => {
                     </label>
                     <div className="mt-2 sm:col-span-2 sm:mt-0">
                       <select
-                        placeholder="Select type"
                         {...register("productType")}
                         className="bg-white block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       >
-                        <option value="">Select type</option>
+                        <option value="" disabled selected>Select Type</option>
                         {type.map((item: any) => (
                           <option key={item.id} value={item.id}>
                             {item.name}
@@ -365,11 +364,10 @@ const NewProductListStore = () => {
                   <button
                     disabled={loadingSubmit}
                     type="submit"
-                    className={`inline-flex justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                      loadingSubmit
-                        ? "bg-gray-400 cursor-not-allowed" // Warna dan gaya ketika disabled
-                        : "bg-lime-800 hover:bg-lime-700 focus-visible:outline-lime-800" // Warna dan gaya ketika aktif
-                    }`}
+                    className={`inline-flex justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${loadingSubmit
+                      ? "bg-gray-400 cursor-not-allowed" // Warna dan gaya ketika disabled
+                      : "bg-lime-800 hover:bg-lime-700 focus-visible:outline-lime-800" // Warna dan gaya ketika aktif
+                      }`}
                   >
                     Confirm Product
                   </button>
