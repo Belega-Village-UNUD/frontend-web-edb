@@ -1,13 +1,11 @@
-import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
-import { StarIcon } from "@heroicons/react/20/solid";
 import Loading from "@/components/Loading";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { StarIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { IoStorefrontOutline } from "react-icons/io5";
-import { LocateIcon } from "lucide-react";
+import Link from "next/link";
 import { GrLocationPin } from "react-icons/gr";
+import { IoStorefrontOutline } from "react-icons/io5";
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -35,7 +33,7 @@ function InfoSeller({ product }: any) {
   console.log(dataRating);
   return (
     <div className="">
-      <div className="flex flex-col bg-gray-50 py-2  border mt-2 border-gray-200 p-8 rounded-xl">
+      <div className="flex flex-col bg-gray-50 py-6  border mt-2 border-gray-200 p-6 rounded-xl">
         <h2 className="font-bold text-xl">About Seller</h2>
         <div className="flex flex-row  bg-gray-50 py-2 items-center">
           <Avatar className="w-16 h-16">

@@ -62,7 +62,6 @@ export const useUsers = create<UserState>()((set) => ({
       });
 
       const responseJson = await response.json();
-      // console.log(responseJson)
       if (responseJson.success === true) {
         set({
           avatarPreview: responseJson.data.avatar_link,

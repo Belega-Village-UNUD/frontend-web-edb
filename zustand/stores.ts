@@ -26,7 +26,6 @@ export const useStore = create<StoreState>()((set) => ({
       });
 
       const responseJson = await response.json();
-      // console.log(responseJson)
       if (responseJson.success === true) {
         set({ avatarPreview: responseJson.data.avatar_link });
         usePersistedStore.getState().setName(responseJson.data.name);

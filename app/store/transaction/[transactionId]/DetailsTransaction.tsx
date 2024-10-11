@@ -1,5 +1,5 @@
+import Loading from "@/components/Loading";
 import CurrencyText from "@/components/text/CurrencyText";
-import { GrStatusInfo } from "react-icons/gr";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,8 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePersistedUser } from "@/zustand/users";
-import { AvatarImage } from "@radix-ui/react-avatar";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { Button } from "@headlessui/react";
+import { useMutation } from "@tanstack/react-query";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -35,18 +35,14 @@ import axios from "axios";
 import {
   Banknote,
   CodeXml,
+  FileBarChart,
   MapPin,
   Truck,
-  Wallet,
-  FileBarChart,
-  Info,
+  Wallet
 } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "@headlessui/react";
 import { toast } from "sonner";
-import Loading from "@/components/Loading";
 
 type Transaction = {
   id: string;
@@ -181,8 +177,6 @@ const DetailsTransaction = () => {
     },
   });
 
-  // console.log(dataStatusShipping);
-
   const handleGetOneTransaction = useCallback(async () => {
     try {
       setLoading(true);
@@ -238,8 +232,6 @@ const DetailsTransaction = () => {
       rowSelection,
     },
   });
-
-  // console.log(dataStatusShipping);
 
   if (loading) {
     return <Loading />;
@@ -377,9 +369,9 @@ const DetailsTransaction = () => {
                             {header.isPlaceholder
                               ? null
                               : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                           </TableHead>
                         );
                       })}

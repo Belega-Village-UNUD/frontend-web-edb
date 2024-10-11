@@ -1,6 +1,13 @@
 "use client";
 import Loading from "@/components/Loading";
 import CurrencyText from "@/components/text/CurrencyText";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { formatReadableDate } from "@/utils/utils";
 import { usePersistedUser } from "@/zustand/users";
 import { Menu, Transition } from "@headlessui/react";
@@ -9,25 +16,16 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
-import { MdCancel } from "react-icons/md";
-import { FaClock } from "react-icons/fa";
-import { FaMoneyCheck } from "react-icons/fa";
-import { FaShippingFast } from "react-icons/fa";
+import { FaClock, FaMoneyCheck, FaShippingFast } from "react-icons/fa";
 import { LuPackage } from "react-icons/lu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { MdCancel } from "react-icons/md";
+import { toast } from "sonner";
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 const HistoryList = () => {
   const [token, setToken] = useState<string>();
@@ -63,8 +61,6 @@ const HistoryList = () => {
     enabled: !!token,
   });
 
-  console.log(orders);
-
   let filteredOrders = [];
   let statusCounts;
   if (isFetched) {
@@ -78,21 +74,21 @@ const HistoryList = () => {
       !statusFilter || statusFilter === "ALL"
         ? sortedOrders
         : sortedOrders?.filter((order: any) => {
-            if (order.status === "SUCCESS") {
-              const shippingStatus =
-                order?.cart_details[0]?.arrival_shipping_status;
+          if (order.status === "SUCCESS") {
+            const shippingStatus =
+              order?.cart_details[0]?.arrival_shipping_status;
 
-              // Filter khusus untuk status SHIPPING
-              if (
-                shippingStatus === "PACKING" ||
-                shippingStatus === "SHIPPED" ||
-                shippingStatus === "ARRIVED"
-              ) {
-                return true;
-              }
+            // Filter khusus untuk status SHIPPING
+            if (
+              shippingStatus === "PACKING" ||
+              shippingStatus === "SHIPPED" ||
+              shippingStatus === "ARRIVED"
+            ) {
+              return true;
             }
-            return order.status === statusFilter;
-          });
+          }
+          return order.status === statusFilter;
+        });
 
     // Hitung jumlah status untuk setiap order
     statusCounts = orders?.reduce((acc: any, order: any) => {
@@ -185,15 +181,15 @@ const HistoryList = () => {
           <div className="mx-auto max-w-2xl space-y-8 sm:px-4 lg:max-w-4xl lg:px-0">
             <div className="flex space-x-4">
               {statusCounts &&
-              typeof statusCounts === "object" &&
-              !Array.isArray(statusCounts) ? (
+                typeof statusCounts === "object" &&
+                !Array.isArray(statusCounts) ? (
                 Object.entries(statusCounts).map(([status, count]: any) => (
                   <div
                     key={status}
                     className={`flex flex-col items-center p-4 rounded ${
                       // @ts-ignore
                       statusColors[status] || "bg-gray-200"
-                    }`}
+                      }`}
                   >
                     <span className="font-bold">{count}</span>
                     <span className="text-gray-700">
@@ -399,7 +395,7 @@ const HistoryList = () => {
                           <div className="flex items-center">
                             {order.status === "SUCCESS" &&
                               order?.cart_details[0]?.arrival_shipping_status ==
-                                "PACKING" && (
+                              "PACKING" && (
                                 <div className="flex flex-row justify-center items-center">
                                   <LuPackage
                                     className="h-5 w-5 text-amber-700"
@@ -412,7 +408,7 @@ const HistoryList = () => {
                               )}
                             {order.status === "SUCCESS" &&
                               order?.cart_details[0]?.arrival_shipping_status ==
-                                "SHIPPED" && (
+                              "SHIPPED" && (
                                 <div className="flex flex-row justify-center items-center">
                                   <FaShippingFast
                                     className="h-5 w-5 text-gray-500"
@@ -425,7 +421,7 @@ const HistoryList = () => {
                               )}
                             {order.status === "SUCCESS" &&
                               order?.cart_details[0]?.arrival_shipping_status ==
-                                "ARRIVED" && (
+                              "ARRIVED" && (
                                 <div className="flex flex-row justify-center items-center">
                                   <CheckCircleIcon
                                     className="h-5 w-5 text-blue-500"

@@ -2,14 +2,13 @@
 import ButtonConfirm from "@/components/button/ButtonConfirm";
 import SetQuantity from "@/components/products/SetQuantity";
 import CurrencyText from "@/components/text/CurrencyText";
+import { useCart } from "@/zustand/carts";
 import { usePersistedUser } from "@/zustand/users";
-import { Disclosure, Tab } from "@headlessui/react";
-import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { Tab } from "@headlessui/react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { useCart } from "@/zustand/carts";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -24,6 +23,8 @@ const DetailProduct: React.FC<ProductDetailsProps> = ({ data }) => {
   const pathname = usePathname();
   const router = useRouter();
   const lastSegment = pathname.split("/").pop();
+
+  let link = null
 
   const [token] = usePersistedUser((state) => [state.token]);
 
@@ -104,6 +105,43 @@ const DetailProduct: React.FC<ProductDetailsProps> = ({ data }) => {
       const responseJson = await response.json();
       if (responseJson.success) {
         toast.success(responseJson.message);
+      } else {
+        toast.error("Please login first");
+        router.push("/buyer/login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleMessage = async (event: any) => {
+    event.preventDefault();
+    try {
+      const token = getToken();
+      const payload = {
+        product_id: lastSegment,
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/message/product`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const responseJson = await response.json();
+      console.log('line 136', responseJson);
+
+      if (responseJson.success) {
+        link = responseJson.data;
+        console.log('line 140', link);
+        toast.success(responseJson.message);
+        window.open(link, '_blank');
       } else {
         toast.error("Please login first");
         router.push("/buyer/login");
@@ -217,122 +255,49 @@ const DetailProduct: React.FC<ProductDetailsProps> = ({ data }) => {
                     type="submit"
                     onClick={handleCheckout}
                   />
-                  {/* <button
+                  <button
                     type="button"
-                    className="ml-4 flex items-center justify-center rounded-md px-3 py-3 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+                    className="ml-2 flex items-center justify-center rounded-md px-3 py-3 text-green-500 hover:bg-green-100 hover:text-green-600"
+                    onClick={handleMessage}
                   >
-                    <span className="sr-only">Add to favorites</span>
-                    <HeartIcon
+                    <span className="sr-only">Chat with seller</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
                       aria-hidden="true"
-                    />
-                  </button> */}
+                    >
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.115 1.518 5.857L0 24l6.143-1.518A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22.5c-1.95 0-3.77-.5-5.357-1.357l-.393-.214-3.643.893.893-3.643-.214-.393A10.5 10.5 0 1112 22.5zm5.25-7.5c-.268-.134-1.607-.786-1.857-.893-.25-.089-.429-.134-.607.134-.179.268-.696.893-.857 1.071-.161.179-.321.196-.589.062-.268-.134-1.125-.411-2.143-1.304-.793-.707-1.321-1.589-1.482-1.857-.161-.268-.018-.411.125-.545.125-.125.268-.321.393-.482.125-.161.179-.268.268-.446.089-.179.045-.321-.022-.446-.067-.134-.607-1.464-.839-2.036-.223-.536-.446-.464-.607-.464-.161 0-.321-.018-.482-.018s-.446.067-.679.321c-.232.25-.893.875-.893 2.143s.911 2.482 1.036 2.679c.125.179 1.786 2.679 4.339 3.75.607.268 1.089.429 1.464.554.616.196 1.179.168 1.625.102.5-.075 1.607-.661 1.839-1.304.232-.643.232-1.196.161-1.304-.071-.107-.232-.161-.5-.286z" />
+                    </svg>
+                  </button>
                 </div>
               </form>
 
               <section aria-labelledby="details-heading" className="mt-12">
-                <h2 id="details-heading" className="sr-only">
-                  Additional details
-                </h2>
-
-                <div className="divide-y divide-gray-200 border-t">
-                  <Disclosure as="div" key={data?.id + "description"}>
-                    {({ open }) => (
-                      <div>
-                        <h3>
-                          <Disclosure.Button className="group relative flex w-full items-center justify-between py-6 text-left">
-                            <span
-                              className={classNames(
-                                open ? "text-green-700" : "text-gray-900",
-                                "text-sm font-medium"
-                              )}
-                            >
-                              Description
-                            </span>
-                            <span className="ml-6 flex items-center">
-                              {open ? (
-                                <MinusIcon
-                                  className="block h-6 w-6 text-green-700 group-hover:text-green-800"
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                <PlusIcon
-                                  className="block h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                                  aria-hidden="true"
-                                />
-                              )}
-                            </span>
-                          </Disclosure.Button>
-                        </h3>
-                        <Disclosure.Panel
-                          as="div"
-                          className="prose prose-sm pb-6"
-                        >
-                          <ul role="list">
-                            <li>{data?.desc_product}</li>
-                          </ul>
-                        </Disclosure.Panel>
-                      </div>
-                    )}
-                  </Disclosure>
-                  <Disclosure as="div" key={data?.id + "spesification"}>
-                    {({ open }) => (
-                      <div>
-                        <h3>
-                          <Disclosure.Button className="group relative flex w-full items-center justify-between py-6 text-left">
-                            <span
-                              className={classNames(
-                                open ? "text-green-700" : "text-gray-900",
-                                "text-sm font-medium"
-                              )}
-                            >
-                              Spesification
-                            </span>
-                            <span className="ml-6 flex items-center">
-                              {open ? (
-                                <MinusIcon
-                                  className="block h-6 w-6 text-green-700 group-hover:text-green-800"
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                <PlusIcon
-                                  className="block h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                                  aria-hidden="true"
-                                />
-                              )}
-                            </span>
-                          </Disclosure.Button>
-                        </h3>
-                        <Disclosure.Panel
-                          as="div"
-                          className="prose prose-sm pb-6"
-                        >
-                          <ul role="list">
-                            <li>
-                              <span className="font-semibold">Category : </span>
-                              {data && data?.product_type
-                                ? data?.product_type.name
-                                : ""}
-                            </li>
-                            <li>
-                              <span className="font-semibold">Material : </span>
-
-                              {data && data?.product_type
-                                ? data?.product_type.material
-                                : ""}
-                            </li>
-                            <li>
-                              <span className="font-semibold">Weight : </span>
-
-                              {data && data?.weight_gr
-                                ? data?.weight_gr + " gram"
-                                : ""}
-                            </li>
-                          </ul>
-                        </Disclosure.Panel>
-                      </div>
-                    )}
-                  </Disclosure>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-700">Description:</h3>
+                    <p className="text-sm text-gray-600">{data?.desc_product}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-700">Category:</h3>
+                    <p className="text-sm text-gray-600">
+                      {data && data?.product_type ? data?.product_type.name : "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-700">Material:</h3>
+                    <p className="text-sm text-gray-600">
+                      {data && data?.product_type ? data?.product_type.material : "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-700">Weight:</h3>
+                    <p className="text-sm text-gray-600">
+                      {data && data?.weight_gr ? `${data?.weight_gr} gram` : "N/A"}
+                    </p>
+                  </div>
                 </div>
               </section>
             </div>

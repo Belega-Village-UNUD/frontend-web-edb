@@ -20,9 +20,9 @@ import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { FaRegSave } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
+import { toast } from "sonner";
 
 interface CartItem {
   cart_id: string;
@@ -255,13 +255,13 @@ const CartList = () => {
       prevState.map((store) =>
         store.store.id === storeId
           ? {
-              ...store,
-              carts: store.carts.map((cart) => ({
-                ...cart,
-                is_checkout: checked,
-              })),
-              is_all_checked: checked,
-            }
+            ...store,
+            carts: store.carts.map((cart) => ({
+              ...cart,
+              is_checkout: checked,
+            })),
+            is_all_checked: checked,
+          }
           : store
       )
     );
@@ -313,7 +313,6 @@ const CartList = () => {
       );
 
       const responseJson = await response.json();
-      // console.log(responseJson);
       if (responseJson.success === true) {
         toast.success(responseJson.message);
         router.push("/buyer/history");

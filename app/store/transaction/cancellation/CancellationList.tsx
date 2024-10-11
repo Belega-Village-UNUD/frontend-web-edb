@@ -48,7 +48,6 @@ import {
   PencilIcon,
   Search,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -203,7 +202,6 @@ const CancellationList = () => {
       );
 
       const responseJson: ApiResponse = await response.json();
-      // console.log(responseJson.data)
       if (responseJson.success === true) {
         let emails: string[] = [];
         let filteredData = responseJson?.data?.filter(
@@ -216,10 +214,8 @@ const CancellationList = () => {
         setNewEmail(emails[0]);
         setTransactions(filteredData);
       } else {
-        // console.log(responseJson.message)
       }
     } catch (error: any) {
-      // console.log(error.message)
     }
   }, [getToken]);
 
@@ -326,9 +322,9 @@ const CancellationList = () => {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}

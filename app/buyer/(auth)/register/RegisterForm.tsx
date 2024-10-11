@@ -47,7 +47,6 @@ const RegisterForm = () => {
       );
 
       const responseJson = await response.json();
-      // console.log(responseJson)
       if (responseJson.success === true) {
         setIsLoading(false);
         toast.success(responseJson.message);

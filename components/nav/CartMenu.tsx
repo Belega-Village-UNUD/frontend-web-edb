@@ -1,3 +1,4 @@
+import { useCart } from "@/zustand/carts";
 import { usePersistedUser } from "@/zustand/users";
 import { Popover, Transition } from "@headlessui/react";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
@@ -5,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import CurrencyText from "../text/CurrencyText";
-import { useCart } from "@/zustand/carts";
 
 const CartMenu = () => {
   const [values, setValues] = useState<{ carts: any[] }[]>([]);
@@ -41,7 +41,6 @@ const CartMenu = () => {
       }, 0);
       setTotalCounter(total);
     } catch (error: any) {
-      // console.log(error.message);
     }
   }, [token]);
 
