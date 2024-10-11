@@ -13,20 +13,7 @@ fi
 BRANCH=$1
 COMMIT_SHA=$2
 
-echo "Performing build for staging" $BRANCH;
-
-if [ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]; then
-    echo "this branch is not up to date"
-    git checkout $BRANCH;
-    git fetch --dry-run origin $BRANCH;
-fi
-
-git pull origin $BRANCH;
-
-if [ $? -ne 0 ]; then
-    echo "Error in pull and fetch $BRANCH of Frontend Web Belega Service $?"
-    exit 1
-fi
+echo "Performing build for $BRANCH";
 
 set -x
 docker image prune -f;
