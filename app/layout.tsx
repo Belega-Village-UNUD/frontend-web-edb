@@ -9,6 +9,7 @@ import Providers from "@/components/Providers";
 export const metadata: Metadata = {
   title: "B-Commerce",
   description: "Bamboo Crafts Online Marketplace",
+  icons: "/logo.png",
 };
 
 export default function RootLayout({

@@ -32,13 +32,6 @@ const UserMenu = () => {
     ])
   );
 
-  // useEffect(() => {
-  //   handleGetProfile();
-  //   setInterval(() => {
-  //     handleGetProfile();
-  //   }, 10000);
-  // }, [handleGetProfile]);
-
   useEffect(() => {
     const token = usePersistedUser.getState().token;
     if (token) {
@@ -71,13 +64,14 @@ const UserMenu = () => {
         {is_login ? (
           <div
             onClick={toggleOpen}
-            className="p-2 flex flex-row items-center rounded-md cursor-pointer hover:border hover:border-lime-900 text-lime-900 w-60"
+            className="flex items-center p-2 rounded-md cursor-pointer text-lime-900 hover:border hover:border-lime-900"
           >
-            {avatarPreview ? (
-              <Avatar width={30} height={30} size={30} src={avatarPreview} />
-            ) : (
-              <Avatar width={30} height={30} size={30} />
-            )}
+            <Avatar
+              width={30}
+              height={30}
+              size={30}
+              src={avatarPreview || undefined}
+            />
             <span
               className="mx-2 text-sm font-semibold leading-6 text-gray-900"
               aria-hidden="true"
@@ -85,9 +79,9 @@ const UserMenu = () => {
               {name}
             </span>
             {isOpen ? (
-              <ChevronUpIcon className="h-5 w-5 text-gray-400" />
+              <ChevronUpIcon className="w-5 h-5 text-gray-400" />
             ) : (
-              <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+              <ChevronDownIcon className="w-5 h-5 text-gray-400" />
             )}
           </div>
         ) : (
@@ -104,13 +98,13 @@ const UserMenu = () => {
           <div className="absolute rounded-md shadow-md w-[200px] bg-white overflow-hidden right-0 top-12 text-sm flex flex-col cursor-pointer">
             {is_login ? (
               <div>
-                {is_store === false && exist_store === false ? (
+                {!is_store && !exist_store ? (
                   <Link href="/store/register">
                     <MenuItem onClick={toggleOpen}>
                       Register Your Store
                     </MenuItem>
                   </Link>
-                ) : exist_store === true && is_store === true ? (
+                ) : is_store && exist_store ? (
                   <Link href="/store">
                     <MenuItem onClick={toggleOpen}>Dashboard Store</MenuItem>
                   </Link>
@@ -127,9 +121,7 @@ const UserMenu = () => {
                 <hr className="border-t border-gray-300" />
                 <MenuItem
                   className="text-red-500 font-bold"
-                  onClick={() => {
-                    handleSignOut();
-                  }}
+                  onClick={handleSignOut}
                 >
                   Log Out
                 </MenuItem>
@@ -147,7 +139,7 @@ const UserMenu = () => {
           </div>
         )}
       </div>
-      {isOpen ? <BackDrop onClick={toggleOpen} /> : null}
+      {isOpen && <BackDrop onClick={toggleOpen} />}
     </>
   );
 };

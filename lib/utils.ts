@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { Metadata } from "next";
-import { twMerge } from "tailwind-merge";
 import qs from "query-string";
+import { twMerge } from "tailwind-merge";
 interface UrlQueryParams {
   params: string;
   key: string;
@@ -21,7 +21,7 @@ export function constructMetadata({
   title = "Painting & Beadwork Manacika Bali",
   description = "Exquisite beaded bags and Balinese paintings",
   image = "/thumbnail.png",
-  icons = "/favicon.ico",
+  icons = "/logo.png",
 }: {
   title?: string;
   description?: string;

@@ -78,13 +78,12 @@ const HistoryList = () => {
             const shippingStatus =
               order?.cart_details[0]?.arrival_shipping_status;
 
-            // Filter khusus untuk status SHIPPING
-            if (
-              shippingStatus === "PACKING" ||
-              shippingStatus === "SHIPPED" ||
-              shippingStatus === "ARRIVED"
-            ) {
-              return true;
+            if (statusFilter == "PACKING") {
+              return shippingStatus == "PACKING";
+            } else if (statusFilter == "SHIPPED") {
+              return shippingStatus == "SHIPPED";
+            } else if (statusFilter == "ARRIVED") {
+              return shippingStatus == "ARRIVED";
             }
           }
           return order.status === statusFilter;
@@ -150,12 +149,13 @@ const HistoryList = () => {
   }
 
   const statusColors = {
-    PAYABLE: "bg-yellow-400",
-    SUCCESS: "bg-green-400",
-    PENDING: "bg-gray-400",
-    PACKING: "bg-gray-400",
-    ARRIVED: "bg-blue-400",
-    SHIPPED: "bg-amber-600",
+    PAYABLE: "bg-yellow-300",
+    PENDING: "bg-gray-300",
+    SUCCESS: "bg-green-300",
+    PACKING: "bg-gray-300",
+    ARRIVED: "bg-blue-300",
+    SHIPPED: "bg-amber-300",
+    CANCEL: "bg-red-300",
   };
 
   return (
@@ -207,10 +207,12 @@ const HistoryList = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">All</SelectItem>
-                <SelectItem value="SUCCESS">Success</SelectItem>
                 <SelectItem value="PENDING">Pending</SelectItem>
                 <SelectItem value="PAYABLE">Payable</SelectItem>
                 <SelectItem value="CANCEL">Canceled</SelectItem>
+                <SelectItem value="ARRIVED">Arrived</SelectItem>
+                <SelectItem value="SHIPPED">Shipped</SelectItem>
+                <SelectItem value="PACKING">Packing</SelectItem>
               </SelectContent>
             </Select>
             {filteredOrders?.length > 0 ? (
