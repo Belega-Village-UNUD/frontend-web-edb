@@ -18,7 +18,7 @@ echo "Performing build for $BRANCH";
 set -x
 docker image prune -f;
 
-docker build . \
+docker build . --file docker/service/Dockerfile \
   -t ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA \
   -t ghcr.io/belega-village-unud/frontend-web-edb:$BRANCH
 
