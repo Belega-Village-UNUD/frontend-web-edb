@@ -3,7 +3,7 @@ services:
   app:
     image: ghcr.io/belega-village-unud/frontend-web-edb:staging
     env_file:
-      - .env
+      - ../../.env
     deploy:
       resources:
        limits:
