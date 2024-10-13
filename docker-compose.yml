@@ -1,0 +1,22 @@
+version: "3.4"
+services:
+  app:
+    image: ghcr.io/belega-village-unud/frontend-web-edb:staging
+    env_file:
+      - .env
+    deploy:
+      resources:
+       limits:
+         cpus: "1.0"
+         memory: "1.5G"
+    ports:
+      - target: ${PORT}
+        published: ${PUBLISH_PORT}
+    networks:
+      - belega-network
+
+networks:
+  belega-network:
+    external: true
+
+

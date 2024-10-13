@@ -14,15 +14,15 @@ fi
 docker service ls | grep "frontend_web_app"
 
 if [ $? -ne 0 ]; then
-  docker service create --name frontend_web_app --publish published=3000,target=3000 ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA
+  docker stack deploy -c ./docker-compose.yml frontend_web
   if [ $? -ne 0 ]; then
-      echo "Error in deploying $BRANCH of Backend Belega Service"
+      echo "Error in deploying $BRANCH of Frontend Belega Service"
       exit 1
   fi
 else
   docker service update --force --image ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA frontend_web_app
   if [ $? -ne 0 ]; then
-      echo "Error in deploying $BRANCH of Backend Belega Service"
+      echo "Error in deploying $BRANCH of Frontend Belega Service"
       exit 1
   fi
 fi
