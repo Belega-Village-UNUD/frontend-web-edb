@@ -174,7 +174,7 @@ const CancellationList = () => {
   const [activeDialog, setActiveDialog] = useState("");
   const router = useRouter();
 
-  const [token] = usePersistedUser((state) => [state.token]);
+  const [token] = usePersistedUser((state: any) => [state.token]);
 
   const getToken = useCallback(() => {
     if (!token) {
@@ -253,7 +253,7 @@ const CancellationList = () => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbPage className="font-semibold">
-                My Transaction
+                Cancelled Transaction
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -263,9 +263,9 @@ const CancellationList = () => {
       <div className="lg:px-8 lg:mb-2 sm:flex sm:items-center">
         <div className="lg:-mx-8 sm:flex-auto">
           <h1 className="flex-1 text-2xl font-bold text-gray-900">
-            My Transaction
+            Cancelled Transaction
           </h1>
-          <p className="text-sm text-gray-500">List your Transaction Store</p>
+          <p className="text-sm text-gray-500">List your Cancelled Transaction Store</p>
         </div>
       </div>
 

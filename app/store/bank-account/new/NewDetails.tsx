@@ -112,7 +112,7 @@ const NewBankListStore = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={"/store/bank"}>My Bank</BreadcrumbLink>
+              <BreadcrumbLink href={"/store/bank-account"}>My Bank</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 
 import CurrencyText from "@/components/text/CurrencyText";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -26,7 +27,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatRupiah } from "@/lib/utils";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const DashboardStore = ({ data, report }: any) => {
   const getTotalAmount = (data: any) => {
@@ -88,89 +88,67 @@ const DashboardStore = ({ data, report }: any) => {
   const cancelProductCount = getCancelProductCount(data || []);
   const pendingProductCount = getPendingProductCount(data || []);
 
+  const cardData = [
+    {
+      title: "Total Income",
+      amount: <CurrencyText amount={totalAmount} />,
+      icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
+    },
+    {
+      title: "Product Sold",
+      amount: soldProductCount,
+      icon: <Users className="h-4 w-4 text-muted-foreground" />,
+    },
+    {
+      title: "Cancelled Transaction",
+      amount: cancelProductCount,
+      icon: <CreditCard className="h-4 w-4 text-muted-foreground" />,
+    },
+    {
+      title: "Pending",
+      amount: pendingProductCount,
+      icon: <Activity className="h-4 w-4 text-muted-foreground" />,
+    },
+  ];
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-          <Card x-chunk="dashboard-01-chunk-0">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Income
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                <CurrencyText amount={totalAmount} />
-              </div>
-              {/* <p className="text-xs text-muted-foreground">
-                +20.1% from last month
-              </p> */}
-            </CardContent>
-          </Card>
-          <Card x-chunk="dashboard-01-chunk-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Product Sold
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{soldProductCount}</div>
-              {/* <p className="text-xs text-muted-foreground">
-                +180.1% from last month
-              </p> */}
-            </CardContent>
-          </Card>
-          <Card x-chunk="dashboard-01-chunk-2">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Cancelled Transaction
-              </CardTitle>
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{cancelProductCount}</div>
-              {/* <p className="text-xs text-muted-foreground">
-                +19% from last month
-              </p> */}
-            </CardContent>
-          </Card>
-          <Card x-chunk="dashboard-01-chunk-3">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{pendingProductCount}</div>
-              {/* <p className="text-xs text-muted-foreground">
-                +201 since last hour
-              </p> */}
-            </CardContent>
-          </Card>
+        <div className="grid gap-4 xl:grid-cols-4 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1">
+          {cardData.map((card, index) => (
+            <Card key={`dashboard-01-chunk-${index}`} className="shadow-lg rounded-lg">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-gray-800">{card.title}</CardTitle>
+                {card.icon}
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-gray-900">{card.amount}</div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-        <div className="grid gap-4 md:gap-8 grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-8 grid-cols-2 xl:grid-cols-4 md:grid-cols-1 sm:grid-cols-1">
           <Card
-            className="xl:col-span-2 col-span-1 h-fit"
+            className="xl:col-span-2 col-span-1 h-fit shadow-lg rounded-lg"
             x-chunk="dashboard-01-chunk-4"
           >
             <CardHeader className="flex flex-row items-center">
               <div className="grid gap-2">
-                <CardTitle>Transactions</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-lg font-semibold text-gray-800">Transactions</CardTitle>
+                <CardDescription className="text-sm text-gray-600">
                   Recent transactions from your store.
                 </CardDescription>
               </div>
               <div className="ml-auto gap-1 flex flex-row justify-center items-center">
-                <Link href="#" className="flex flex-row items-center gap-1">
+                <Link href="/store/transaction" className="flex flex-row items-center gap-1 text-green-700 hover:text-green-500">
                   View All
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[600px] ">
-                <Table>
+              <ScrollArea className="h-[600px] overflow-auto">
+                <Table className="w-full">
                   <TableHeader>
                     <TableRow>
                       <TableHead>Customer</TableHead>
@@ -199,10 +177,10 @@ const DashboardStore = ({ data, report }: any) => {
                           (detail: any, detailIndex: number) => (
                             <TableRow key={`${saleIndex}-${detailIndex}`}>
                               <TableCell>
-                                <div className="font-medium bg-black w-fit text-[11px] text-white rounded-2xl mb-1 py-1 px-2">
+                                <div className={`font-medium w-fit text-xs text-white rounded-2xl mb-1 py-1 px-2 ${sale.status === "PAYABLE" ? "bg-blue-500" : sale.status === "PENDING" ? "bg-yellow-500" : sale.status === "SUCCESS" ? "bg-green-500" : "bg-red-500"}`}>
                                   {sale.status}
                                 </div>
-                                <div className="hidden text-sm text-muted-foreground md:inline">
+                                <div className="hidden text-sm text-gray-600 md:inline">
                                   {sale?.user?.email}
                                 </div>
                               </TableCell>
@@ -233,12 +211,12 @@ const DashboardStore = ({ data, report }: any) => {
           </Card>
           <Card
             x-chunk="dashboard-01-chunk-5"
-            className="xl:col-span-2 col-span-1 h-fit"
+            className="xl:col-span-2 col-span-1 h-fit shadow-lg rounded-lg"
           >
             <CardHeader>
-              <CardTitle>Recent Sales</CardTitle>
+              <CardTitle className="text-lg font-semibold text-gray-800">Recent Sales</CardTitle>
             </CardHeader>
-            <ScrollArea className="h-[650px] ">
+            <ScrollArea className="h-[650px] overflow-auto">
               <CardContent className="grid gap-8">
                 {data
                   ?.filter((sale: any) => sale.status === "SUCCESS") // Filter hanya penjualan yang sukses
@@ -259,14 +237,14 @@ const DashboardStore = ({ data, report }: any) => {
                         />
                       </Avatar>
                       <div className="grid gap-1">
-                        <p className="text-sm font-medium leading-none">
+                        <p className="text-sm font-medium leading-none text-gray-800">
                           {detail.product?.name_product}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-600">
                           {detail.product?.store?.name}
                         </p>
                       </div>
-                      <div className="ml-auto font-medium">
+                      <div className="ml-auto font-medium text-gray-900">
                         +{formatRupiah(detail.unit_price * detail.qty)}
                       </div>
                     </div>

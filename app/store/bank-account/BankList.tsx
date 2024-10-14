@@ -1,7 +1,6 @@
 "use client";
 import ButtonConfirm from "@/components/button/ButtonConfirm";
 import Loading from "@/components/Loading";
-import CurrencyText from "@/components/text/CurrencyText";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -63,7 +62,6 @@ import {
   Search,
   SquareX,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -299,8 +297,8 @@ const BankListStore = () => {
         </Breadcrumb>
       </div>
 
-      <div className="lg:px-8 lg:mb-2 sm:flex sm:items-center">
-        <div className="lg:-mx-8 sm:flex-auto">
+      <div className="mb-2 sm:flex sm:items-center justify-between">
+        <div className="sm:flex-auto">
           <h1 className="flex-1 text-2xl font-bold text-gray-900">My Bank</h1>
           <p className="text-sm text-gray-500">
             List of banks that you have in your store
@@ -311,10 +309,6 @@ const BankListStore = () => {
             label="Add Bank"
             onClick={() => router.push("/store/bank-account/new")}
           />
-          {/* <Link href={`/store/bank/new`} className="flex items-center rounded-md bg-green-700 px-3 py-2 text-center text-base font-medium text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-greenbg-green-700">
-            <div><PlusIcon className="w-5 h-5" /></div>
-            <div className="pl-1">Add New Bank</div>
-          </Link> */}
         </div>
       </div>
 
@@ -369,9 +363,9 @@ const BankListStore = () => {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
