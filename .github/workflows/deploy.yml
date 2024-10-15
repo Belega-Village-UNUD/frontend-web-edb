@@ -9,7 +9,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   COMMIT_SHA: ${{ github.sha }}
   REPO: frontend-web-edb
-  INSTANCE_NAME: becommerce-instance
+  INSTANCE_NAME: belega-instance
   ZONE: asia-southeast2-a
 
 jobs:
