@@ -5,7 +5,7 @@ on:
     branches: ["staging"]
 
 env:
-  REGISTRY: ghcr.io
+  REGISTRY: registry.belegacommerce.shop
   IMAGE_NAME: ${{ github.repository }}
   COMMIT_SHA: ${{ github.sha }}
   REPO: frontend-web-edb

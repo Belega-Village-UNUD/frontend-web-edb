@@ -38,8 +38,8 @@ if [ $? -ne 0 ]; then
 fi
 
 docker build . --file docker/service/Dockerfile \
-  -t ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA \
-  -t ghcr.io/belega-village-unud/frontend-web-edb:$BRANCH
+  -t registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$COMMIT_SHA \
+  -t registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$BRANCH
 
 if [ $? -ne 0 ]; then
     echo "Error in build $BRANCH for Frontend Web Belega Service $?"
@@ -48,4 +48,4 @@ fi
 
 set +x
 
-echo "Successfully build the image for ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA"
+echo "Successfully build the image for registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$COMMIT_SHA"

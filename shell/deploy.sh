@@ -20,7 +20,7 @@ if [ $? -ne 0 ]; then
       exit 1
   fi
 else
-  docker service update --force --image ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA frontend_web_app
+  docker service update --force --image registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$COMMIT_SHA frontend_web_app
   if [ $? -ne 0 ]; then
       echo "Error in deploying $BRANCH of Frontend Belega Service"
       exit 1
@@ -98,7 +98,7 @@ fi
 
 echo "Successfully updating frontend config on service ssl_nginx"
 
-echo "Successfully deploy the image for ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA on service frontend_web_app"
+echo "Successfully deploy the image for registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$COMMIT_SHA on service frontend_web_app"
 
 docker service ls | grep frontend_web_app | awk '{print $2, $3, $4, $5}'
 docker service ls | grep ssl_nginx | awk '{print $2, $3, $4, $5}'
