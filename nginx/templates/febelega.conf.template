@@ -25,10 +25,10 @@ server {
     location / {
         proxy_pass http://${FRONTEND_SERVICE}:${PORT};
         proxy_http_version 1.1;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $${esc}remote_addr;
+        proxy_set_header X-Forwarded-For $${esc}proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $${esc}scheme;
+        proxy_set_header Host $${esc}host;
         proxy_set_header Connection "keep-alive";
         proxy_read_timeout 100s;
         proxy_connect_timeout 100s;
