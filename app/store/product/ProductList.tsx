@@ -63,7 +63,6 @@ import {
   Search,
   SquareX,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -327,9 +326,9 @@ const ProductListStore = () => {
         </Breadcrumb>
       </div>
 
-      <div className="lg:px-8 lg:mb-2 sm:flex sm:items-center">
-        <div className="lg:-mx-8 sm:flex-auto">
-          <h1 className="flex-1 text-2xl font-bold text-gray-900">
+      <div className="mb-2 sm:flex sm:items-center justify-between">
+        <div className="sm:flex-auto">
+          <h1 className="text-2xl font-bold text-gray-900">
             My Product
           </h1>
           <p className="text-sm text-gray-500">
@@ -341,10 +340,6 @@ const ProductListStore = () => {
             label="Add Product"
             onClick={() => router.push("/store/product/new")}
           />
-          {/* <Link href={`/store/product/new`} className="flex items-center rounded-md bg-green-700 px-3 py-2 text-center text-base font-medium text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-greenbg-green-700">
-            <div><PlusIcon className="w-5 h-5" /></div>
-            <div className="pl-1">Add New Product</div>
-          </Link> */}
         </div>
       </div>
 
@@ -399,9 +394,9 @@ const ProductListStore = () => {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}

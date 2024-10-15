@@ -1,4 +1,3 @@
-import { FileUploader } from "@/components/form/FileUploader";
 import Loading from "@/components/Loading";
 import {
   Breadcrumb,
@@ -8,13 +7,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { urlToBlobFile } from "@/lib/utils";
 import { usePersistedUser } from "@/zustand/users";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -143,7 +140,7 @@ const DetailsBank = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={"/store/bank"}>My Bank</BreadcrumbLink>
+              <BreadcrumbLink href={"/store/bank-account"}>My Bank</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

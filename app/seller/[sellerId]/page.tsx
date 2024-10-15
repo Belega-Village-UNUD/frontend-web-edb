@@ -4,12 +4,12 @@ import Container from "@/components/Container";
 import ProductCard from "@/components/products/ProductCard";
 import ProductSkeleton from "@/components/skeleton/ProductSkeleton";
 
+import Loading from "@/components/Loading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import SellerRating from "./SellerRating";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Loading from "@/components/Loading";
 import ProfileSeller from "./ProfileSeller";
+import SellerRating from "./SellerRating";
 
 interface SellerProps {
   params: {
@@ -45,37 +45,33 @@ export default function Seller({ params }: SellerProps) {
   return (
     <div className="p-0">
       <Container>
-        <div className="bg-green-50">
+        <div className="bg-green-50 p-4">
           <ProfileSeller data={data} />
           <Tabs defaultValue="products" className="w-full mt-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="products">Products</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+              <TabsTrigger value="products" className="text-lg font-semibold text-gray-800 hover:text-gray-900">Products</TabsTrigger>
+              <TabsTrigger value="reviews" className="text-lg font-semibold text-gray-800 hover:text-gray-900">Reviews</TabsTrigger>
             </TabsList>
             <TabsContent value="products">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 p-5">
+              <div className="mt-4">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
                   Seller Products
                 </h2>
-                <div className="grid grid-cols-2 p-4 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   {data?.product?.length > 0 ? (
-                    <>
-                      {data?.product?.map((product: any) => {
-                        return product.stock > 0 ? (
-                          <ProductCard key={product.id} data={product} />
-                        ) : null;
-                      })}
-                    </>
+                    data.product.map((product: any) => product.stock > 0 && (
+                      <ProductCard key={product.id} data={product} />
+                    ))
                   ) : (
-                    <>
-                      <ProductSkeleton />
-                    </>
+                    <ProductSkeleton />
                   )}
                 </div>
               </div>
             </TabsContent>
             <TabsContent value="reviews">
-              <SellerRating sellerId={params.sellerId} />
+              <div className="mt-8">
+                <SellerRating sellerId={params.sellerId} />
+              </div>
             </TabsContent>
           </Tabs>
         </div>

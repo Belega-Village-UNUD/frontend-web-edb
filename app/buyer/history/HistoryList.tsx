@@ -144,15 +144,44 @@ const HistoryList = () => {
     }
   };
 
+  const handleCancel = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    orderId: string
+  ) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/transaction/buyer/cancel/${orderId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const responseJson = await response.json();
+      if (responseJson.success) {
+        toast.success(responseJson.message);
+      } else {
+        toast.error(responseJson.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isFetching && !isFetched) {
     return <Loading />;
   }
 
   const statusColors = {
     PAYABLE: "bg-yellow-300",
-    PENDING: "bg-gray-300",
+    PENDING: "bg-gray-200",
     SUCCESS: "bg-green-300",
-    PACKING: "bg-gray-300",
+    PACKING: "bg-orange-300",
     ARRIVED: "bg-blue-300",
     SHIPPED: "bg-amber-300",
     CANCEL: "bg-red-300",
@@ -257,14 +286,38 @@ const HistoryList = () => {
                           </dd>
                         </div>
                       </div>
-                      <div className="">
+                      <div className="flex items-center">
+                        {order.status === "PENDING" && (
+                          <div className="flex flex-1 justify-center">
+                            {/* <Link
+                              href={`/checkout/${order?.id}`}
+                              className="whitespace-nowrap text-white bg-red-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-red-400"
+                            >
+                              Cancel Transaction
+                            </Link> */}
+                            <button
+                              className="whitespace-nowrap text-white bg-red-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-red-400"
+                              type="submit"
+                              onClick={(event: any) =>
+                                handleCancel(
+                                  event,
+                                  order?.cart_details[0]?.product?.id
+                                )
+                              }
+                            >
+                              Cancel Transaction
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center">
                         {order.status === "PAYABLE" && (
                           <div className="flex flex-1 justify-center">
                             <Link
                               href={`/checkout/${order?.id}`}
                               className="whitespace-nowrap text-white bg-indigo-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-indigo-700"
                             >
-                              Pay
+                              Pay Transaction
                             </Link>
                           </div>
                         )}
@@ -452,16 +505,18 @@ const HistoryList = () => {
                           </div>
 
                           <div className="mt-8 flex items-center space-x-5 divide-x divide-gray-300 border-t border-gray-300 pt-5 text-sm font-medium sm:ml-5 sm:mt-0 sm:border-none sm:pt-0">
-                            {order.status === "SUCCESS" && (
-                              <div className="flex flex-1 justify-center">
-                                <Link
-                                  href={`/transaction/${order.id}/product/${order?.cart_details[0]?.product?.id}/rate`}
-                                  className="whitespace-nowrap text-white bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
-                                >
-                                  Rate Product
-                                </Link>
-                              </div>
-                            )}
+                            {order.status === "SUCCESS" &&
+                              order?.cart_details[0]?.arrival_shipping_status ==
+                              "ARRIVED" && (
+                                <div className="flex flex-1 justify-center">
+                                  <Link
+                                    href={`/transaction/${order.id}/product/${order?.cart_details[0]?.product?.id}/rate`}
+                                    className="whitespace-nowrap text-white bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
+                                  >
+                                    Rate Product
+                                  </Link>
+                                </div>
+                              )}
                             <div className="flex flex-1 justify-center">
                               <Link
                                 href={`/product/${order?.cart_details[0]?.product?.id}`}
@@ -471,20 +526,24 @@ const HistoryList = () => {
                               </Link>
                             </div>
 
-                            <div className="flex flex-1 justify-center pl-5">
-                              <button
-                                className="text-white bg-green-600 px-4 py-2 rounded-md shadow-md hover:bg-green-700"
-                                type="submit"
-                                onClick={(event: any) =>
-                                  handleCheckout(
-                                    event,
-                                    order?.cart_details[0]?.product?.id
-                                  )
-                                }
-                              >
-                                Buy Again
-                              </button>
-                            </div>
+                            {order.status === "SUCCESS" &&
+                              order?.cart_details[0]?.arrival_shipping_status ==
+                              "ARRIVED" && (
+                                <div className="flex flex-1 justify-center pl-5">
+                                  <button
+                                    className="text-white bg-green-600 px-4 py-2 rounded-md shadow-md hover:bg-green-700"
+                                    type="submit"
+                                    onClick={(event: any) =>
+                                      handleCheckout(
+                                        event,
+                                        order?.cart_details[0]?.product?.id
+                                      )
+                                    }
+                                  >
+                                    Buy Again
+                                  </button>
+                                </div>
+                              )}
                           </div>
                         </div>
                       </li>
