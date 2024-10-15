@@ -144,6 +144,35 @@ const HistoryList = () => {
     }
   };
 
+  const handleCancel = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    orderId: string
+  ) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/transaction/buyer/cancel/${orderId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const responseJson = await response.json();
+      if (responseJson.success) {
+        toast.success(responseJson.message);
+      } else {
+        toast.error(responseJson.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isFetching && !isFetched) {
     return <Loading />;
   }
@@ -260,12 +289,24 @@ const HistoryList = () => {
                       <div className="flex items-center">
                         {order.status === "PENDING" && (
                           <div className="flex flex-1 justify-center">
-                            <Link
+                            {/* <Link
                               href={`/checkout/${order?.id}`}
                               className="whitespace-nowrap text-white bg-red-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-red-400"
                             >
                               Cancel Transaction
-                            </Link>
+                            </Link> */}
+                            <button
+                              className="whitespace-nowrap text-white bg-red-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-red-400"
+                              type="submit"
+                              onClick={(event: any) =>
+                                handleCancel(
+                                  event,
+                                  order?.cart_details[0]?.product?.id
+                                )
+                              }
+                            >
+                              Cancel Transaction
+                            </button>
                           </div>
                         )}
                       </div>
