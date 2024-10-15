@@ -13,10 +13,29 @@ fi
 BRANCH=$1
 COMMIT_SHA=$2
 
+set -x
+
 echo "Performing build for $BRANCH";
 
-set -x
+if [ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]; then
+    echo "this branch is not up to date"
+    git checkout $BRANCH;
+    git fetch --dry-run;
+fi
+
+git pull origin $BRANCH;
+
+if [ $? -ne 0 ]; then
+    echo "Error in pull and fetch $BRANCH of Backend Belega Service $?"
+    exit 1
+fi
+
+
 docker image prune -f;
+
+if [ $? -ne 0 ]; then
+    echo "Error in pruning images $?"
+fi
 
 docker build . --file docker/service/Dockerfile \
   -t ghcr.io/belega-village-unud/frontend-web-edb:$COMMIT_SHA \
