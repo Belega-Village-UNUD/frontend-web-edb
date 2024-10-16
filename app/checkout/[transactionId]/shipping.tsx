@@ -5,25 +5,24 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { usePersistedUser } from "@/zustand/users";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { usePersistedUser } from "@/zustand/users";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 interface PaymentProps {
   dataCheckout: any;
@@ -42,7 +41,7 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
   const { mutate: payAction, isPending } = useMutation({
     mutationFn: async ({ code, service }: any) => {
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/transaction/buyer/?transaction_id=${dataCheckout?.id}&shipping_name=["${service}"]&shipping_cost_index=[${code}]`,
+        `${process.env.NEXT_PUBLIC_API_URL}/transaction/buyer/final?transaction_id=${dataCheckout?.id}&shipping_name=["${service}"]&shipping_cost_index=[${code}]`,
         {},
 
         {
@@ -52,6 +51,7 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
           },
         }
       );
+      console.log("line 55: ", JSON.stringify(response))
       return response.data.data;
     },
     onSuccess: (data) => {

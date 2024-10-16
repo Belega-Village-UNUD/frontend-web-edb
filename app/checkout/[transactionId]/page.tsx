@@ -76,8 +76,6 @@ export default function Page({ params }: checkoutProps) {
     enabled: true,
   });
 
-  console.log(dataStatusShipping, "status");
-
   const { mutate: payAction, isPending } = useMutation({
     mutationFn: async () => {
       let attempt = 0;
@@ -209,8 +207,6 @@ export default function Page({ params }: checkoutProps) {
   ) {
     return <Loading />;
   }
-
-  console.log(dataStatusShipping);
 
   const totalUnitPrice = dataCheckout?.cart_details?.reduce(
     (acc: any, item: any) => acc + item.unit_price * item.qty,
