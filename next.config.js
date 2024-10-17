@@ -11,6 +11,12 @@ const nextConfig = {
       "images.unsplash.com",
       "github.com",
     ],
+    remotePatterns: [
+      {
+        protocol: process.env.NEXT_PUBLIC_PROTOCOL,
+        hostname: process.env.NEXT_PUBLIC_HOSTNAME,
+      },
+    ],
   },
 };
 
