@@ -14,7 +14,7 @@ fi
 docker service ls | grep "frontend_web_app"
 
 if [ $? -ne 0 ]; then
-  export $(cat .env) >  /dev/null 2>&1; docker stack deploy -c ./docker/service/docker-compose.yml frontend_web
+  export COMMIT_SHA=$COMMIT_SHA $(cat .env | grep PORT) >  /dev/null 2>&1; docker stack deploy -c ./docker/service/docker-compose.yml frontend_web
   if [ $? -ne 0 ]; then
       echo "Error in deploying $BRANCH of Frontend Belega Service"
       exit 1
