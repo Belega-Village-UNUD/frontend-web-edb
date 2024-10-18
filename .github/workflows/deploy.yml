@@ -35,6 +35,18 @@ jobs:
       - name: SSH to Compute Engine and Build
         id: compute-ssh-build
         uses: "google-github-actions/ssh-compute@v1"
+        env:
+          NODE_ENV: ${{ secrets.NODE_ENV }}
+          FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
+          FRONTEND_SERVICE: ${{ secrets.FRONTEND_SERVICE }}
+          MIDTRANS_API_URL: ${{ secrets.MIDTRANS_API_URL }}
+          MIDTRANS_SERVER_KEY: ${{ secrets.MIDTRANS_SERVER_KEY }}
+          NEXT_PUBLIC_MIDTRANS_CLIENT_KEY: ${{ secrets.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_PROTOCOL: ${{ secrets.NEXT_PUBLIC_PROTOCOL }}
+          NEXT_PUBLIC_HOSTNAME: ${{ secrets.NEXT_PUBLIC_HOSTNAME }}
+          PORT: ${{ secrets.PORT }}
+          PUBLISH_PORT: ${{ secrets.PUBLISH_PORT }}
         with:
           instance_name: ${{ env.INSTANCE_NAME }}
           zone: ${{ env.ZONE }}
@@ -44,6 +56,17 @@ jobs:
             cd $(pwd)/${{ env.REPO }}
             git switch staging
             git pull origin staging
+            echo NODE_ENV=$NODE_ENV >> .env
+            echo FRONTEND_HOST=$FRONTEND_HOST >> .env
+            echo FRONTEND_SERVICE=$FRONTEND_SERVICE >> .env
+            echo MIDTRANS_API_URL=$MIDTRANS_API_URL >> .env
+            echo MIDTRANS_SERVER_KEY=$MIDTRANS_SERVER_KEY >> .env
+            echo NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=$NEXT_PUBLIC_MIDTRANS_CLIENT_KEY >> .env
+            echo NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL >> .env
+            echo NEXT_PUBLIC_PROTOCOL=$NEXT_PUBLIC_PROTOCOL >> .env
+            echo NEXT_PUBLIC_HOSTNAME=$NEXT_PUBLIC_HOSTNAME >> .env
+            echo PORT=$PORT >> .env
+            echo PUBLISH_PORT=$PUBLISH_PORT >> .env
             bash ./shell/build.sh staging ${{ env.COMMIT_SHA }}
 
       - name: Build Output
@@ -83,6 +106,8 @@ jobs:
           command: |-
             cd $(pwd)/${{ env.REPO }}
             bash ./shell/deploy.sh staging ${{ env.COMMIT_SHA }}
+            bash ./shell/proxy.sh
+            rm .env
 
       - name: Deploy Output
         id: compute-ssh-deploy-output
