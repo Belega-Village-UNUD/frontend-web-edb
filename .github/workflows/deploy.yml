@@ -56,17 +56,19 @@ jobs:
             cd $(pwd)/${{ env.REPO }}
             git switch staging
             git pull origin staging
-            echo NODE_ENV=${{ env.NODE_ENV }} >> .env
-            echo FRONTEND_HOST=${{ env.FRONTEND_HOST }} >> .env
-            echo FRONTEND_SERVICE=${{ env.FRONTEND_SERVICE }} >> .env
-            echo MIDTRANS_API_URL=${{ env.MIDTRANS_API_URL }} >> .env
-            echo MIDTRANS_SERVER_KEY=${{ env.MIDTRANS_SERVER_KEY }} >> .env
-            echo NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=${{ env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY }} >> .env
-            echo NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }} >> .env
-            echo NEXT_PUBLIC_PROTOCOL=${{ env.NEXT_PUBLIC_PROTOCOL }} >> .env
-            echo NEXT_PUBLIC_HOSTNAME=${{ env.NEXT_PUBLIC_HOSTNAME }} >> .env
-            echo PORT=${{ env.PORT }} >> .env
-            echo PUBLISH_PORT=${{ env.PUBLISH_PORT }} >> .env
+            tee .env <<EOF
+            NODE_ENV=${{ env.NODE_ENV }}
+            FRONTEND_HOST=${{ env.FRONTEND_HOST }}
+            FRONTEND_SERVICE=${{ env.FRONTEND_SERVICE }}
+            MIDTRANS_API_URL=${{ env.MIDTRANS_API_URL }}
+            MIDTRANS_SERVER_KEY=${{ env.MIDTRANS_SERVER_KEY }}
+            NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=${{ env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY }}
+            NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_PROTOCOL=${{ env.NEXT_PUBLIC_PROTOCOL }}
+            NEXT_PUBLIC_HOSTNAME=${{ env.NEXT_PUBLIC_HOSTNAME }}
+            PORT=${{ env.PORT }}
+            PUBLISH_PORT=${{ env.PUBLISH_PORT }}
+            EOF
             bash ./shell/build.sh staging ${{ env.COMMIT_SHA }}
 
       - name: Build Output
