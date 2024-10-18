@@ -13,8 +13,6 @@ fi
 BRANCH=$1
 COMMIT_SHA=$2
 
-set -x
-
 echo "Performing build for $BRANCH";
 
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]; then
@@ -45,7 +43,5 @@ if [ $? -ne 0 ]; then
     echo "Error in build $BRANCH for Frontend Web Belega Service $?"
     exit 1
 fi
-
-set +x
 
 echo "Successfully build the image for registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$COMMIT_SHA"
