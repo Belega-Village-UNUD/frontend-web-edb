@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { deleteCookie } from "@/utils/cookies";
 import { usePersistedUser, useUsers } from "@/zustand/users";
 import { useShallow } from "zustand/react/shallow";
 import Avatar from "../Avatar";
@@ -21,6 +22,7 @@ const UserMenu = () => {
   const [handleGetProfile, avatarPreview] = useUsers(
     useShallow((state) => [state.handleGetProfile, state.avatarPreview])
   );
+
   const router = useRouter();
   const [name, is_store, is_login, exist_store, logout] = usePersistedUser(
     useShallow((state) => [
@@ -36,9 +38,6 @@ const UserMenu = () => {
     const token = usePersistedUser.getState().token;
     if (token) {
       useUsers.getState().handleGetProfile();
-      // if (!name) {
-      //   router.push("/buyer/profile");
-      // }
     }
   }, [name, router]);
 
@@ -46,15 +45,17 @@ const UserMenu = () => {
     setIsOpen((prev) => !prev);
   }, []);
 
+
   const handleSignOut = () => {
     try {
       setIsOpen(false);
+      deleteCookie()
       logout();
-      toast.success("Logout berhasil");
+      toast.success("Logout successfully.");
       router.push("/");
     } catch (error) {
       setIsOpen(false);
-      toast.error("Logout gagal");
+      toast.error("Logout failed.");
     }
   };
 

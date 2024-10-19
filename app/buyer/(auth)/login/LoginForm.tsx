@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import ButtonConfirm from "@/components/button/ButtonConfirm";
 import InputAuth from "@/components/inputs/InputAuth";
 import Heading from "@/components/products/Heading";
+import { create } from "@/utils/cookies";
 import { usePersistedUser } from "@/zustand/users";
 import { useShallow } from "zustand/react/shallow";
 
@@ -50,6 +51,7 @@ const LoginForm = () => {
 
       if (responseJson.success === true) {
         setToken(responseJson.data.token);
+        create()
         setIsLogin(true);
         setIsStore(responseJson.data.payload.is_store);
         setExistStore(responseJson.data.payload.exist_store);
