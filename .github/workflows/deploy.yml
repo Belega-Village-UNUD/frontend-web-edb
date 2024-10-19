@@ -47,6 +47,8 @@ jobs:
           NEXT_PUBLIC_HOSTNAME: ${{ secrets.NEXT_PUBLIC_HOSTNAME }}
           PORT: ${{ secrets.PORT }}
           PUBLISH_PORT: ${{ secrets.PUBLISH_PORT }}
+          TOKEN_NAME: ${{ secrets.TOKEN_NAME }}
+          TOKEN_VALUE: ${{ secrets.TOKEN_VALUE }}
         with:
           instance_name: ${{ env.INSTANCE_NAME }}
           zone: ${{ env.ZONE }}
@@ -68,6 +70,8 @@ jobs:
             NEXT_PUBLIC_HOSTNAME=${{ env.NEXT_PUBLIC_HOSTNAME }}
             PORT=${{ env.PORT }}
             PUBLISH_PORT=${{ env.PUBLISH_PORT }}
+            TOKEN_NAME=${{ env.TOKEN_NAME }}
+            TOKEN_VALUE=${{ env.TOKEN_VALUE }}
             EOF
             bash ./shell/build.sh staging ${{ env.COMMIT_SHA }}
 
