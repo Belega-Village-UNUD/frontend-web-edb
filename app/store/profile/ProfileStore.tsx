@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -15,10 +15,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { usePersistedUser } from "@/zustand/users";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Combobox } from "@/components/ui/combobox";
+import { usePersistedUser } from "@/zustand/users";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -70,7 +68,7 @@ const ProfileStore = () => {
       }
 
       if (!token) {
-        console.error("Anda belum login");
+        console.error("Please login first.");
         setIsLoading(false);
         return;
       }
@@ -248,16 +246,16 @@ const ProfileStore = () => {
 
   const provinceSelect = isFetchedProvince
     ? dataProvince.map((item: any) => ({
-        value: item.province_id,
-        label: item.province,
-      }))
+      value: item.province_id,
+      label: item.province,
+    }))
     : [];
 
   const citySelect = isFetchedCity
     ? dataCity.map((item: any) => ({
-        value: item.city_id,
-        label: item.city_name,
-      }))
+      value: item.city_id,
+      label: item.city_name,
+    }))
     : [];
 
   return (
@@ -365,7 +363,7 @@ const ProfileStore = () => {
                   register={register}
                   label="Phone Number"
                   errors={errors}
-                  // readonly
+                // readonly
                 />
               </div>
 

@@ -109,7 +109,6 @@ const CartList = () => {
 
   useEffect(() => {
     if (values) {
-      console.log("Fetched values:", values);
       setSelectedItem(values);
     }
   }, [values]);

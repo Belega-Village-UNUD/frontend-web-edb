@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { usePersistedUser } from "./users";
@@ -13,7 +14,7 @@ export const useStore = create<StoreState>()((set) => ({
     try {
       const token = usePersistedUser.getState().token;
       if (!token) {
-        console.error("Anda belum login");
+        toast.warning("Please Login First");
         return;
       }
 

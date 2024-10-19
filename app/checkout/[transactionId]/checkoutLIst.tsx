@@ -29,7 +29,8 @@ function CheckoutLIst({ cart, shipping }: checkoutListProps) {
             <span className="font-light text-sm text-gray-500"> (Preorder)</span>
           )}
         </h6>
-        <p className="text-gray-500">{`Qty: x${cart?.qty}`}</p>
+        <p className="pt-2 font-semibold">{cart?.product?.store?.name}</p>
+        <p className="text-gray-500">{`${cart?.qty} Pcs`}</p>
         <p className="text-gray-500">{`Price: ${formatRupiah(
           cart?.unit_price
         )}`}</p>

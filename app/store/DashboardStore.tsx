@@ -93,21 +93,25 @@ const DashboardStore = ({ data, report }: any) => {
       title: "Total Income",
       amount: <CurrencyText amount={totalAmount} />,
       icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
+      link: "/store/transaction"
     },
     {
       title: "Product Sold",
       amount: soldProductCount,
       icon: <Users className="h-4 w-4 text-muted-foreground" />,
+      link: "/store/transaction"
     },
     {
       title: "Cancelled Transaction",
       amount: cancelProductCount,
       icon: <CreditCard className="h-4 w-4 text-muted-foreground" />,
+      link: "/store/transaction"
     },
     {
       title: "Pending",
       amount: pendingProductCount,
       icon: <Activity className="h-4 w-4 text-muted-foreground" />,
+      link: "/store/transaction"
     },
   ];
 
@@ -116,15 +120,17 @@ const DashboardStore = ({ data, report }: any) => {
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-4 xl:grid-cols-4 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1">
           {cardData.map((card, index) => (
-            <Card key={`dashboard-01-chunk-${index}`} className="shadow-lg rounded-lg">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-800">{card.title}</CardTitle>
-                {card.icon}
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-gray-900">{card.amount}</div>
-              </CardContent>
-            </Card>
+            <Link href={card.link} key={index}>
+              <Card key={`dashboard-01-chunk-${index}`} className="shadow-lg rounded-lg">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-800">{card.title}</CardTitle>
+                  {card.icon}
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-gray-900">{card.amount}</div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
         <div className="grid gap-8 grid-cols-2 xl:grid-cols-4 md:grid-cols-1 sm:grid-cols-1">

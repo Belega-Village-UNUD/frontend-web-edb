@@ -135,17 +135,15 @@ const DetailProduct: React.FC<ProductDetailsProps> = ({ data }) => {
       );
 
       const responseJson = await response.json();
-      console.log('line 136', responseJson);
-
       if (responseJson.success) {
         link = responseJson.data;
-        console.log('line 140', link);
         toast.success(responseJson.message);
         window.open(link, '_blank');
       } else {
         toast.error("Please login first");
         router.push("/buyer/login");
       }
+
     } catch (error) {
       console.log(error);
     }

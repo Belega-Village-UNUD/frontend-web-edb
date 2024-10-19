@@ -353,7 +353,7 @@ export default function Page({ params }: checkoutProps) {
                     {dataStatusShipping?.carts_details[0]
                       ?.arrival_shipping_status == "PACKING"
                       ? "Waiting product sending by seller"
-                      : "Product is arrived"}
+                      : "Product has arrived"}
                   </p>
                 ) : null}
               </div>

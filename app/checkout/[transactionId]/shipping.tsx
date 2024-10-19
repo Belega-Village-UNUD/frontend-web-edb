@@ -51,7 +51,6 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
           },
         }
       );
-      console.log("line 55: ", JSON.stringify(response))
       return response.data.data;
     },
     onSuccess: (data) => {

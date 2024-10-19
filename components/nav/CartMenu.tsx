@@ -20,7 +20,7 @@ const CartMenu = () => {
   const handleGetAllCartBuyer = useCallback(async () => {
     try {
       if (!token) {
-        console.error("Anda belum login");
+        console.error("Please login first.");
         return;
       }
 
