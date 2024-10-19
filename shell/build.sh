@@ -39,9 +39,4 @@ docker build . --file docker/service/Dockerfile \
   -t registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$COMMIT_SHA \
   -t registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$BRANCH
 
-# if [ $? -ne 0 ]; then
-#     echo "Error in build $BRANCH for Frontend Web Belega Service $?"
-#     exit 1
-# fi
-
 echo "Successfully build the image for registry.belegacommerce.shop/belega-village-unud/frontend-web-edb:$COMMIT_SHA"
