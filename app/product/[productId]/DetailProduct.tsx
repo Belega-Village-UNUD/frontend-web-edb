@@ -105,6 +105,7 @@ const DetailProduct: React.FC<ProductDetailsProps> = ({ data }) => {
       const responseJson = await response.json();
       if (responseJson.success) {
         toast.success(responseJson.message);
+        router.push(`/checkout/${responseJson.data[0].transaction.id}`)
       } else {
         toast.error("Please login first");
         router.push("/buyer/login");

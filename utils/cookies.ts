@@ -9,7 +9,7 @@ export async function getToken(){
 
 export async function create() {
   const threeHours = 3 * 60 * 60 * 1000;
-  cookies().set(`${COOKIES_NAME}`, `${COOKIES_VALUE}`, { expires: Date.now() + threeHours });
+  cookies().set(`${COOKIES_NAME}`, `${COOKIES_VALUE}`, { expires: Date.now() + threeHours, secure: true },);
 }
 
 export async function deleteCookie() {

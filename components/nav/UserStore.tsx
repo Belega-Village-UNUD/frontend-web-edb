@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { deleteCookie } from "@/utils/cookies";
 import { usePersistedStore, useStore } from "@/zustand/stores";
 import { usePersistedUser } from "@/zustand/users";
 import { useShallow } from "zustand/react/shallow";
@@ -57,6 +58,7 @@ const UserStore = () => {
   const handleSignOut = () => {
     try {
       setIsOpen(false);
+      deleteCookie()
       logout();
       toast.success("Logout store berhasil");
       router.push("/buyer/login");

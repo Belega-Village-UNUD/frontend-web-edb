@@ -1,5 +1,6 @@
 "use client";
 import Loading from "@/components/Loading";
+import BackDrop from "@/components/nav/BackDrop";
 import CurrencyText from "@/components/text/CurrencyText";
 import {
   Select,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { formatReadableDate } from "@/utils/utils";
 import { usePersistedUser } from "@/zustand/users";
-import { Menu, Transition } from "@headlessui/react";
+import { Description, Dialog, DialogPanel, DialogTitle, Menu, Transition } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useQuery } from "@tanstack/react-query";
@@ -18,7 +19,8 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { FaClock, FaMoneyCheck, FaShippingFast } from "react-icons/fa";
 import { LuPackage } from "react-icons/lu";
 import { MdCancel } from "react-icons/md";
@@ -31,6 +33,15 @@ const HistoryList = () => {
   const [token, setToken] = useState<string>();
   const [statusFilter, setStatusFilter] = useState("");
   const router = useRouter();
+  const [open, setOpen] = useState(false)
+
+  const [orderId, setOrderId] = useState(null)
+
+  const toggleOpen = useCallback(() => {
+    setOpen((prev) => !prev);
+  }, []);
+
+  const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>()
 
   useEffect(() => {
     const tokenFromStore = usePersistedUser.getState().token;
@@ -144,13 +155,16 @@ const HistoryList = () => {
     }
   };
 
-  const handleCancel = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    orderId: string
+  const handleCancel: SubmitHandler<FieldValues> = async (
+    data: any
   ) => {
-    event.preventDefault();
-
     try {
+      setOpen(false);
+
+      const payload = {
+        reason: data.cancellation,
+      };
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/transaction/buyer/cancel/${orderId}`,
         {
@@ -159,12 +173,14 @@ const HistoryList = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(payload)
         }
       );
 
       const responseJson = await response.json();
       if (responseJson.success) {
         toast.success(responseJson.message);
+        router.push(`/checkout/${orderId}`)
       } else {
         toast.error(responseJson.message);
       }
@@ -286,27 +302,58 @@ const HistoryList = () => {
                           </dd>
                         </div>
                       </div>
+                      <div className="flex items-center px-2">
+                        {order.status === "SUCCESS" &&
+                          order?.cart_details[0]?.arrival_shipping_status ==
+                          "SHIPPED" && (
+                            <div className="flex flex-1 justify-center">
+                              <button
+                                className="whitespace-nowrap text-white bg-blue-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-blue-400"
+                                type="submit"
+                              // onClick={(event: any) =>
+                              //   handleCancel(
+                              //     event,
+                              //     order?.id
+                              //   )
+                              // }
+                              >
+                                Product Has Arrived
+                              </button>
+                            </div>
+                          )}
+                      </div>
+
                       <div className="flex items-center">
                         {order.status === "PENDING" && (
                           <div className="flex flex-1 justify-center">
-                            {/* <Link
-                              href={`/checkout/${order?.id}`}
-                              className="whitespace-nowrap text-white bg-red-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-red-400"
-                            >
-                              Cancel Transaction
-                            </Link> */}
                             <button
                               className="whitespace-nowrap text-white bg-red-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-red-400"
                               type="submit"
-                              onClick={(event: any) =>
-                                handleCancel(
-                                  event,
-                                  order?.cart_details[0]?.product?.id
-                                )
-                              }
+                              onClick={() => setOpen(true)}
                             >
                               Cancel Transaction
                             </button>
+                            <Dialog open={open} onClose={() => setOpen(false)} className="relative z-50">
+                              <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+                                <DialogPanel className="max-w-lg space-y-4 bg-white p-12 rounded-lg shadow-sm">
+                                  <DialogTitle className="font-bold text-lg">Cancel Transaction</DialogTitle>
+                                  <Description>This will permanently cancel your transaction.</Description>
+                                  <form onSubmit={handleSubmit(handleCancel)}>
+                                    <p>Are you sure you want to cancel your transaction? Please provide a reason for cancellation.</p>
+                                    <textarea
+                                      className="w-full p-2 border border-gray-300 rounded-md"
+                                      placeholder="Reason for cancellation..."
+                                      rows={3}
+                                      {...register("cancellation")}
+                                    />
+                                    <div className="flex gap-4 mt-4">
+                                      <button type="button" onClick={() => setOpen(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                                      <button type="submit" onClick={() => { setOrderId(order?.id) }} className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Confirm Cancellation</button>
+                                    </div>
+                                  </form>
+                                </DialogPanel>
+                              </div>
+                            </Dialog>
                           </div>
                         )}
                       </div>
@@ -323,46 +370,46 @@ const HistoryList = () => {
                         )}
                       </div>
                     </dl>
-                    {order.status == "SUCCESS" && (
-                      <Menu as="div" className="relative flex justify-end">
-                        <div className="flex items-center">
-                          <Menu.Button className="-m-2 flex items-center p-2 text-gray-400 hover:text-gray-500">
-                            <span className="sr-only">
-                              Options for order {order.id}
-                            </span>
-                            <EllipsisVerticalIcon
-                              className="h-6 w-6"
-                              aria-hidden="true"
-                            />
-                          </Menu.Button>
-                        </div>
+                    <Menu as="div" className="relative flex justify-end pl-2">
+                      <div className="flex items-center">
+                        <Menu.Button className="-m-2 flex items-center p-2 text-gray-400 hover:text-gray-500">
+                          <span className="sr-only">
+                            Options for order {order.id}
+                          </span>
+                          <EllipsisVerticalIcon
+                            className="h-6 w-6"
+                            aria-hidden="true"
+                          />
+                        </Menu.Button>
+                      </div>
 
-                        <Transition
-                          as={Fragment}
-                          enter="transition ease-out duration-100"
-                          enterFrom="transform opacity-0 scale-95"
-                          enterTo="transform opacity-100 scale-100"
-                          leave="transition ease-in duration-75"
-                          leaveFrom="transform opacity-100 scale-100"
-                          leaveTo="transform opacity-0 scale-95"
-                        >
-                          <Menu.Items className="absolute right-0 z-10 mt-2 w-44 origin-bottom-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            <div className="py-1">
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <Link
-                                    href={`/checkout/${order?.id}`}
-                                    className={classNames(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm"
-                                    )}
-                                  >
-                                    Detail transaction
-                                  </Link>
-                                )}
-                              </Menu.Item>
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute right-0 z-10 mt-2 w-44 origin-bottom-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <div className="py-1">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link
+                                  href={`/checkout/${order?.id}`}
+                                  className={classNames(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm"
+                                  )}
+                                >
+                                  Detail transaction
+                                </Link>
+                              )}
+                            </Menu.Item>
+                            {order.status == "SUCCESS" && (
                               <Menu.Item>
                                 {({ active }) => (
                                   <Link
@@ -378,11 +425,11 @@ const HistoryList = () => {
                                   </Link>
                                 )}
                               </Menu.Item>
-                            </div>
-                          </Menu.Items>
-                        </Transition>
-                      </Menu>
-                    )}
+                            )}
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
                   </div>
 
                   {/* Products */}
@@ -559,6 +606,7 @@ const HistoryList = () => {
           </div>
         </div>
       </section>
+      {open && <BackDrop onClick={toggleOpen} />}
     </div>
   );
 };
