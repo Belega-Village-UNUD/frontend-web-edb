@@ -1,4 +1,5 @@
 "use client";
+
 import Container from "@/components/Container";
 import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
@@ -215,7 +216,6 @@ export default function Page({ params }: checkoutProps) {
 
   // Menghitung ongkir
   const totalShipping = dataCheckout?.total_amount - totalUnitPrice;
-  console.log('line 218: ', dataStatusShipping?.carts_details[0]?.arrival_shipping_status)
   return (
     <Container>
       <div className="mt-10">
@@ -239,11 +239,9 @@ export default function Page({ params }: checkoutProps) {
           <div className="w-full">
             <p className="mb-6 py-2 text-3xl font-bold text-green-700 border-4 border-green-700 border-dotted w-auto text-center">
               {
-                dataStatusShipping?.carts_details[0]?.arrival_shipping_status === "UNCONFIRMED" || dataStatusShipping?.carts_details[0]?.arrival_shipping_status === null ?
-                  ('line 245: UNCONFIRMED') :
-                  // dataStatusShipping.carts_details[0].arrival_shipping_status :
-                  // dataCheckout.status;
-                  ('line 243: SHIPPED')
+                ["UNCONFIRMED", null, undefined].includes(dataStatusShipping?.carts_details[0]?.arrival_shipping_status) ?
+                  dataCheckout?.status :
+                  dataStatusShipping?.carts_details[0]?.arrival_shipping_status
               }
             </p>
             <div className="items-start gap-8 xl:flex lg:flex md:flex">
@@ -253,7 +251,8 @@ export default function Page({ params }: checkoutProps) {
                     <CheckoutLIst
                       key={cart.id}
                       cart={cart}
-                      shipping={dataShipping}
+                      order={dataCheckout}
+                      cart_detail={dataStatusShipping?.carts_details[0]}
                     />
                   ))}
                 </div>
@@ -316,15 +315,15 @@ export default function Page({ params }: checkoutProps) {
                     </div>
                   </div>
                 </div>
-                {dataCheckout?.redirect_url != null ? null :
-                  dataCheckout?.status == "SUCCESS" ? (
-                    <Shipping
-                      profile={dataUser.profile}
-                      dataCheckout={dataCheckout}
-                      shipping={dataShipping}
-                    />
-                  ) : null
-                }
+
+                {dataCheckout?.redirect_url === null && dataCheckout.status === "PAYABLE" ? (
+                  <Shipping
+                    profile={dataUser.profile}
+                    dataCheckout={dataCheckout}
+                    shipping={dataShipping}
+                  />
+                ) : null}
+
                 {dataCheckout?.redirect_url &&
                   dataCheckout.status != "SUCCESS" ? (
                   <div className="flex flex-col gap-2">
@@ -342,6 +341,13 @@ export default function Page({ params }: checkoutProps) {
                       isLoading={isPending}
                     >
                       Confirm Payment
+                    </Button>
+                    <Button
+                      // onClick={() => checkStatusAction()} // You need to define this function
+                      className="text-center w-full mx-auto border border-transparent bg-blue hover:bg-blue-600 bg-blue-500 focus:bg-blue-500 text-white rounded-md px-3 justify-center items-center flex font-semibold cursor-pointer py-6"
+                    // isLoading={isPendingCheckStatus} // You need to define this state
+                    >
+                      Check Status
                     </Button>
                   </div>
                 ) : null}
@@ -374,7 +380,6 @@ export default function Page({ params }: checkoutProps) {
               <Payment
                 profile={dataUser.profile}
                 dataCheckout={dataCheckout}
-                shipping={dataShipping}
               />
             </div>
           </div>

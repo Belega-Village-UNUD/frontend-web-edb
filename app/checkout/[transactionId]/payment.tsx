@@ -3,10 +3,9 @@
 interface PaymentProps {
   dataCheckout: any;
   profile: any;
-  shipping: any;
 }
 
-function Payment({ dataCheckout, profile, shipping }: PaymentProps) {
+function Payment({ dataCheckout, profile }: PaymentProps) {
   return (
     <div className="md:w-5/12">
       <div className="w-full mx-auto rounded-lg bg-white border border-gray-200 p-6 text-gray-800 font-light mb-2 shadow-md">

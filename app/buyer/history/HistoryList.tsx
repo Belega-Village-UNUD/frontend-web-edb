@@ -310,12 +310,6 @@ const HistoryList = () => {
                               <button
                                 className="whitespace-nowrap text-white bg-blue-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-blue-400"
                                 type="submit"
-                              // onClick={(event: any) =>
-                              //   handleCancel(
-                              //     event,
-                              //     order?.id
-                              //   )
-                              // }
                               >
                                 Product Has Arrived
                               </button>
@@ -409,23 +403,25 @@ const HistoryList = () => {
                                 </Link>
                               )}
                             </Menu.Item>
-                            {order.status == "SUCCESS" && (
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <Link
-                                    href={`/buyer/history/${order?.id}`}
-                                    className={classNames(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm"
-                                    )}
-                                  >
-                                    Invoice
-                                  </Link>
-                                )}
-                              </Menu.Item>
-                            )}
+                            {order.status == "SUCCESS" &&
+                              order?.cart_details[0]?.arrival_shipping_status ==
+                              "ARRIVED" && (
+                                <Menu.Item>
+                                  {({ active }) => (
+                                    <Link
+                                      href={`/buyer/history/${order?.id}`}
+                                      className={classNames(
+                                        active
+                                          ? "bg-gray-100 text-gray-900"
+                                          : "text-gray-700",
+                                        "block px-4 py-2 text-sm"
+                                      )}
+                                    >
+                                      Invoice
+                                    </Link>
+                                  )}
+                                </Menu.Item>
+                              )}
                           </div>
                         </Menu.Items>
                       </Transition>
@@ -437,6 +433,21 @@ const HistoryList = () => {
                   <ul role="list" className="divide-y divide-gray-300">
                     {order.cart_details.map((cart_detail: any, index: any) => (
                       <li key={index} className="p-5 sm:p-7">
+                        <div className="flex flex-row justify-between items-center w-full mb-6">
+                          <div className="text-lg font-semibold">
+                            {cart_detail?.product?.store?.name}
+                          </div>
+                          <div className={`text-sm font-medium px-2 py-1 rounded-full ${["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
+                            ? "bg-yellow-200 text-yellow-800"
+                            : "bg-green-200 text-green-800"
+                            }`}>
+                            {
+                              ["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
+                                ? order?.status
+                                : cart_detail?.arrival_shipping_status
+                            }
+                          </div>
+                        </div>
                         {cart_detail?.product ? (
                           <div className="flex items-center sm:items-start">
                             <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-44 sm:w-44">
@@ -471,45 +482,43 @@ const HistoryList = () => {
 
                         <div className="mt-8 sm:flex sm:justify-between">
                           <div className="flex items-center">
-                            {order.status === "SUCCESS" &&
-                              order?.cart_details[0]?.arrival_shipping_status ==
-                              "PACKING" && (
-                                <div className="flex flex-row justify-center items-center">
-                                  <LuPackage
-                                    className="h-5 w-5 text-amber-700"
-                                    aria-hidden="true"
-                                  />
-                                  <p className="ml-2 text-sm font-medium text-gray-500">
-                                    Packing
-                                  </p>
-                                </div>
-                              )}
-                            {order.status === "SUCCESS" &&
-                              order?.cart_details[0]?.arrival_shipping_status ==
-                              "SHIPPED" && (
-                                <div className="flex flex-row justify-center items-center">
-                                  <FaShippingFast
-                                    className="h-5 w-5 text-gray-500"
-                                    aria-hidden="true"
-                                  />
-                                  <p className="ml-2 text-sm font-medium text-gray-500">
-                                    Shipped
-                                  </p>
-                                </div>
-                              )}
-                            {order.status === "SUCCESS" &&
-                              order?.cart_details[0]?.arrival_shipping_status ==
-                              "ARRIVED" && (
-                                <div className="flex flex-row justify-center items-center">
-                                  <CheckCircleIcon
-                                    className="h-5 w-5 text-blue-500"
-                                    aria-hidden="true"
-                                  />
-                                  <p className="ml-2 text-sm font-medium text-gray-500">
-                                    Arrived
-                                  </p>
-                                </div>
-                              )}
+                            {order.status === "SUCCESS" && (
+                              <>
+                                {order?.cart_details[0]?.arrival_shipping_status === "PACKING" && (
+                                  <div className="flex flex-row justify-center items-center">
+                                    <LuPackage
+                                      className="h-5 w-5 text-amber-700"
+                                      aria-hidden="true"
+                                    />
+                                    <p className="ml-2 text-sm font-medium text-gray-500">
+                                      Packing
+                                    </p>
+                                  </div>
+                                )}
+                                {order?.cart_details[0]?.arrival_shipping_status === "SHIPPED" && (
+                                  <div className="flex flex-row justify-center items-center">
+                                    <FaShippingFast
+                                      className="h-5 w-5 text-gray-500"
+                                      aria-hidden="true"
+                                    />
+                                    <p className="ml-2 text-sm font-medium text-gray-500">
+                                      Shipped
+                                    </p>
+                                  </div>
+                                )}
+                                {order?.cart_details[0]?.arrival_shipping_status === "ARRIVED" && (
+                                  <div className="flex flex-row justify-center items-center">
+                                    <CheckCircleIcon
+                                      className="h-5 w-5 text-blue-500"
+                                      aria-hidden="true"
+                                    />
+                                    <p className="ml-2 text-sm font-medium text-gray-500">
+                                      Arrived
+                                    </p>
+                                  </div>
+                                )}
+                              </>
+                            )}
                             {order.status === "CANCEL" && (
                               <>
                                 <MdCancel
@@ -552,18 +561,16 @@ const HistoryList = () => {
                           </div>
 
                           <div className="mt-8 flex items-center space-x-5 divide-x divide-gray-300 border-t border-gray-300 pt-5 text-sm font-medium sm:ml-5 sm:mt-0 sm:border-none sm:pt-0">
-                            {order.status === "SUCCESS" &&
-                              order?.cart_details[0]?.arrival_shipping_status ==
-                              "ARRIVED" && (
-                                <div className="flex flex-1 justify-center">
-                                  <Link
-                                    href={`/transaction/${order.id}/product/${order?.cart_details[0]?.product?.id}/rate`}
-                                    className="whitespace-nowrap text-white bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
-                                  >
-                                    Rate Product
-                                  </Link>
-                                </div>
-                              )}
+                            {order.status === "SUCCESS" && order?.cart_details[0]?.arrival_shipping_status == "ARRIVED" && (
+                              <div className="flex flex-1 justify-center">
+                                <Link
+                                  href={`/transaction/${order.id}/product/${order?.cart_details[0]?.product?.id}/rate`}
+                                  className="whitespace-nowrap text-white bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
+                                >
+                                  Rate Product
+                                </Link>
+                              </div>
+                            )}
                             <div className="flex flex-1 justify-center">
                               <Link
                                 href={`/product/${order?.cart_details[0]?.product?.id}`}
@@ -605,9 +612,9 @@ const HistoryList = () => {
             )}
           </div>
         </div>
-      </section>
+      </section >
       {open && <BackDrop onClick={toggleOpen} />}
-    </div>
+    </div >
   );
 };
 
