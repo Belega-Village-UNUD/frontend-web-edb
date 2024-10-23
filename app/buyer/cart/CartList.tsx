@@ -67,29 +67,21 @@ interface SelectedStore {
 const initialData: SelectedStore[] = [];
 
 const CartList = () => {
-  const [newQty, setNewQty] = useState<{ [key: string]: number }>({});
+  const [newQty, setNewQty] = useState<Record<string, number>>({});
   const [grandTotal, setGrandTotal] = useState(0);
-
-  const [selectedItem, setSelectedItem] =
-    useState<SelectedStore[]>(initialData);
-
+  const [selectedItem, setSelectedItem] = useState<SelectedStore[]>(initialData);
   const router = useRouter();
   const [token, setToken] = useState<string>();
 
   useEffect(() => {
     const tokenFromStore = usePersistedUser.getState().token;
     if (!tokenFromStore) {
-      // router.push("/");
+      router.push("/buyer/login");
     }
     setToken(tokenFromStore);
-  }, [router, token]);
+  }, [router]);
 
-  const {
-    isFetching,
-    data: values,
-    isFetched,
-    refetch,
-  } = useQuery({
+  const { isFetching, data: values, refetch } = useQuery({
     queryFn: async () => {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/cart`,
@@ -100,11 +92,12 @@ const CartList = () => {
           },
         }
       );
-
-      return data.data; // Ensure this returns the correct structure expected by selectedItem
+      return data.data;
     },
     queryKey: ["get-carts"],
-    enabled: !token, // Ensure this is enabled only when the token is available
+    enabled: Boolean(token),
+    staleTime: 10 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   useEffect(() => {
@@ -119,11 +112,11 @@ const CartList = () => {
 
   const handleUpdateCart = useCallback(
     async (product_id: string, qty: number) => {
-      try {
-        if (!token) {
-          // router.push("/buyer/login");
-        }
+      if (!token) {
+        router.push("/buyer/login");
+      }
 
+      try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/cart`,
           {
@@ -146,16 +139,16 @@ const CartList = () => {
         console.error(error.message);
       }
     },
-    [refetch, router, token]
+    [token, router]
   );
 
   const handleDeleteCart = useCallback(
     async (cart_id: string) => {
-      try {
-        if (!token) {
-          // router.push("/buyer/login");
-        }
+      if (!token) {
+        router.push("/buyer/login");
+      }
 
+      try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/cart`,
           {
@@ -179,15 +172,15 @@ const CartList = () => {
         console.error(error.message);
       }
     },
-    [refetch, router, token]
+    [token, router]
   );
 
   const handleDeleteAllCart = async () => {
-    try {
-      if (!token) {
-        // router.push("/buyer/login");
-      }
+    if (!token) {
+      router.push("/buyer/login");
+    }
 
+    try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/cart/all`,
         {
@@ -269,7 +262,7 @@ const CartList = () => {
   const calculateTotal = (price: number, qty: number) => price * qty;
 
   useEffect(() => {
-    const total = selectedItem?.reduce((acc: number, store: any) => {
+    const total = selectedItem.reduce((acc: number, store: any) => {
       return (
         acc +
         store.carts
@@ -296,7 +289,7 @@ const CartList = () => {
 
     try {
       if (!token) {
-        // router.push("/buyer/login");
+        router.push("/buyer/login");
       }
 
       const response = await fetch(
@@ -406,23 +399,17 @@ const CartList = () => {
                           }
                           className="h-4 w-4 rounded border-gray-300 text-lime-700 accent-green-700 focus:ring-lime-700 mr-4"
                         />
-                        {cart?.product?.images?.length > 0 ? (
-                          <Image
-                            src={cart?.product?.images[0]}
-                            alt={cart.name_product}
-                            className="flex-grow h-full w-full object-cover place-items-center md:h-full md:w-full sm:h-full sm:w-full"
-                            width={100}
-                            height={100}
-                          />
-                        ) : (
-                          <Image
-                            src="https://flowbite.com/docs/images/examples/image-1@2x.jpg"
-                            alt="Product Image"
-                            className="flex-grow h-full w-full object-cover place-items-center md:h-full md:w-full sm:h-full sm:w-full"
-                            width={100}
-                            height={100}
-                          />
-                        )}
+                        <Image
+                          src={
+                            cart?.product?.images?.length > 0 && cart?.product?.images !== null
+                              ? cart?.product?.images[0]
+                              : "https://flowbite.com/docs/images/examples/image-1@2x.jpg"
+                          }
+                          alt="Product Image"
+                          className="flex-grow h-full w-full object-cover place-items-center md:h-full md:w-full sm:h-full sm:w-full"
+                          width={100}
+                          height={100}
+                        />
                       </div>
                       <div className="p-4 flex flex-col justify-center">
                         <h3 className="text-base font-medium text-slate-700">
@@ -498,6 +485,7 @@ const CartList = () => {
                     </div>
                   );
                 }
+                return null;
               })}
             </div>
           ))

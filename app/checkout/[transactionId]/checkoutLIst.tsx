@@ -9,9 +9,6 @@ interface checkoutListProps {
 }
 
 function CheckoutLIst({ cart, order, cart_detail }: checkoutListProps) {
-  console.log('line 12: ', JSON.stringify(cart, null, 2))
-  console.log('line 13: ', JSON.stringify(order, null, 2))
-  console.log('line 14: ', JSON.stringify(cart_detail, null, 2))
   return (
     <div className="w-full grid grid-cols-4 p-4 bg-white shadow-lg rounded-lg mb-4 transition-transform transform hover:scale-105">
       <div className="overflow-hidden rounded-lg w-28 h-28 bg-gray-100 border border-gray-300">
@@ -35,16 +32,18 @@ function CheckoutLIst({ cart, order, cart_detail }: checkoutListProps) {
         <p className="text-gray-500">{`Price: ${formatRupiah(cart?.unit_price || 0)}`}</p>
         <p className="text-gray-500">{`Weight: ${cart?.product?.weight_gr || 0} Gram`}</p>
       </div>
-      <div className="col-end-5 text-center gap-y-5">
-        <div className={`text-sm font-medium px-2 py-1 rounded-full w-16 ${["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
-          ? "bg-yellow-200 text-yellow-800"
-          : "bg-green-200 text-green-800"
-          }`}>
-          {
-            ["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
-              ? order?.status || "Unknown Status"
-              : cart_detail?.arrival_shipping_status
-          }
+      <div className="grid grid-cols-1 justify-items-end gap-2">
+        <div className="w-full text-center">
+          <div className={`text-sm font-medium px-2 py-1 rounded-full ${["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
+            ? "bg-yellow-200 text-yellow-800"
+            : "bg-green-200 text-green-800"
+            }`}>
+            {
+              ["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
+                ? order?.status || "Unknown Status"
+                : cart_detail?.arrival_shipping_status
+            }
+          </div>
         </div>
         <span className="font-semibold text-gray-700 text-lg">
           {formatePrice((cart?.unit_price || 0) * (cart?.qty || 0))}

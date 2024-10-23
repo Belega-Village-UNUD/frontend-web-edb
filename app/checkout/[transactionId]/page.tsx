@@ -75,6 +75,8 @@ export default function Page({ params }: checkoutProps) {
     },
     queryKey: ["get-status-transaction"],
     enabled: true,
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const { mutate: payAction, isPending } = useMutation({
@@ -168,6 +170,8 @@ export default function Page({ params }: checkoutProps) {
     },
     queryKey: ["get-shipping"],
     enabled: true,
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const {
@@ -190,6 +194,8 @@ export default function Page({ params }: checkoutProps) {
     },
     queryKey: ["get-user"],
     enabled: true,
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   if (isFetched && !dataCheckout) {
@@ -209,13 +215,11 @@ export default function Page({ params }: checkoutProps) {
     return <Loading />;
   }
 
-  const totalUnitPrice = dataCheckout?.cart_details?.reduce(
-    (acc: any, item: any) => acc + item.unit_price * item.qty,
-    0
-  );
+  const totalUnitPrice = dataCheckout?.cart_details?.reduce((acc: any, item: any) => acc + item.unit_price * item.qty, 0);
 
   // Menghitung ongkir
   const totalShipping = dataCheckout?.total_amount - totalUnitPrice;
+
   return (
     <Container>
       <div className="mt-10">

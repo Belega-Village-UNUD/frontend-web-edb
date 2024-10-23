@@ -27,6 +27,8 @@ export default function Home() {
     },
     queryKey: ["get-products"],
     enabled: true,
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   if (isFetching && !isFetched) {
