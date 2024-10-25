@@ -341,15 +341,8 @@ export default function Page({ params }: checkoutProps) {
                     </Link>
                     <Button
                       onClick={() => payAction()}
-                      className="text-center w-full mx-auto border border-transparent bg-green hover:bg-yellow-600 bg-yellow-500 focus:bg-yellow-500 text-white rounded-md px-3 justify-center items-center flex font-semibold cursor-pointer py-6"
-                      isLoading={isPending}
-                    >
-                      Confirm Payment
-                    </Button>
-                    <Button
-                      // onClick={() => checkStatusAction()} // You need to define this function
                       className="text-center w-full mx-auto border border-transparent bg-blue hover:bg-blue-600 bg-blue-500 focus:bg-blue-500 text-white rounded-md px-3 justify-center items-center flex font-semibold cursor-pointer py-6"
-                    // isLoading={isPendingCheckStatus} // You need to define this state
+                      isLoading={isPending}
                     >
                       Check Status
                     </Button>

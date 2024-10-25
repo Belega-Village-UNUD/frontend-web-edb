@@ -25,6 +25,7 @@ import { FaClock, FaMoneyCheck, FaShippingFast } from "react-icons/fa";
 import { LuPackage } from "react-icons/lu";
 import { MdCancel } from "react-icons/md";
 import { toast } from "sonner";
+
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -33,15 +34,14 @@ const HistoryList = () => {
   const [token, setToken] = useState<string>();
   const [statusFilter, setStatusFilter] = useState("");
   const router = useRouter();
-  const [open, setOpen] = useState(false)
-
-  const [orderId, setOrderId] = useState(null)
+  const [open, setOpen] = useState(false);
+  const [orderId, setOrderId] = useState(null);
 
   const toggleOpen = useCallback(() => {
     setOpen((prev) => !prev);
   }, []);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>()
+  const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>();
 
   useEffect(() => {
     const tokenFromStore = usePersistedUser.getState().token;
@@ -74,13 +74,14 @@ const HistoryList = () => {
 
   let filteredOrders = [];
   let statusCounts;
+
   if (isFetched) {
     const sortedOrders = orders?.sort(
       // @ts-ignore
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
 
-    // Filter berdasarkan statusFilter atau "ALL"
+    // Filter based on statusFilter or "ALL"
     filteredOrders =
       !statusFilter || statusFilter === "ALL"
         ? sortedOrders
@@ -100,11 +101,11 @@ const HistoryList = () => {
           return order.status === statusFilter;
         });
 
-    // Hitung jumlah status untuk setiap order
+    // Count status for each order
     statusCounts = orders?.reduce((acc: any, order: any) => {
       const shippingStatus = order?.cart_details[0]?.arrival_shipping_status;
 
-      // Cek jika status adalah SUCCESS dan ada status pengiriman
+      // Check if status is SUCCESS and there is a shipping status
       if (order.status === "SUCCESS") {
         if (
           shippingStatus === "PACKING" ||
@@ -194,13 +195,13 @@ const HistoryList = () => {
   }
 
   const statusColors = {
-    PAYABLE: "bg-yellow-300",
     PENDING: "bg-gray-200",
+    PAYABLE: "bg-yellow-300",
     SUCCESS: "bg-green-300",
+    CANCEL: "bg-red-300",
     PACKING: "bg-orange-300",
     ARRIVED: "bg-blue-300",
     SHIPPED: "bg-amber-300",
-    CANCEL: "bg-red-300",
   };
 
   return (
@@ -223,7 +224,7 @@ const HistoryList = () => {
 
         <div className="mx-auto max-w-7xl sm:px-4 lg:px-10">
           <div className="mx-auto max-w-2xl space-y-10 sm:px-6 lg:max-w-4xl lg:px-0">
-            <div className="flex space-x-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {statusCounts &&
                 typeof statusCounts === "object" &&
                 !Array.isArray(statusCounts) ? (

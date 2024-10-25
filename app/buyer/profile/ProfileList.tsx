@@ -143,12 +143,12 @@ const ProfileList = () => {
 
         setAvatarPreview(responseJson.data.profile.avatar_link);
       } else {
-        // console.log(responseJson.message)
+        console.log(responseJson.message)
       }
     } catch (error: any) {
-      // toast.error(error.message);
+      toast.error(error.message);
     }
-  }, [token, setValue, router]);
+  }, [token, setValue]);
 
   useEffect(() => {
     handleGetProfile();
