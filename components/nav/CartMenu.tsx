@@ -12,18 +12,18 @@ const CartMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [token] = usePersistedUser((state) => [state.token]);
-  const { totalCounter, setTotalCounter } = useCart((state) => ({
+  const { setTotalCounter } = useCart((state) => ({
     totalCounter: state.counter,
     setTotalCounter: state.setTotalCounter,
   }));
 
   const handleGetAllCartBuyer = useCallback(async () => {
-    try {
-      if (!token) {
-        console.error("Anda belum login");
-        return;
-      }
+    if (!token) {
+      console.error("Please login first.");
+      return;
+    }
 
+    try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
         method: "GET",
         headers: {
@@ -34,29 +34,24 @@ const CartMenu = () => {
 
       const responseJson = await response.json();
       setValues(responseJson.data);
-      // @ts-ignore
-      const total = responseJson.data.reduce((acc, item) => {
-        const inStockCarts = item.carts.filter((cart: any) => cart.stock > 0);
-        return acc + inStockCarts.length;
+
+      const total = responseJson.data.reduce((acc: any, item: any) => {
+        return acc + item.carts.filter((cart: any) => cart.stock > 0).length;
       }, 0);
       setTotalCounter(total);
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Error fetching cart data:", error);
     }
-  }, [token]);
+  }, [token, setTotalCounter]);
 
-  const totalProducts = values?.reduce((total, item) => {
-    const inStockCarts = item.carts.filter((cart: any) => cart.stock > 0);
-    return total + inStockCarts.length;
+  const totalProducts = values.reduce((total, item) => {
+    return total + item.carts.filter((cart: any) => cart.stock > 0).length;
   }, 0);
 
   useEffect(() => {
     handleGetAllCartBuyer();
-    const intervalId = setInterval(() => {
-      handleGetAllCartBuyer();
-    }, 10000);
-    return () => {
-      clearInterval(intervalId);
-    };
+    const intervalId = setInterval(handleGetAllCartBuyer, 15000);
+    return () => clearInterval(intervalId);
   }, [handleGetAllCartBuyer]);
 
   return (
@@ -99,29 +94,23 @@ const CartMenu = () => {
 
             <form className="mx-auto max-w-3xl px-2">
               <ul role="list" className="divide-y divide-gray-200">
-                {values?.map((item: any) => (
+                {values.map((item: any) => (
                   <div key={item.store.id}>
                     {item.carts
                       .filter((cart: any) => cart.stock >= 1)
                       .map((cart: any) => (
                         <li key={cart.id} className="flex items-center py-3">
-                          {cart?.images?.length > 0 ? (
-                            <Image
-                              src={cart.images[0]}
-                              alt={"image"}
-                              className="h-12 w-12 flex-none rounded-md border object-center object-cover border-gray-200"
-                              width={45}
-                              height={45}
-                            />
-                          ) : (
-                            <Image
-                              src="https://flowbite.com/docs/images/examples/image-1@2x.jpg"
-                              alt="Product Image"
-                              className="h-12 w-12 flex-none rounded-md border border-gray-200"
-                              width={55}
-                              height={45}
-                            />
-                          )}
+                          <Image
+                            src={
+                              cart?.images?.length > 0 && cart?.images !== null
+                                ? cart.images[0]
+                                : "https://flowbite.com/docs/images/examples/image-1@2x.jpg"
+                            }
+                            alt="Product Image"
+                            className="h-12 w-12 flex-none rounded-md border object-center object-cover border-gray-200"
+                            width={45}
+                            height={45}
+                          />
                           <div className="ml-2 flex-auto flex justify-between">
                             <h3 className="mx-1 font-medium text-gray-900 flex flex-col">
                               <span>
@@ -144,15 +133,9 @@ const CartMenu = () => {
                 ))}
               </ul>
               <div className="mt-4 flex justify-between items-center">
-                {totalProducts > 5 ? (
-                  <span className="text-sm text-green-900">
-                    {totalProducts} other products
-                  </span>
-                ) : (
-                  <span className="text-sm text-green-900">
-                    {totalProducts} products
-                  </span>
-                )}
+                <span className="text-sm text-green-900">
+                  {totalProducts} {totalProducts > 5 ? "other" : ""} products
+                </span>
 
                 <Link href="/buyer/cart">
                   <p className="flex-shrink-0 px-4 py-2 rounded-md border border-transparent bg-lime-900 text-sm font-medium text-white shadow-sm hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:ring-offset-gray-50">

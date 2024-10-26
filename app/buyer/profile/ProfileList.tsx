@@ -9,11 +9,11 @@ import { toast } from "sonner";
 import Avatar from "@/components/Avatar";
 import ButtonConfirm from "@/components/button/ButtonConfirm";
 import InputForm from "@/components/inputs/InputForm";
+import { Combobox } from "@/components/ui/combobox";
 import { usePersistedUser } from "@/zustand/users";
-import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Combobox } from "@/components/ui/combobox";
+import { useRouter } from "next/navigation";
 
 interface User {
   name: string;
@@ -84,16 +84,16 @@ const ProfileList = () => {
 
   const provinceSelect = isFetchedProvince
     ? dataProvince.map((item: any) => ({
-        value: item.province_id,
-        label: item.province,
-      }))
+      value: item.province_id,
+      label: item.province,
+    }))
     : [];
 
   const citySelect = isFetchedCity
     ? dataCity.map((item: any) => ({
-        value: item.city_id,
-        label: item.city_name,
-      }))
+      value: item.city_id,
+      label: item.city_name,
+    }))
     : [];
 
   const {
@@ -124,7 +124,6 @@ const ProfileList = () => {
       );
 
       const responseJson = await response.json();
-      // console.log(responseJson)
       if (responseJson.success === true) {
         setValue("name", responseJson.data.profile.name);
         setValue("email", responseJson.data.user.email);
@@ -144,12 +143,12 @@ const ProfileList = () => {
 
         setAvatarPreview(responseJson.data.profile.avatar_link);
       } else {
-        // console.log(responseJson.message)
+        console.log(responseJson.message)
       }
     } catch (error: any) {
-      // toast.error(error.message);
+      toast.error(error.message);
     }
-  }, [token, setValue, router]);
+  }, [token, setValue]);
 
   useEffect(() => {
     handleGetProfile();
@@ -424,7 +423,7 @@ const ProfileList = () => {
           <div className="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-8 sm:px-8">
             <ButtonConfirm
               outline
-              label={isLoading ? "" : "Edit Profile"}
+              label={isLoading ? "" : "Save Edit"}
               loading={isLoading}
               onClick={handleSubmit(handleChangeProfile)}
             />

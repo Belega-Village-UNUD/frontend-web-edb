@@ -61,7 +61,6 @@ import {
   SquareCheckBig,
   SquareX,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -70,6 +69,7 @@ type Transaction = {
   id: string;
   transactionId: string;
   createdAt: string;
+  updatedAt: string;
   total_amount: number;
   status: "PENDING" | "PAYABLE" | "SUCCESS" | "CANCEL";
   user: {
@@ -133,6 +133,27 @@ const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
+    id: "Updated Date",
+    accessorKey: "updatedAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="-px-2 font-semibold"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Updated Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {format(new Date(row.original.updatedAt), "MMMM dd, yyyy")}
+      </div>
+    ),
+  },
+  {
     id: "Status",
     accessorKey: "status",
     header: ({ column }) => {
@@ -156,9 +177,13 @@ const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="capitalize opacity-70">
           {status !== "SUCCESS" ? (
-            <p>{status}</p>
+            <div className={`font-medium w-fit text-xs text-white rounded-2xl mb-1 py-1 px-2 ${status === "PAYABLE" ? "bg-blue-500" : status === "PENDING" ? "bg-yellow-500" : "bg-red-500"}`}>
+              {status}
+            </div>
           ) : (
-            <p>{arrivalShippingStatus || "No status available"}</p>
+            <div className={`font-medium w-fit text-xs text-white rounded-2xl mb-1 py-1 px-2 ${arrivalShippingStatus === "PACKING" ? "bg-cyan-500" : arrivalShippingStatus === "SHIPPED" ? "bg-indigo-500" : arrivalShippingStatus === "ARRIVED" ? "bg-lime-500" : "bg-red-500"}`}>
+              {arrivalShippingStatus || "No status available"}
+            </div>
           )}
         </div>
       );
@@ -243,7 +268,6 @@ const TransactionList = () => {
       );
 
       const responseJson: ApiResponse = await response.json();
-      // console.log(responseJson)
       if (responseJson.success === true) {
         let emails: string[] = [];
         responseJson.data.map((item: Transaction) => {
@@ -252,8 +276,6 @@ const TransactionList = () => {
         });
         setNewEmail(emails[0]);
         setTransactions(responseJson.data);
-      } else {
-        // console.log(responseJson.message)
       }
     } catch (error: any) {
       // console.log(error.message)
@@ -431,9 +453,9 @@ const TransactionList = () => {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}

@@ -14,7 +14,7 @@ export const useUsers = create<UserState>()((set) => ({
     try {
       const token = usePersistedUser.getState().token;
       if (!token) {
-        console.error("Anda belum login");
+        toast.warning("Please Login First");
         return;
       }
 
@@ -49,7 +49,7 @@ export const useUsers = create<UserState>()((set) => ({
       const token = usePersistedUser.getState().token;
 
       if (!token) {
-        console.error("Anda belum login");
+        toast.warning("Your are not login");
         return;
       }
 

@@ -1,15 +1,15 @@
 "use client";
 
-import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
-import { Fragment, useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
 import CurrencyText from "@/components/text/CurrencyText";
-import Image from "next/image";
-import { toast } from "sonner";
 import { useCart } from "@/zustand/carts";
 import { usePersistedUser } from "@/zustand/users";
+import { Dialog, Transition } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   data: any;
@@ -50,7 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
   const [token] = usePersistedUser((state) => [state.token]);
   const getToken = useCallback(() => {
     if (!token) {
-      console.error("Anda belum login");
+      console.error("Please login first.");
       // router.push("/buyer/login");
       return null;
     }

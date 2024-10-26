@@ -2,11 +2,11 @@
 
 import Container from "@/components/Container";
 import HomeBanner from "@/components/HomeBanner";
+import Loading from "@/components/Loading";
 import ProductCard from "@/components/products/ProductCard";
 import ProductSkeleton from "@/components/skeleton/ProductSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Loading from "@/components/Loading";
 
 export default function Home() {
   const {
@@ -27,6 +27,8 @@ export default function Home() {
     },
     queryKey: ["get-products"],
     enabled: true,
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   if (isFetching && !isFetched) {

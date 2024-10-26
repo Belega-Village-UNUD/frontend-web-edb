@@ -1,5 +1,7 @@
 "use client";
 
+import { formatRupiah } from "@/lib/utils";
+import { usePersistedUser } from "@/zustand/users";
 import {
   Dialog,
   Disclosure,
@@ -10,30 +12,26 @@ import {
 } from "@headlessui/react";
 import {
   Bars3Icon,
-  ChartPieIcon,
   ChevronRightIcon,
   ClipboardDocumentCheckIcon,
-  DocumentDuplicateIcon,
   HomeModernIcon,
-  XMarkIcon,
+  XMarkIcon
 } from "@heroicons/react/24/outline";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import {
+  Banknote,
+  HandCoins,
   ShoppingBag,
   StoreIcon,
-  HandCoins,
-  Banknote,
   WalletCards,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
-import UserStore from "../nav/UserStore";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { usePersistedUser } from "@/zustand/users";
 import Loading from "../Loading";
-import { formatRupiah } from "@/lib/utils";
+import UserStore from "../nav/UserStore";
 
 const teams = [
   { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
@@ -128,7 +126,6 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
       icon: StoreIcon,
       children: [
         { name: "Store Profile", href: "/store/profile" },
-        // { name: "Store Decoration", href: "/store/store/new" },
       ],
     },
     // {
@@ -219,31 +216,90 @@ const SideBar: React.FC<navigationType> = ({ main }) => {
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
                             {navigation.map((item) => {
-                              const splitPath = pathname.split("/").join("/");
-                              const isActive = splitPath === item.href;
                               return (
                                 <li key={item.name}>
-                                  <Link
-                                    href={item.href}
-                                    key={item.name}
-                                    className={classNames(
-                                      isActive
-                                        ? "bg-green-100 text-green-700"
-                                        : "text-gray-700 hover:text-green-700 hover:bg-green-100",
-                                      "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                    )}
-                                  >
-                                    <item.icon
+                                  {!item.children ? (
+                                    <Link
+                                      href={item.href}
+                                      key={item.name}
                                       className={classNames(
-                                        isActive
-                                          ? "text-green-700"
-                                          : "text-gray-400 group-hover:text-green-700",
-                                        "h-6 w-6 shrink-0"
+                                        pathname.endsWith(item.href)
+                                          ? "bg-green-100 text-green-700"
+                                          : "text-gray-700 hover:text-green-700 hover:bg-green-100",
+                                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                       )}
-                                      aria-hidden="true"
-                                    />
-                                    {item.name}
-                                  </Link>
+                                    >
+                                      <item.icon
+                                        className={classNames(
+                                          pathname.endsWith(item.href)
+                                            ? "text-green-700"
+                                            : "text-gray-400 group-hover:text-green-700",
+                                          "h-6 w-6 shrink-0"
+                                        )}
+                                        aria-hidden="true"
+                                      />
+                                      {item.name}
+                                    </Link>
+                                  ) : (
+                                    <Disclosure as="div" defaultOpen={true}>
+                                      {({ open }) => (
+                                        <>
+                                          <DisclosureButton
+                                            className={classNames(
+                                              pathname.endsWith(item.href)
+                                                ? "bg-gray-50"
+                                                : "hover:bg-gray-50",
+                                              "flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-700"
+                                            )}
+                                          >
+                                            <item.icon
+                                              className="h-6 w-6 shrink-0 text-gray-400"
+                                              aria-hidden="true"
+                                            />
+                                            {item.name}
+                                            <ChevronRightIcon
+                                              className={classNames(
+                                                open
+                                                  ? "rotate-90 text-gray-500"
+                                                  : "text-gray-400",
+                                                "ml-auto h-5 w-5 shrink-0"
+                                              )}
+                                              aria-hidden="true"
+                                            />
+                                          </DisclosureButton>
+                                          <DisclosurePanel as="ul" className="mt-1">
+                                            {item.children.map((subItem) => {
+                                              return (
+                                                <li key={subItem.name}>
+                                                  <Link
+                                                    href={subItem.href}
+                                                    key={subItem.name}
+                                                    className={classNames(
+                                                      pathname.endsWith(subItem.href)
+                                                        ? "bg-green-100 text-green-700"
+                                                        : "text-gray-700 hover:text-green-700 hover:bg-green-100",
+                                                      "group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-6"
+                                                    )}
+                                                  >
+                                                    <div
+                                                      className={classNames(
+                                                        pathname.endsWith(subItem.href)
+                                                          ? "text-green-700"
+                                                          : "text-gray-400 group-hover:text-green-700",
+                                                        "h-6 w-6 shrink-0"
+                                                      )}
+                                                      aria-hidden="true"
+                                                    ></div>
+                                                    {subItem.name}
+                                                  </Link>
+                                                </li>
+                                              );
+                                            })}
+                                          </DisclosurePanel>
+                                        </>
+                                      )}
+                                    </Disclosure>
+                                  )}
                                 </li>
                               );
                             })}

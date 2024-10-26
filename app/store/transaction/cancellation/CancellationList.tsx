@@ -56,6 +56,7 @@ type Transaction = {
   id: string;
   transactionId: string;
   createdAt: string;
+  updatedAt: string;
   total_amount: number;
   status: "PENDING" | "PAYABLE" | "SUCCESS" | "CANCEL";
   user: {
@@ -119,10 +120,50 @@ const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
+    id: "Updated Date",
+    accessorKey: "updatedAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="-px-2 font-semibold"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Updated Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {format(new Date(row.original.updatedAt), "MMMM dd, yyyy")}
+      </div>
+    ),
+  },
+  {
     id: "Status",
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <div className="capitalize">{row.original.status}</div>,
+    cell: ({ row }) => {
+      const status = row.original.status;
+      const arrivalShippingStatus =
+        // @ts-ignore
+        row?.original?.cart_details[0]?.arrival_shipping_status;
+
+      return (
+        <div className="capitalize opacity-70">
+          {status !== "SUCCESS" ? (
+            <div className={`font-medium w-fit text-xs text-white rounded-2xl mb-1 py-1 px-2 ${status === "PAYABLE" ? "bg-blue-500" : status === "PENDING" ? "bg-yellow-500" : "bg-red-500"}`}>
+              {status}
+            </div>
+          ) : (
+            <div className={`font-medium w-fit text-xs text-white rounded-2xl mb-1 py-1 px-2 ${arrivalShippingStatus === "PACKING" ? "bg-cyan-500" : arrivalShippingStatus === "SHIPPED" ? "bg-indigo-500" : arrivalShippingStatus === "ARRIVED" ? "bg-lime-500" : "bg-red-500"}`}>
+              {arrivalShippingStatus || "No status available"}
+            </div>
+          )}
+        </div>
+      );
+    },
   },
   {
     id: "Customer",
@@ -178,7 +219,7 @@ const CancellationList = () => {
 
   const getToken = useCallback(() => {
     if (!token) {
-      console.error("Please Login First");
+      console.error("Please login first.");
       return null;
     }
     return token;
