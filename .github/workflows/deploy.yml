@@ -3,6 +3,12 @@ name: Deploy
 on:
   push:
     branches: ["staging"]
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - "shell/proxy.sh"
+      - "shell/deploy.sh"
+      - "shell/build.sh"
 
 env:
   REGISTRY: registry.belegacommerce.shop
