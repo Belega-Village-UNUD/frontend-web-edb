@@ -17,7 +17,7 @@ echo "Performing build for $BRANCH";
 
 if [ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]; then
     echo "this branch is not up to date"
-    git checkout $BRANCH;
+    git checkout --force $BRANCH;
     git fetch --dry-run;
 fi
 
