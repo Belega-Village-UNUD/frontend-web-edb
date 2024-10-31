@@ -74,7 +74,7 @@ jobs:
             TOKEN_NAME=${{ env.TOKEN_NAME }}
             TOKEN_VALUE=${{ env.TOKEN_VALUE }}
             EOF
-            echo "${secrets.REGISTRY_PASSWORD}" | docker login https://registry.belegacommerce.shop -u REGISTRY_USERNAME --password-stdin  
+            echo "${secrets.REGISTRY_PASSWORD}" | docker login https://registry.belegacommerce.shop -u ${secrets.REGISTRY_USERNAME} --password-stdin  
             bash ./shell/build.sh staging ${{ env.COMMIT_SHA }}
 
       - name: Build Output
