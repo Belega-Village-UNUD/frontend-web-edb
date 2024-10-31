@@ -215,9 +215,6 @@ export default function Page({ params }: checkoutProps) {
     return <Loading />;
   }
 
-  // Menghitung ongkir
-  const totalFinalPrice = dataStatusShipping?.sub_total_transaction_price_before_shipping + dataStatusShipping.sub_total_shipping;
-
   return (
     <Container>
       <div className="mt-10">
@@ -339,7 +336,7 @@ export default function Page({ params }: checkoutProps) {
                     </div>
                     <div className="pl-3">
                       <span className="font-semibold">
-                        {formatePrice(totalFinalPrice)}
+                        {formatePrice(dataCheckout.total_amount)}
                       </span>
                     </div>
                   </div>
