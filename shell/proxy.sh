@@ -42,6 +42,7 @@ else
 
   echo "Updating configuration for frontend route"
   docker config rm febelega.conf
+  export $(cat .env) > /dev/null 2>&1; envsubst < nginx/templates/febelega.conf.template > nginx/templates/febelega.conf
 
   if [ $? -ne 0 ]; then
     echo "Failed to create update for frontend route"
@@ -60,6 +61,13 @@ docker service update --config-add source=febelega.conf,target=/etc/nginx/conf.d
 
 if [ $? -ne 0 ]; then
   echo "Failed updating config for frontend route on ssl service"
+  exit 1
+fi
+
+if [ $(docker service ps ssl_nginx | grep -i running | wc -l) == 0 ]; then
+  docker service update --config-rm --force febelega.conf
+  docker config rm febelega.cponf 
+  echo "Failed updating config for backend route on ssl service, something is wrong with the nginx configuration, please check the template and make sure the variable is available"
   exit 1
 fi
 

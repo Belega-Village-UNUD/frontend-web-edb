@@ -1,13 +1,16 @@
 FROM node:20.9.0-alpine as build
 
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+USER nextjs
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN NODE_ENV=development npm install
 
 COPY . .
 
@@ -18,9 +21,6 @@ FROM gcr.io/distroless/nodejs20 as environment
 ENV NODE_ENV production
 ENV FRONT_WEB_PORT ${PORT}
 ENV NEXT_TELEMETRY_DISABLED 1
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-USER nextjs
 
 EXPOSE $FRONT_WEB_PORT
 

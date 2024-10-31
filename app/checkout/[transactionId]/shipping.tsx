@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { formatePrice } from "@/utils/formatPrice";
 import { usePersistedUser } from "@/zustand/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -84,7 +85,7 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
     },
     onSuccess: (data) => {
       toast.success("Shipping successful selected");
-      // window.location.reload();
+      window.location.reload();
     },
     onError: (error) => {
       console.error("Error during select shipping:", error);
@@ -104,6 +105,16 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    const allStoresSelected = mergedData.every((store: any) => {
+      const storeId = store.store_id;
+      return selectedShipping[storeId] !== undefined;
+    });
+
+    if (!allStoresSelected) {
+      toast.error("Please select a shipping option for each store.");
+      return;
+    }
+
     const payload = Object.entries(selectedShipping).map(
       ([storeId, shipping]) => ({
         service: shipping.service,
@@ -134,7 +145,7 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
               control={form.control}
               name="shipping"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="space-y-3 p-4">
                   <FormLabel className="text-base font-semibold text-gray-600">
                     Shipping
                   </FormLabel>
@@ -145,11 +156,12 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
                     })
                     .map((store: any, index: number) => {
                       const storeId = store.store_id;
+                      const storeName = store.store_name;
 
                       return (
                         <Accordion key={index} type="single" collapsible>
                           <AccordionItem value={`item-${index}`}>
-                            <AccordionTrigger>{storeId}</AccordionTrigger>
+                            <AccordionTrigger>{storeName}</AccordionTrigger>
                             <AccordionContent>
                               <FormControl>
                                 <RadioGroup
@@ -164,9 +176,9 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
                                     const parsedValue = JSON.parse(value);
                                     setSelectedShipping((prev) => ({
                                       ...prev,
-                                      [storeId]: parsedValue, // Update specific store's shipping
+                                      [storeId]: parsedValue,
                                     }));
-                                    field.onChange(parsedValue); // Update the form field value if needed
+                                    field.onChange(parsedValue);
                                   }}
                                 >
                                   {store.shipping.map((shippingOption: any) =>
@@ -185,7 +197,7 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
                                             />
                                           </FormControl>
                                           <FormLabel className="font-normal">
-                                            {`${cost.description} (${cost.service}) `}
+                                            {`${shippingOption.name} | ${cost.cost[0].etd} days | (${cost.service}) | (${formatePrice(cost.cost[0].value)})`}
                                           </FormLabel>
                                         </FormItem>
                                       )
@@ -210,7 +222,7 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
                 rel="noopener noreferrer"
                 className="text-center w-full mx-auto border border-transparent bg-green hover:bg-blue-950 bg-blue-900 focus:bg-lime-950 text-white rounded-md px-3 py-4 justify-center items-center flex font-semibold cursor-pointer"
               >
-                Check Shipping
+                Confirm Shipping
               </Button>
             )}
           </form>
