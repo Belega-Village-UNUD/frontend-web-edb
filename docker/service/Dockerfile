@@ -1,6 +1,6 @@
 FROM node:20.9.0-alpine as dependencies
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+ENV NODE_ENV development
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 USER nextjs
@@ -10,14 +10,13 @@ RUN npm install
 
 FROM node:20.9.0-alpine as build
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 USER nextjs
 WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-COPY public ./public
-COPY package.json next.config.js tsconfig.json ./
 RUN npm run build
 
 
