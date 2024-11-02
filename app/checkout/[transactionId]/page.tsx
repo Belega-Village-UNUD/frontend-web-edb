@@ -168,7 +168,7 @@ export default function Page({ params }: checkoutProps) {
       );
       return data.data;
     },
-    queryKey: ["get-shipping"],
+    queryKey: ["get-shipping", params.transactionId],
     enabled: true,
     staleTime: 5 * 60 * 1000,
     gcTime: 5 * 60 * 1000,

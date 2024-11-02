@@ -151,8 +151,10 @@ function Shipping({ dataCheckout, profile, shipping }: PaymentProps) {
                   </FormLabel>
                   {mergedData
                     .filter((store: any) => {
-                      const costs = store?.shipping?.[0]?.costs;
-                      return Array.isArray(costs) && costs.length > 0;
+                      const hasValidShipping = store.shipping.some(
+                        (shippingOption: any) => Array.isArray(shippingOption.costs) && shippingOption.costs.length > 0
+                      );
+                      return hasValidShipping;
                     })
                     .map((store: any, index: number) => {
                       const storeId = store.store_id;
