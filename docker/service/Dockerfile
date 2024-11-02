@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 COPY public ./public
-COPY package.json next.config.js jsconfig.json ./
+COPY package.json next.config.js tsconfig.json ./
 RUN npm run build
 
 
