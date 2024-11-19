@@ -9,6 +9,16 @@ interface checkoutListProps {
 }
 
 function CheckoutLIst({ cart, order, cart_detail }: checkoutListProps) {
+  const storeId = cart?.product?.store?.id;
+  const storeStatusObj = order.status_store.find((status_store: any) => { return status_store.store_id === storeId });
+  let status = storeStatusObj ? storeStatusObj.status_store : "Unknown Status";
+  const statusMap: { [key: string]: string } = {
+    cancel: "Cancelled",
+    pending: "Pending",
+    confirm: "Confirmed",
+  };
+  status = statusMap[status] || status;
+
   return (
     <div className="w-full grid grid-cols-4 p-4 bg-white shadow-lg rounded-lg mb-4 transition-transform transform hover:scale-105">
       <div className="overflow-hidden rounded-lg w-28 h-28 bg-gray-100 border border-gray-300">
@@ -34,7 +44,7 @@ function CheckoutLIst({ cart, order, cart_detail }: checkoutListProps) {
       </div>
       <div className="grid grid-cols-1 justify-items-end gap-2">
         <div className="w-full text-center">
-          <div className={`text-sm font-medium px-2 py-1 rounded-full ${["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
+          {/* <div className={`text-sm font-medium px-2 py-1 rounded-full ${["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
             ? "bg-yellow-200 text-yellow-800"
             : "bg-green-200 text-green-800"
             }`}>
@@ -43,6 +53,9 @@ function CheckoutLIst({ cart, order, cart_detail }: checkoutListProps) {
                 ? order?.status || "Unknown Status"
                 : cart_detail?.arrival_shipping_status
             }
+          </div> */}
+          <div className={`text-sm font-medium px-2 py-1 rounded-full ${status === "Cancelled" ? "bg-red-200 text-red-800" : status === "Pending" ? "bg-yellow-200 text-yellow-800" : "bg-green-200 text-green-800"}`}>
+            {status || "Unknown Status"}
           </div>
         </div>
         <span className="font-semibold text-gray-700 text-lg">

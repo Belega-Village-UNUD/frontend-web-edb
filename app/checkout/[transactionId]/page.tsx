@@ -215,6 +215,16 @@ export default function Page({ params }: checkoutProps) {
     return <Loading />;
   }
 
+  type StatusType = 'PENDING' | 'UNCONFIRMED' | 'SUCCESS' | 'SHIPPED' | 'PACKING' | 'ARRIVED';
+  type StatusMessagesType = { [key in StatusType]?: string };
+
+  const statusMessages: StatusMessagesType = {
+    "PENDING": "Waiting Confirmation Store"
+  };
+  let status: StatusType = ["UNCONFIRMED", null, undefined].includes(dataStatusShipping?.carts_details[0]?.arrival_shipping_status)
+    ? dataCheckout?.status
+    : dataStatusShipping?.carts_details[0]?.arrival_shipping_status;
+
   return (
     <Container>
       <div className="mt-10">
@@ -237,11 +247,7 @@ export default function Page({ params }: checkoutProps) {
         <div className="w-full  border-t border-b border-gray-200 px-5 py-6 text-gray-800">
           <div className="w-full">
             <p className="mb-6 py-2 text-3xl font-bold text-green-700 border-4 border-green-700 border-dotted w-auto text-center">
-              {
-                ["UNCONFIRMED", null, undefined].includes(dataStatusShipping?.carts_details[0]?.arrival_shipping_status) ?
-                  dataCheckout?.status :
-                  dataStatusShipping?.carts_details[0]?.arrival_shipping_status
-              }
+              {statusMessages[status] || status}
             </p>
             <div className="items-start gap-8 xl:flex lg:flex md:flex">
               <div className="p-6 mb-10 bg-white border border-gray-200 rounded-md shadow-md md:w-7/12">
@@ -260,75 +266,73 @@ export default function Page({ params }: checkoutProps) {
                 <div className="mb-6 border-b border-gray-200 md:border-none text-gray-800 text-base">
                   {dataCheckout?.redirect_url == null ? (
                     null
-                  ) :
-                    (
-                      <>
-                        {dataStatusShipping?.carts_details.map((cartDetail: any, index: number) => (
-                          <div key={index} className="mb-4">
-                            <div className="w-full flex items-center">
-                              <div className="flex-grow">
-                                <span className="text-gray-600">Store {index + 1} Shipping</span>
-                              </div>
-                              <div className="pl-3">
-                                <span className="font-semibold">
-                                  {`${cartDetail?.shipping?.code
-                                    ?.charAt(0)
-                                    .toUpperCase() +
-                                    cartDetail?.shipping?.code
-                                      ?.slice(1)
-                                      .toLowerCase()
-                                    } (${cartDetail?.shipping?.service
-                                    })`}
-                                </span>
-                              </div>
+                  ) : (
+                    <>
+                      {dataStatusShipping?.carts_details.map((cartDetail: any, index: number) => (
+                        <div key={index} className="mb-4">
+                          <div className="w-full flex items-center">
+                            <div className="flex-grow">
+                              <span className="text-gray-600">Store {index + 1} Shipping</span>
                             </div>
-                            <div className="w-full flex items-center">
-                              <div className="flex-grow">
-                                <span className="text-gray-600">Estimation</span>
-                              </div>
-                              <div className="pl-3">
-                                <span className="font-semibold">
-                                  {`${cartDetail?.shipping?.estimation} days`}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="w-full flex items-center">
-                              <div className="flex-grow">
-                                <span className="text-gray-600">Shipping cost</span>
-                              </div>
-                              <div className="pl-3">
-                                <span className="font-semibold">
-                                  {formatePrice(cartDetail?.shipping?.costs)}
-                                </span>
-                              </div>
+                            <div className="pl-3">
+                              <span className="font-semibold">
+                                {`${cartDetail?.shipping?.code
+                                  ?.charAt(0)
+                                  .toUpperCase() +
+                                  cartDetail?.shipping?.code
+                                    ?.slice(1)
+                                    .toLowerCase()
+                                  } (${cartDetail?.shipping?.service
+                                  })`}
+                              </span>
                             </div>
                           </div>
-                        ))}
-
-                        <div className="w-full flex items-center">
-                          <div className="flex-grow">
-                            <span className="text-gray-600">Total Shipping</span>
+                          <div className="w-full flex items-center">
+                            <div className="flex-grow">
+                              <span className="text-gray-600">Estimation</span>
+                            </div>
+                            <div className="pl-3">
+                              <span className="font-semibold">
+                                {`${cartDetail?.shipping?.estimation} days`}
+                              </span>
+                            </div>
                           </div>
-                          <div className="pl-3">
-                            <span className="font-semibold">
-                              {formatePrice(dataStatusShipping?.sub_total_shipping)}
-                            </span>
+                          <div className="w-full flex items-center">
+                            <div className="flex-grow">
+                              <span className="text-gray-600">Shipping cost</span>
+                            </div>
+                            <div className="pl-3">
+                              <span className="font-semibold">
+                                {formatePrice(cartDetail?.shipping?.costs)}
+                              </span>
+                            </div>
                           </div>
                         </div>
+                      ))}
 
-                        <div className="w-full flex items-center">
-                          <div className="flex-grow">
-                            <span className="text-gray-600">Total Before Shipping</span>
-                          </div>
-                          <div className="pl-3">
-                            <span className="font-semibold">
-                              {formatePrice(dataStatusShipping?.sub_total_transaction_price_before_shipping)}
-                            </span>
-                          </div>
+                      <div className="w-full flex items-center">
+                        <div className="flex-grow">
+                          <span className="text-gray-600">Total Shipping</span>
                         </div>
-                      </>
-                    )
-                  }
+                        <div className="pl-3">
+                          <span className="font-semibold">
+                            {formatePrice(dataStatusShipping?.sub_total_shipping)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="w-full flex items-center">
+                        <div className="flex-grow">
+                          <span className="text-gray-600">Total Before Shipping</span>
+                        </div>
+                        <div className="pl-3">
+                          <span className="font-semibold">
+                            {formatePrice(dataStatusShipping?.sub_total_transaction_price_before_shipping)}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   <div className="w-full flex items-center">
                     <div className="flex-grow">
