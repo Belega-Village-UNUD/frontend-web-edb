@@ -307,7 +307,7 @@ const CartList = () => {
       const responseJson = await response.json();
       if (responseJson.success === true) {
         toast.success(responseJson.message);
-        router.push("/buyer/history");
+        router.push(`/checkout/${responseJson.data.id}`);
       } else {
         toast.error(responseJson.message);
       }

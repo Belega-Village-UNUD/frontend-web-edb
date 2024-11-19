@@ -130,22 +130,22 @@ function Page({ params }: historyProps) {
           orderDate={order?.createdAt}
           paidDate={order?.updatedAt}
           from={{
-            companyName: order?.cart_details[0]?.user?.userProfile?.name,
-            country: "Bali",
-            city: "Gianyar",
-            postal: "10023",
-            address: "123 Example St",
-            phone: "123-456-7890",
-            email: order?.cart_details[0]?.user?.email,
-          }}
-          to={{
-            personName: order?.cart_details[0]?.product?.store?.name,
+            companyName: order?.cart_details[0]?.product?.store?.name,
             country: "Bali",
             city: "Gianyar",
             postal: "90001",
             address: "456 Another St",
             phone: "987-654-3210",
             email: order?.cart_details[0]?.product?.store?.user?.email,
+          }}
+          to={{
+            personName: order?.cart_details[0]?.user?.userProfile?.name,
+            country: "Bali",
+            city: "Gianyar",
+            postal: "10023",
+            address: "123 Example St",
+            phone: "123-456-7890",
+            email: order?.cart_details[0]?.user?.email,
           }}
           items={order?.cart_details}
           vat={10}
