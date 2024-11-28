@@ -66,7 +66,7 @@ fi
 
 if [ $(docker service ps ssl_nginx | grep -i running | wc -l) == 0 ]; then
   docker service update --config-rm --force febelega.conf
-  docker config rm febelega.cponf 
+  docker config rm febelega.conf 
   echo "Failed updating config for backend route on ssl service, something is wrong with the nginx configuration, please check the template and make sure the variable is available"
   exit 1
 fi
