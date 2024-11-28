@@ -84,6 +84,7 @@ jobs:
           echo '${{ steps.compute-ssh-setup.outputs.stderr }}'
 
   build:
+    needs: setup
     runs-on: ubuntu-latest
     environment: staging
     permissions:
@@ -127,6 +128,7 @@ jobs:
           echo '${{ steps.compute-ssh-build.outputs.stderr }}'
 
   eslint:
+    needs: setup
     runs-on: ubuntu-latest
     environment: staging
     permissions:
