@@ -14,7 +14,7 @@ env:
   ZONE: asia-southeast2-a
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
     environment: staging
     permissions:
@@ -27,14 +27,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Google Auth
-        id: auth-build
+        id: auth-setup
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.GCP_SA }}
 
-      - name: SSH to Compute Engine and Build
-        id: compute-ssh-build
+      - name: SSH to Compute Engine and Setup Environment
+        id: compute-ssh-setup
         uses: "google-github-actions/ssh-compute@v1"
         env:
           NODE_ENV: ${{ secrets.NODE_ENV }}
@@ -76,7 +76,48 @@ jobs:
             TOKEN_NAME=${{ env.TOKEN_NAME }}
             TOKEN_VALUE=${{ env.TOKEN_VALUE }}
             EOF
-            echo "${env.REGISTRY_PASSWORD}" | docker login https://registry.belegacommerce.shop -u ${env.REGISTRY_USERNAME} --password-stdin  
+
+      - name: Setup Output
+        id: compute-ssh-setup-output
+        run: |-
+          echo '${{ steps.compute-ssh-setup.outputs.stdout }}'
+          echo '${{ steps.compute-ssh-setup.outputs.stderr }}'
+
+  build:
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        id: auth-build
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA }}
+
+      - name: SSH to Compute Engine and Build
+        id: compute-ssh-build
+        uses: "google-github-actions/ssh-compute@v1"
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        with:
+          instance_name: ${{ env.INSTANCE_NAME }}
+          zone: ${{ env.ZONE }}
+          ssh_private_key: ${{ secrets.SERVICE_ACCOUNT_SECRET_SSH_KEY }}
+          user: ${{ secrets.CE_USER }}
+          command: |-
+            cd $(pwd)/${{ env.REPO }}
+            git switch staging
+            git pull origin staging
+            echo "${env.REGISTRY_PASSWORD}" | docker login https://registry.belegacommerce.shop -u ${env.REGISTRY_USERNAME} --password-stdin
             bash ./shell/build.sh staging ${{ env.COMMIT_SHA }}
 
       - name: Build Output
