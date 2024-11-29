@@ -12,13 +12,9 @@ import jsPDF from "jspdf";
 import { useRouter } from "next/navigation";
 import { FaDownload } from "react-icons/fa";
 
-interface historyProps {
-  params: {
-    historyId: string;
-  };
-}
-
-function Page({ params }: historyProps) {
+function Page({ params, searchParams }: any) {
+  console.log('line 48: ', JSON.stringify(params));
+  console.log('line 49: ', JSON.stringify(searchParams));
   const [token, setToken] = useState<string>();
   const router = useRouter();
 
@@ -32,11 +28,33 @@ function Page({ params }: historyProps) {
 
   const {
     isFetching,
-    data: order,
+    data: dataInvoice,
     isFetched,
+    refetch,
   } = useQuery({
     queryFn: async () => {
-      // const token = getToken();
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/transaction/buyer/invoice?transaction_id=${params.historyId}&store_id=${searchParams.store_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return data.data;
+    },
+    queryKey: ["get-invoice"],
+    enabled: !token,
+  });
+  console.log('line 48: ', JSON.stringify(dataInvoice));
+
+  const {
+    isFetching: isFetchingOne,
+    data: order,
+    isFetched: isFetchedOne,
+  } = useQuery({
+    queryFn: async () => {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/transaction/buyer/${params.historyId}`,
         {
@@ -100,7 +118,9 @@ function Page({ params }: historyProps) {
 
   if (
     isFetching ||
+    isFetchingOne ||
     (isFetchingStatusShipping && !isFetched) ||
+    !isFetchedOne ||
     !isFetchedStatusShipping
   ) {
     return <Loading />;
@@ -112,10 +132,7 @@ function Page({ params }: historyProps) {
           onClick={() => {
             downloadPDF();
           }}
-          className={`flex items-center justify-center rounded-md border px-2.5 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 space-x-3 ${order?.status === "SUCCESS"
-            ? "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+          className={`flex items-center justify-center rounded-md border px-2.5 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 space-x-3 border-green-700 bg-white text-green-700 hover:bg-gray-50 hover:text-green-800`}
         >
           <FaDownload />
           <span>Download Invoice</span>
@@ -124,33 +141,24 @@ function Page({ params }: historyProps) {
       <div className="flex flex-col items-center bg-gray-100 p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Invoice Details</h2>
         <Invoice
-          totalPrice={order?.total_amount}
           ref={invoiceRef}
-          invoiceId={order?.id}
+          invoiceId={dataInvoice.id}
+          transactionId={dataInvoice.transaction_id}
           orderDate={order?.createdAt}
-          paidDate={order?.updatedAt}
           from={{
-            companyName: order?.cart_details[0]?.product?.store?.name,
-            country: "Bali",
-            city: "Gianyar",
-            postal: "90001",
-            address: "456 Another St",
-            phone: "987-654-3210",
-            email: order?.cart_details[0]?.product?.store?.user?.email,
+            companyName: dataInvoice.store_name,
+            email: dataInvoice.store_email,
+            address: dataInvoice.store_address,
           }}
           to={{
-            personName: order?.cart_details[0]?.user?.userProfile?.name,
-            country: "Bali",
-            city: "Gianyar",
-            postal: "10023",
-            address: "123 Example St",
-            phone: "123-456-7890",
-            email: order?.cart_details[0]?.user?.email,
+            personName: dataInvoice.buyer_name,
+            email: dataInvoice.buyer_email,
+            address: dataInvoice.buyer_address
           }}
-          items={order?.cart_details}
+          items={dataInvoice.cart_detail}
           vat={10}
           tax={5}
-          total={order?.total_amount}
+          total={dataInvoice.total_price}
           paymentHistory={{
             date: "2024-07-26",
             amount: order?.total_amount,
@@ -160,7 +168,8 @@ function Page({ params }: historyProps) {
           status={order?.status}
           buyerName={order?.cart_details[0]?.user?.userProfile?.name}
           imageUrl={order?.cart_details[0]?.product?.images[0]}
-          shippingCost={dataStatusShipping?.carts_details[0]?.shipping?.costs}
+          shippingCost={dataInvoice.shipping_price}
+          shippingMethod={dataInvoice.shipping_method}
         />
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">Thank you for your purchase!</p>

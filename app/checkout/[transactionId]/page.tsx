@@ -79,6 +79,28 @@ export default function Page({ params }: checkoutProps) {
     gcTime: 5 * 60 * 1000,
   });
 
+  let groupedProducts: any = {};
+  if (Array.isArray(dataCheckout?.cart_details)) {
+    groupedProducts = dataCheckout?.cart_details.reduce((grouped: any, product: any) => {
+      const storeId = product.product.store.id;
+      const storeName = product.product.store.name;
+      const status = dataCheckout?.status;
+      const statusStore = dataCheckout?.status_store.find((status: any) => status.store_id === storeId)?.status_store;
+      const transactionId = dataCheckout?.id;
+      const statusArrival = dataStatusShipping?.carts_details.find((status: any) => status.store_id === storeId)?.arrival_shipping_status;
+      if (!grouped[storeId]) {
+        grouped[storeId] = { transaction_id: transactionId, store_id: storeId, status: status, store_name: storeName, status_store: statusStore, status_arrival: statusArrival, products: [] };
+      }
+      grouped[storeId].products.push(product);
+      return grouped;
+    }, {});
+  } else {
+    const storeId = dataCheckout?.cart_details.product.store.id;
+    const statusStore = dataCheckout?.status_store.find((status: any) => status.store_id === storeId)?.status_store;
+    groupedProducts[storeId] = { products: [dataCheckout?.cart_details], statusStore: statusStore };
+  }
+  console.log('line 78: ', JSON.stringify(groupedProducts));
+
   const { mutate: payAction, isPending } = useMutation({
     mutationFn: async () => {
       let attempt = 0;
@@ -115,6 +137,7 @@ export default function Page({ params }: checkoutProps) {
     },
     onSuccess: (data) => {
       toast.success("Payment is successful");
+      refetchStatusShipping();
       window.location.reload();
     },
     onError: (error) => {
@@ -252,14 +275,9 @@ export default function Page({ params }: checkoutProps) {
             <div className="items-start gap-8 xl:flex lg:flex md:flex">
               <div className="p-6 mb-10 bg-white border border-gray-200 rounded-md shadow-md md:w-7/12">
                 <div className="w-full mx-auto text-gray-800 font-light mb-6 border-b border-gray-200 pb-6 space-y-4 ">
-                  {dataCheckout?.cart_details.map((cart: any) => (
-                    <CheckoutLIst
-                      key={cart.id}
-                      cart={cart}
-                      order={dataCheckout}
-                      cart_detail={dataStatusShipping?.carts_details[0]}
-                    />
-                  ))}
+                  <CheckoutLIst
+                    order={groupedProducts}
+                  />
                 </div>
 
                 {/* total price */}
@@ -392,7 +410,7 @@ export default function Page({ params }: checkoutProps) {
                 {dataCheckout.status == "SUCCESS" &&
                   dataStatusShipping?.carts_details[0]?.arrival_shipping_status !=
                   "SHIPPED" ? (
-                  <p className="text-center w-full mx-auto border border-transparent bg-green hover:bg-gray-600 bg-gray-500 focus:bg-gray-600 text-white rounded-md px-3 py-3 justify-center items-center flex font-semibold ">
+                  <p className="text-center w-full mx-auto border border-transparent bg-gray-300 text-white rounded-md px-3 py-3 justify-center items-center flex font-semibold ">
                     {dataStatusShipping?.carts_details[0]
                       ?.arrival_shipping_status == "PACKING"
                       ? "Waiting product sending by seller"

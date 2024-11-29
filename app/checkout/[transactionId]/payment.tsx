@@ -1,11 +1,13 @@
 "use client";
 
+
 interface PaymentProps {
   dataCheckout: any;
   profile: any;
 }
 
 function Payment({ dataCheckout, profile }: PaymentProps) {
+  console.log('line 1: ', JSON.stringify(profile));
   return (
     <div className="md:w-5/12">
       <div className="w-full mx-auto rounded-lg bg-white border border-gray-200 p-6 text-gray-800 font-light mb-2 shadow-md">
@@ -17,7 +19,7 @@ function Payment({ dataCheckout, profile }: PaymentProps) {
           { label: "Province", value: profile?.city?.province },
           { label: "City", value: profile?.city?.city_name },
           { label: "Postal Code", value: profile?.city?.postal_code },
-          { label: "Phone", value: profile?.phone },
+          { label: "Phone", value: profile?.phone ? profile?.phone : "-" },
         ].map((item, index) => (
           <div key={index} className="w-full flex mb-3 items-center justify-between">
             <div className="w-32 text-left">
