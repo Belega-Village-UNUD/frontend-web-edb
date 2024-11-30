@@ -194,16 +194,6 @@ const HistoryList = () => {
     return <Loading />;
   }
 
-  // const statusColors = {
-  //   PENDING: "bg-gray-200",
-  //   PAYABLE: "bg-yellow-200",
-  //   SUCCESS: "bg-green-200",
-  //   CANCEL: "bg-red-200",
-  //   PACKING: "bg-orange-200",
-  //   ARRIVED: "bg-blue-200",
-  //   SHIPPED: "bg-amber-200",
-  // };
-
   const statusColors = {
     PENDING: { bg: "bg-gray-200", text: "text-gray-800" },
     PAYABLE: { bg: "bg-yellow-200", text: "text-yellow-800" },
@@ -309,7 +299,7 @@ const HistoryList = () => {
                           <dd className="mt-1 ">
                             <CurrencyText
                               amount={order.total_amount}
-                              className="font-semibold text-green-500"
+                              className="text-green-600"
                             />
                           </dd>
                         </div>
@@ -328,7 +318,7 @@ const HistoryList = () => {
                             </div>
                           )}
                       </div>
-                      <div className="flex items-center">
+                      <div className="flex items-center gap-2">
                         {order.cart_details.map((cart_detail: any, index: any) => {
                           let status = ["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
                             ? order?.status
@@ -346,9 +336,7 @@ const HistoryList = () => {
                         })}
                       </div>
                       <button className="cursor-pointer mx-4" title="Detail Order">
-                        <Link
-                          href={`/checkout/${order?.id}`}
-                        >
+                        <Link href={`/checkout/${order?.id}`} >
                           <LucideInfo
                             className="h-6 w-6 hover:text-green-700"
                             aria-hidden="true"
@@ -562,7 +550,6 @@ const HistoryList = () => {
                             <FaTimesCircle className="text-white" />
                             <span className="text-white text-sm">Cancel Transaction</span>
                           </div>
-
                         )}
                       </div>
                       <Dialog open={open} onClose={() => setOpen(false)} className="relative z-50">

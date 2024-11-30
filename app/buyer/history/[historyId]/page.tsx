@@ -13,8 +13,6 @@ import { useRouter } from "next/navigation";
 import { FaDownload } from "react-icons/fa";
 
 function Page({ params, searchParams }: any) {
-  console.log('line 48: ', JSON.stringify(params));
-  console.log('line 49: ', JSON.stringify(searchParams));
   const [token, setToken] = useState<string>();
   const router = useRouter();
 
@@ -47,7 +45,6 @@ function Page({ params, searchParams }: any) {
     queryKey: ["get-invoice"],
     enabled: !token,
   });
-  console.log('line 48: ', JSON.stringify(dataInvoice));
 
   const {
     isFetching: isFetchingOne,

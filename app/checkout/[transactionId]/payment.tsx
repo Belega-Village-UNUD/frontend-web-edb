@@ -7,7 +7,6 @@ interface PaymentProps {
 }
 
 function Payment({ dataCheckout, profile }: PaymentProps) {
-  console.log('line 1: ', JSON.stringify(profile));
   return (
     <div className="md:w-5/12">
       <div className="w-full mx-auto rounded-lg bg-white border border-gray-200 p-6 text-gray-800 font-light mb-2 shadow-md">

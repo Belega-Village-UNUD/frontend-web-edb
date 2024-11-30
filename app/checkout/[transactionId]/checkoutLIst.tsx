@@ -27,10 +27,9 @@ function CheckoutLIst({ order }: checkoutListProps) {
                 {store.store_name || "Unknown Store"}
               </h6>
               <div className="flex gap-4">
-                <div className={`text-sm font-medium px-2 py-1 rounded-full ${statusStoreOrder === "Cancelled" ? "bg-red-200 text-red-800" : statusStoreOrder === "Pending" ? "bg-yellow-200 text-yellow-800" : "bg-green-200 text-green-800"}`}>
+                <div className={`text-sm font-medium px-2 py-1 rounded-full ${statusStoreOrder === "Cancelled" ? "bg-red-200 text-red-800" : statusStoreOrder === "Pending" ? "bg-gray-200 text-gray-800" : "bg-green-200 text-green-800"}`}>
                   {statusStoreOrder || "Unknown Status"}
                 </div>
-
                 {store.status_arrival === "ARRIVED" && (
                   <button>
                     <Link

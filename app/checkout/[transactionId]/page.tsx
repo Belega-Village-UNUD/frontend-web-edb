@@ -99,7 +99,6 @@ export default function Page({ params }: checkoutProps) {
     const statusStore = dataCheckout?.status_store.find((status: any) => status.store_id === storeId)?.status_store;
     groupedProducts[storeId] = { products: [dataCheckout?.cart_details], statusStore: statusStore };
   }
-  console.log('line 78: ', JSON.stringify(groupedProducts));
 
   const { mutate: payAction, isPending } = useMutation({
     mutationFn: async () => {
@@ -238,11 +237,12 @@ export default function Page({ params }: checkoutProps) {
     return <Loading />;
   }
 
-  type StatusType = 'PENDING' | 'UNCONFIRMED' | 'SUCCESS' | 'SHIPPED' | 'PACKING' | 'ARRIVED';
+  type StatusType = 'PENDING' | 'PAYABLE' | 'UNCONFIRMED' | 'SUCCESS' | 'SHIPPED' | 'PACKING' | 'ARRIVED';
   type StatusMessagesType = { [key in StatusType]?: string };
 
   const statusMessages: StatusMessagesType = {
-    "PENDING": "Waiting Confirmation Store"
+    "PENDING": "Waiting Confirmation Store",
+    "PAYABLE": "Pay Your Order"
   };
   let status: StatusType = ["UNCONFIRMED", null, undefined].includes(dataStatusShipping?.carts_details[0]?.arrival_shipping_status)
     ? dataCheckout?.status
