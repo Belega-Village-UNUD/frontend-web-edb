@@ -1,13 +1,152 @@
+import pluginSecurity from "eslint-plugin-security";
+import jsoncExtend from "eslint-plugin-jsonc";
+import html from "eslint-plugin-html";
+import scanJS from "eslint-plugin-scanjs-rules";
+import noUnsanitized from "eslint-plugin-no-unsanitized";
+import noWildCardPostMessage from "eslint-plugin-no-wildcard-postmessage";
+import pollutionSecurityRules from "eslint-plugin-prototype-pollution-security-rules";
+import noSecrets from "eslint-plugin-no-secrets";
+import security from "eslint-plugin-security";
+import securityNode from "eslint-plugin-security-node";
+import prettier from "eslint-config-prettier";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
 });
-export default [...compat.extends("next/core-web-vitals")];
+
+export default [
+  ...compat.extends("next/core-web-vitals"),
+  ...jsoncExtend.configs["flat/recommended-with-jsonc"],
+  pluginSecurity.configs.recommended,
+  prettier,
+  {
+    languageOptions: {
+      ecmaVersion: 8,
+      sourceType: "module",
+    },
+    ignores: ["package-lock.json"],
+    settings: {
+      "html/html-extensions": [".html", ".htm"],
+    },
+    plugins: {
+      "no-secrets": noSecrets,
+      html: html,
+      // Standard Rules
+      "scanjs-rules": scanJS,
+      "no-unsanitized": noUnsanitized,
+      "no-wildcard-postmessage": noWildCardPostMessage,
+      "prototype-pollution-security-rules": pollutionSecurityRules,
+      "no-secrets": noSecrets,
+      // NodeJS Rules
+      security: security,
+      "security-node": securityNode,
+    },
+    files: ["**/**.js", "**/**.js", "**/**.ts", "**/**.tsx"],
+    rules: {
+      indent: ["warn", 2],
+      semi: ["warn", "always"],
+      quotes: ["warn", "double"],
+
+      /** No Secrets Rules**/
+      "no-secrets/no-secrets": "warn",
+
+      /** ScanJS rules **/
+      "scanjs-rules/accidental_assignment": "warn",
+      "scanjs-rules/assign_to_hostname": "warn",
+      "scanjs-rules/assign_to_href": "warn",
+      "scanjs-rules/assign_to_location": "warn",
+      "scanjs-rules/assign_to_onmessage": "warn",
+      "scanjs-rules/assign_to_pathname": "warn",
+      "scanjs-rules/assign_to_protocol": "warn",
+      "scanjs-rules/assign_to_search": "warn",
+      "scanjs-rules/assign_to_src": "warn",
+      "scanjs-rules/call_Function": "warn",
+      "scanjs-rules/call_addEventListener": "warn",
+      "scanjs-rules/call_addEventListener_deviceproximity": "warn",
+      "scanjs-rules/call_addEventListener_message": "warn",
+      "scanjs-rules/call_connect": "warn",
+      "scanjs-rules/call_eval": "warn",
+      "scanjs-rules/call_execScript": "warn",
+      "scanjs-rules/call_hide": "warn",
+      "scanjs-rules/call_open_remote=true": "warn",
+      "scanjs-rules/call_parseFromString": "warn",
+      "scanjs-rules/call_setImmediate": "warn",
+      "scanjs-rules/call_setInterval": "warn",
+      "scanjs-rules/call_setTimeout": "warn",
+      "scanjs-rules/identifier_indexedDB": "warn",
+      "scanjs-rules/identifier_localStorage": "warn",
+      "scanjs-rules/identifier_sessionStorage": "warn",
+      "scanjs-rules/new_Function": "warn",
+      "scanjs-rules/property_addIdleObserver": "warn",
+      "scanjs-rules/property_createContextualFragment": "warn",
+      "scanjs-rules/property_crypto": "warn",
+      "scanjs-rules/property_geolocation": "warn",
+      "scanjs-rules/property_getUserMedia": "warn",
+      "scanjs-rules/property_indexedDB": "warn",
+      "scanjs-rules/property_localStorage": "warn",
+      "scanjs-rules/property_mgmt": "warn",
+      "scanjs-rules/property_sessionStorage": "warn",
+
+      /** no-unsanitized rules **/
+      "no-unsanitized/method": "warn",
+      "no-unsanitized/property": "warn",
+
+      /** no-secrets rules **/
+      "no-secrets/no-secrets": ["warn", { tolerance: 5 }],
+
+      /** prototype-pollution-security-rules rules **/
+      "prototype-pollution-security-rules/detect-merge": "warn",
+      "prototype-pollution-security-rules/detect-merge-objects": "warn",
+      "prototype-pollution-security-rules/detect-merge-options": "warn",
+      "prototype-pollution-security-rules/detect-deep-extend": "warn",
+
+      /** no-wildcard-postmessage (NodeJS) rules **/
+      "no-wildcard-postmessage/no-wildcard-postmessage": "warn",
+
+      /** nodejs rules **/
+      "security-node/non-literal-reg-expr": "off", // To avoid duplicates.
+      "security-node/detect-absence-of-name-option-in-exrpress-session": "warn",
+      "security-node/detect-buffer-unsafe-allocation": "warn",
+      "security-node/detect-child-process": "warn",
+      "security-node/detect-crlf": "warn",
+      "security-node/detect-dangerous-redirects": "warn",
+      "security-node/detect-eval-with-expr": "off", // To avoid dulicates.
+      "security-node/detect-html-injection": "warn",
+      "security-node/detect-insecure-randomness": "warn",
+      "security-node/detect-non-literal-require-calls": "off", // To avoid duplicates.
+      "security-node/detect-nosql-injection": "warn",
+      "security-node/detect-option-multiplestatements-in-mysql": "warn",
+      "security-node/detect-option-rejectunauthorized-in-nodejs-httpsrequest":
+        "warn",
+      "security-node/detect-option-unsafe-in-serialize-javascript-npm-package":
+        "warn",
+      "security-node/detect-possible-timing-attacks": "warn",
+      "security-node/detect-runinthiscontext-method-in-nodes-vm": "warn",
+      "security-node/detect-security-missconfiguration-cookie": "warn",
+      "security-node/detect-sql-injection": "warn",
+      "security-node/disable-ssl-across-node-server": "warn",
+
+      /** security plugin rules**/
+      "security/detect-unsafe-regex": "warn",
+      "security/detect-buffer-noassert": "warn",
+      "security/detect-child-process": "warn",
+      "security/detect-disable-mustache-escape": "warn",
+      "security/detect-eval-with-expression": "off", // To avoid duplicates.
+      "security/detect-no-csrf-before-method-override": "warn",
+      "security/detect-non-literal-fs-filename": "warn",
+      "security/detect-non-literal-regexp": "warn",
+      "security/detect-non-literal-require": "warn",
+      "security/detect-object-injection": "warn",
+      "security/detect-possible-timing-attacks": "warn",
+      "security/detect-pseudoRandomBytes": "warn",
+    },
+  },
+];
