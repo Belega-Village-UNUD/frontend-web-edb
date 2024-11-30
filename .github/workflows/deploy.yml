@@ -153,8 +153,14 @@ jobs:
           --format @microsoft/eslint-formatter-sarif
           --output-file eslint-result.sarif
 
+      - name: Archive Eslint SAST code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-sast-report
+          path: eslint-result.sarif
+
       - name: Upload analysis results to GitHub
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         id: upload-eslint-result
         if: success() || failure()
         with:
