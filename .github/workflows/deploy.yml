@@ -148,7 +148,7 @@ jobs:
 
       - name: Run ESLint
         id: run-eslint
-        run: npx eslint ./src
+        run: npx eslint .
           --config  eslint.config.js
           --format @microsoft/eslint-formatter-sarif
           --output-file eslint-result.sarif
