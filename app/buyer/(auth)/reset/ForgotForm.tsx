@@ -7,6 +7,7 @@ import ButtonConfirm from "@/components/button/ButtonConfirm";
 import InputAuth from "@/components/inputs/InputAuth";
 import Heading from "@/components/products/Heading";
 import { usePersistedUser } from "@/zustand/users";
+import Link from "next/link";
 import { toast } from "sonner";
 
 interface ForgetFormProps {
@@ -63,6 +64,15 @@ const ForgotForm = ({ onForgetFormSubmit }: ForgetFormProps) => {
     <>
       <Heading title="Forgot Password" />
       <hr className="bg-slate-300 w-full h-px" />
+      <p className="text-base">
+        Do you remember your account?{" "}
+        <Link
+          href="/buyer/login"
+          className="text-lime-500 hover:text-lime-700 hover:underline"
+        >
+          Log in
+        </Link>
+      </p>
       <InputAuth name="email" label="Email" type="email" disable={isLoading} register={register} errors={errors} required />
       <ButtonConfirm outline label={isLoading ? '' : 'Confirm your email'} loading={isLoading} onClick={handleSubmit(onSubmit)} />
     </>

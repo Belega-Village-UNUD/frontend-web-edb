@@ -8,15 +8,15 @@ import {
   AiFillYoutube,
 } from "react-icons/ai";
 
-import Container from "../Container";
-import FooterList from "./FooterList";
 import { usePathname } from "next/navigation";
+import Container from "../Container";
 import { DisableNav } from "../nav/DisableNav";
+import FooterList from "./FooterList";
 
 const Footer = () => {
   return (
     !DisableNav(usePathname()) && (
-      <footer className="bg-white text-slate-800 text-sm mt-16">
+      <footer className="bg-white text-slate-800 text-sm">
         <hr />
         <Container>
           <div className="flex flex-col md:flex-row justify-between pt-10 pb-8 gap-8">

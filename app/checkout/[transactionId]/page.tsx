@@ -10,6 +10,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { IoChevronBackSharp } from "react-icons/io5";
 import { toast } from "sonner";
 import CheckoutLIst from "./checkoutLIst";
 import Payment from "./payment";
@@ -79,6 +80,27 @@ export default function Page({ params }: checkoutProps) {
     gcTime: 5 * 60 * 1000,
   });
 
+  let groupedProducts: any = {};
+  if (Array.isArray(dataCheckout?.cart_details)) {
+    groupedProducts = dataCheckout?.cart_details.reduce((grouped: any, product: any) => {
+      const storeId = product.product.store.id;
+      const storeName = product.product.store.name;
+      const status = dataCheckout?.status;
+      const statusStore = dataCheckout?.status_store.find((status: any) => status.store_id === storeId)?.status_store;
+      const transactionId = dataCheckout?.id;
+      const statusArrival = dataStatusShipping?.carts_details.find((status: any) => status.store_id === storeId)?.arrival_shipping_status;
+      if (!grouped[storeId]) {
+        grouped[storeId] = { transaction_id: transactionId, store_id: storeId, status: status, store_name: storeName, status_store: statusStore, status_arrival: statusArrival, products: [] };
+      }
+      grouped[storeId].products.push(product);
+      return grouped;
+    }, {});
+  } else {
+    const storeId = dataCheckout?.cart_details.product.store.id;
+    const statusStore = dataCheckout?.status_store.find((status: any) => status.store_id === storeId)?.status_store;
+    groupedProducts[storeId] = { products: [dataCheckout?.cart_details], statusStore: statusStore };
+  }
+
   const { mutate: payAction, isPending } = useMutation({
     mutationFn: async () => {
       let attempt = 0;
@@ -115,6 +137,7 @@ export default function Page({ params }: checkoutProps) {
     },
     onSuccess: (data) => {
       toast.success("Payment is successful");
+      refetchStatusShipping();
       window.location.reload();
     },
     onError: (error) => {
@@ -215,6 +238,17 @@ export default function Page({ params }: checkoutProps) {
     return <Loading />;
   }
 
+  type StatusType = 'PENDING' | 'PAYABLE' | 'UNCONFIRMED' | 'SUCCESS' | 'SHIPPED' | 'PACKING' | 'ARRIVED';
+  type StatusMessagesType = { [key in StatusType]?: string };
+
+  const statusMessages: StatusMessagesType = {
+    "PENDING": "Waiting Confirmation Store",
+    "PAYABLE": "Pay Your Order"
+  };
+  let status: StatusType = ["UNCONFIRMED", null, undefined].includes(dataStatusShipping?.carts_details[0]?.arrival_shipping_status)
+    ? dataCheckout?.status
+    : dataStatusShipping?.carts_details[0]?.arrival_shipping_status;
+
   return (
     <Container>
       <div className="mt-10">
@@ -222,13 +256,13 @@ export default function Page({ params }: checkoutProps) {
           <div className="mb-2">
             <div
               onClick={() => router.push('/buyer/history')}
-              className="focus:outline-none hover:underline text-gray-500 text-sm cursor-pointer"
+              className="focus:outline-none hover:underline text-gray-400 text-sm hover:text-green-700 cursor-pointer flex items-center gap-1"
             >
-              <i className="mdi mdi-arrow-left text-gray-400"></i> Back
+              <IoChevronBackSharp /> Back
             </div>
           </div>
           <div className="mb-2">
-            <h1 className="text-3xl md:text-5xl font-bold text-gray-600">
+            <h1 className="text-3xl md:text-5xl font-bold text-green-700">
               Checkout.
             </h1>
           </div>
@@ -237,98 +271,87 @@ export default function Page({ params }: checkoutProps) {
         <div className="w-full  border-t border-b border-gray-200 px-5 py-6 text-gray-800">
           <div className="w-full">
             <p className="mb-6 py-2 text-3xl font-bold text-green-700 border-4 border-green-700 border-dotted w-auto text-center">
-              {
-                ["UNCONFIRMED", null, undefined].includes(dataStatusShipping?.carts_details[0]?.arrival_shipping_status) ?
-                  dataCheckout?.status :
-                  dataStatusShipping?.carts_details[0]?.arrival_shipping_status
-              }
+              {statusMessages[status] || status}
             </p>
             <div className="items-start gap-8 xl:flex lg:flex md:flex">
               <div className="p-6 mb-10 bg-white border border-gray-200 rounded-md shadow-md md:w-7/12">
                 <div className="w-full mx-auto text-gray-800 font-light mb-6 border-b border-gray-200 pb-6 space-y-4 ">
-                  {dataCheckout?.cart_details.map((cart: any) => (
-                    <CheckoutLIst
-                      key={cart.id}
-                      cart={cart}
-                      order={dataCheckout}
-                      cart_detail={dataStatusShipping?.carts_details[0]}
-                    />
-                  ))}
+                  <CheckoutLIst
+                    order={groupedProducts}
+                  />
                 </div>
 
                 {/* total price */}
                 <div className="mb-6 border-b border-gray-200 md:border-none text-gray-800 text-base">
                   {dataCheckout?.redirect_url == null ? (
                     null
-                  ) :
-                    (
-                      <>
-                        {dataStatusShipping?.carts_details.map((cartDetail: any, index: number) => (
-                          <div key={index} className="mb-4">
-                            <div className="w-full flex items-center">
-                              <div className="flex-grow">
-                                <span className="text-gray-600">Store {index + 1} Shipping</span>
-                              </div>
-                              <div className="pl-3">
-                                <span className="font-semibold">
-                                  {`${cartDetail?.shipping?.code
-                                    ?.charAt(0)
-                                    .toUpperCase() +
-                                    cartDetail?.shipping?.code
-                                      ?.slice(1)
-                                      .toLowerCase()
-                                    } (${cartDetail?.shipping?.service
-                                    })`}
-                                </span>
-                              </div>
+                  ) : (
+                    <>
+                      {dataStatusShipping?.carts_details.map((cartDetail: any, index: number) => (
+                        <div key={index} className="mb-4">
+                          <div className="w-full flex items-center">
+                            <div className="flex-grow">
+                              <span className="text-gray-600">Store {index + 1} Shipping</span>
                             </div>
-                            <div className="w-full flex items-center">
-                              <div className="flex-grow">
-                                <span className="text-gray-600">Estimation</span>
-                              </div>
-                              <div className="pl-3">
-                                <span className="font-semibold">
-                                  {`${cartDetail?.shipping?.estimation} days`}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="w-full flex items-center">
-                              <div className="flex-grow">
-                                <span className="text-gray-600">Shipping cost</span>
-                              </div>
-                              <div className="pl-3">
-                                <span className="font-semibold">
-                                  {formatePrice(cartDetail?.shipping?.costs)}
-                                </span>
-                              </div>
+                            <div className="pl-3">
+                              <span className="font-semibold">
+                                {`${cartDetail?.shipping?.code
+                                  ?.charAt(0)
+                                  .toUpperCase() +
+                                  cartDetail?.shipping?.code
+                                    ?.slice(1)
+                                    .toLowerCase()
+                                  } (${cartDetail?.shipping?.service
+                                  })`}
+                              </span>
                             </div>
                           </div>
-                        ))}
-
-                        <div className="w-full flex items-center">
-                          <div className="flex-grow">
-                            <span className="text-gray-600">Total Shipping</span>
+                          <div className="w-full flex items-center">
+                            <div className="flex-grow">
+                              <span className="text-gray-600">Estimation</span>
+                            </div>
+                            <div className="pl-3">
+                              <span className="font-semibold">
+                                {`${cartDetail?.shipping?.estimation} days`}
+                              </span>
+                            </div>
                           </div>
-                          <div className="pl-3">
-                            <span className="font-semibold">
-                              {formatePrice(dataStatusShipping?.sub_total_shipping)}
-                            </span>
+                          <div className="w-full flex items-center">
+                            <div className="flex-grow">
+                              <span className="text-gray-600">Shipping cost</span>
+                            </div>
+                            <div className="pl-3">
+                              <span className="font-semibold">
+                                {formatePrice(cartDetail?.shipping?.costs)}
+                              </span>
+                            </div>
                           </div>
                         </div>
+                      ))}
 
-                        <div className="w-full flex items-center">
-                          <div className="flex-grow">
-                            <span className="text-gray-600">Total Before Shipping</span>
-                          </div>
-                          <div className="pl-3">
-                            <span className="font-semibold">
-                              {formatePrice(dataStatusShipping?.sub_total_transaction_price_before_shipping)}
-                            </span>
-                          </div>
+                      <div className="w-full flex items-center">
+                        <div className="flex-grow">
+                          <span className="text-gray-600">Total Shipping</span>
                         </div>
-                      </>
-                    )
-                  }
+                        <div className="pl-3">
+                          <span className="font-semibold">
+                            {formatePrice(dataStatusShipping?.sub_total_shipping)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="w-full flex items-center">
+                        <div className="flex-grow">
+                          <span className="text-gray-600">Total Before Shipping</span>
+                        </div>
+                        <div className="pl-3">
+                          <span className="font-semibold">
+                            {formatePrice(dataStatusShipping?.sub_total_transaction_price_before_shipping)}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   <div className="w-full flex items-center">
                     <div className="flex-grow">
@@ -388,7 +411,7 @@ export default function Page({ params }: checkoutProps) {
                 {dataCheckout.status == "SUCCESS" &&
                   dataStatusShipping?.carts_details[0]?.arrival_shipping_status !=
                   "SHIPPED" ? (
-                  <p className="text-center w-full mx-auto border border-transparent bg-green hover:bg-gray-600 bg-gray-500 focus:bg-gray-600 text-white rounded-md px-3 py-3 justify-center items-center flex font-semibold ">
+                  <p className="text-center w-full mx-auto border border-transparent bg-gray-300 text-white rounded-md px-3 py-3 justify-center items-center flex font-semibold ">
                     {dataStatusShipping?.carts_details[0]
                       ?.arrival_shipping_status == "PACKING"
                       ? "Waiting product sending by seller"

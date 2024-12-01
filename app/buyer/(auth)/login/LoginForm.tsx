@@ -104,8 +104,8 @@ const LoginForm = () => {
       <Heading title="Log in with Email" />
       <hr className="bg-slate-300 w-full h-px" />
       <p className="text-base">
-        Don`t have an account?
-        <Link href='/buyer/register' className="text-lime-500 hover:text-lime-700 hover:underline"> Register</Link>
+        Don`t have an account?{" "}
+        <Link href='/buyer/register' className="text-lime-500 hover:text-lime-700 hover:underline">Register</Link>
       </p>
       <InputAuth name="email" label="Email" type="email" disable={isLoading} register={register} errors={errors} required />
       <InputAuth name="password" label="Password" disable={isLoading} register={register} errors={errors} type="password" required />

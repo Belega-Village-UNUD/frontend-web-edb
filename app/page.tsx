@@ -41,11 +41,11 @@ export default function Home() {
         <div>
           <HomeBanner />
         </div>
-        <div className="bg-green-50">
+        <div className="bg-green-50 mb-10">
           <h2 className="text-xl font-bold text-gray-900 p-5">
             Customers also bought
           </h2>
-          <div className="grid grid-cols-2 p-4 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
+          <div className="grid grid-cols-2 p-4 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
             {products?.length > 0 ? (
               <>
                 {products?.map((product: any) => {

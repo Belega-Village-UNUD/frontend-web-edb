@@ -11,17 +11,17 @@ import {
 } from "@/components/ui/select";
 import { formatReadableDate } from "@/utils/utils";
 import { usePersistedUser } from "@/zustand/users";
-import { Description, Dialog, DialogPanel, DialogTitle, Menu, Transition } from "@headlessui/react";
+import { Description, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { LucideInfo } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { FaClock, FaMoneyCheck, FaShippingFast } from "react-icons/fa";
+import { FaClock, FaMoneyBillWave, FaMoneyCheck, FaShippingFast, FaTimesCircle } from "react-icons/fa";
 import { LuPackage } from "react-icons/lu";
 import { MdCancel } from "react-icons/md";
 import { toast } from "sonner";
@@ -195,14 +195,14 @@ const HistoryList = () => {
   }
 
   const statusColors = {
-    PENDING: "bg-gray-200",
-    PAYABLE: "bg-yellow-300",
-    SUCCESS: "bg-green-300",
-    CANCEL: "bg-red-300",
-    PACKING: "bg-orange-300",
-    ARRIVED: "bg-blue-300",
-    SHIPPED: "bg-amber-300",
-  };
+    PENDING: { bg: "bg-gray-200", text: "text-gray-800" },
+    PAYABLE: { bg: "bg-yellow-200", text: "text-yellow-800" },
+    SUCCESS: { bg: "bg-green-200", text: "text-green-800" },
+    CANCEL: { bg: "bg-red-200", text: "text-red-800" },
+    PACKING: { bg: "bg-orange-200", text: "text-orange-800" },
+    ARRIVED: { bg: "bg-blue-200", text: "text-blue-800" },
+    SHIPPED: { bg: "bg-amber-200", text: "text-amber-800" },
+  }
 
   return (
     <div className="py-12">
@@ -233,7 +233,7 @@ const HistoryList = () => {
                     key={status}
                     className={`flex flex-col items-center p-5 rounded-lg shadow-md ${
                       // @ts-ignore
-                      statusColors[status] || "bg-gray-200"
+                      statusColors[status] ? `${statusColors[status].bg} ${statusColors[status].text}` : "bg-gray-200 text-gray-800"
                       }`}
                   >
                     <span className="font-bold text-lg">{count}</span>
@@ -261,6 +261,7 @@ const HistoryList = () => {
                 <SelectItem value="PACKING">Packing</SelectItem>
               </SelectContent>
             </Select>
+
             {filteredOrders?.length > 0 ? (
               filteredOrders?.map((order: any) => (
                 <div
@@ -295,10 +296,10 @@ const HistoryList = () => {
                           <dt className="font-semibold text-green-900">
                             Total amount
                           </dt>
-                          <dd className="mt-1 font-semibold text-green-900">
+                          <dd className="mt-1 ">
                             <CurrencyText
                               amount={order.total_amount}
-                              className="text-center py-20 text-sm font-medium text-slate-700"
+                              className="text-green-600"
                             />
                           </dd>
                         </div>
@@ -317,292 +318,262 @@ const HistoryList = () => {
                             </div>
                           )}
                       </div>
+                      <div className="flex items-center gap-2">
+                        {order.cart_details.map((cart_detail: any, index: any) => {
+                          let status = ["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
+                            ? order?.status
+                            : cart_detail?.arrival_shipping_status;
 
-                      <div className="flex items-center">
-                        {order.status === "PENDING" && (
-                          <div className="flex flex-1 justify-center">
-                            <button
-                              className="whitespace-nowrap text-white bg-red-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-red-400"
-                              type="submit"
-                              onClick={() => setOpen(true)}
-                            >
-                              Cancel Transaction
-                            </button>
-                            <Dialog open={open} onClose={() => setOpen(false)} className="relative z-50">
-                              <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-                                <DialogPanel className="max-w-lg space-y-4 bg-white p-12 rounded-lg shadow-sm">
-                                  <DialogTitle className="font-bold text-lg">Cancel Transaction</DialogTitle>
-                                  <Description>This will permanently cancel your transaction.</Description>
-                                  <form onSubmit={handleSubmit(handleCancel)}>
-                                    <p>Are you sure you want to cancel your transaction? Please provide a reason for cancellation.</p>
-                                    <textarea
-                                      className="w-full p-2 border border-gray-300 rounded-md"
-                                      placeholder="Reason for cancellation..."
-                                      rows={3}
-                                      {...register("cancellation")}
-                                    />
-                                    <div className="flex gap-4 mt-4">
-                                      <button type="button" onClick={() => setOpen(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
-                                      <button type="submit" onClick={() => { setOrderId(order?.id) }} className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Confirm Cancellation</button>
-                                    </div>
-                                  </form>
-                                </DialogPanel>
+                          let statusColor = statusColors[status as keyof typeof statusColors];
+
+                          return (
+                            <div key={index} className="justify-center items-center">
+                              <div className={`text-sm font-medium px-2 py-1 rounded-full inline-block ${statusColor.bg} ${statusColor.text}`}>
+                                {status}
                               </div>
-                            </Dialog>
-                          </div>
-                        )}
+                            </div>
+                          )
+                        })}
                       </div>
-                      <div className="flex items-center">
-                        {order.status === "PAYABLE" && (
-                          <div className="flex flex-1 justify-center">
-                            <Link
-                              href={`/checkout/${order?.id}`}
-                              className="whitespace-nowrap text-white bg-indigo-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-indigo-700"
-                            >
-                              Pay Transaction
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                    </dl>
-                    <Menu as="div" className="relative flex justify-end pl-2">
-                      <div className="flex items-center">
-                        <Menu.Button className="-m-2 flex items-center p-2 text-gray-400 hover:text-gray-500">
-                          <span className="sr-only">
-                            Options for order {order.id}
-                          </span>
-                          <EllipsisVerticalIcon
-                            className="h-6 w-6"
+                      <button className="cursor-pointer mx-4" title="Detail Order">
+                        <Link href={`/checkout/${order?.id}`} >
+                          <LucideInfo
+                            className="h-6 w-6 hover:text-green-700"
                             aria-hidden="true"
                           />
-                        </Menu.Button>
-                      </div>
-
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-44 origin-bottom-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <div className="py-1">
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link
-                                  href={`/checkout/${order?.id}`}
-                                  className={classNames(
-                                    active
-                                      ? "bg-gray-100 text-gray-900"
-                                      : "text-gray-700",
-                                    "block px-4 py-2 text-sm"
-                                  )}
-                                >
-                                  Detail transaction
-                                </Link>
-                              )}
-                            </Menu.Item>
-                            {order.status == "SUCCESS" &&
-                              order?.cart_details[0]?.arrival_shipping_status ==
-                              "ARRIVED" && (
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <Link
-                                      href={`/buyer/history/${order?.id}`}
-                                      className={classNames(
-                                        active
-                                          ? "bg-gray-100 text-gray-900"
-                                          : "text-gray-700",
-                                        "block px-4 py-2 text-sm"
-                                      )}
-                                    >
-                                      Invoice
-                                    </Link>
-                                  )}
-                                </Menu.Item>
-                              )}
-                          </div>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
+                        </Link>
+                      </button>
+                    </dl>
                   </div>
 
                   {/* Products */}
                   <h4 className="sr-only">Items</h4>
                   <ul role="list" className="divide-y divide-gray-300">
-                    {order.cart_details.map((cart_detail: any, index: any) => (
-                      <li key={index} className="p-5 sm:p-7">
-                        <div className="flex flex-row justify-between items-center w-full mb-6">
-                          <div className="text-lg font-semibold">
-                            {cart_detail?.product?.store?.name}
-                          </div>
-                          <div className={`text-sm font-medium px-2 py-1 rounded-full ${["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
-                            ? "bg-yellow-200 text-yellow-800"
-                            : "bg-green-200 text-green-800"
-                            }`}>
-                            {
-                              ["UNCONFIRMED", null, undefined].includes(cart_detail?.arrival_shipping_status)
-                                ? order?.status
-                                : cart_detail?.arrival_shipping_status
-                            }
-                          </div>
-                        </div>
-                        {cart_detail?.product ? (
-                          <div className="flex items-center sm:items-start">
-                            <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-44 sm:w-44">
-                              <Image
-                                src={
-                                  cart_detail?.product?.images[0] ||
-                                  "https://flowbite.com/docs/images/examples/image-1@2x.jpg"
-                                }
-                                alt={cart_detail?.product?.name_product}
-                                width={180}
-                                height={180}
-                                className="h-full w-full object-cover object-center"
-                              />
+                    {order.cart_details.map((cart_detail: any, index: any) => {
+                      const statusStoreOrder = order.status_store.find((status: any) => status.store_id === cart_detail?.product?.store_id)?.status_store;
+
+                      const getStatusColor = (status: string) => {
+                        switch (status) {
+                          case "confirm":
+                            return { bg: "bg-green-200", text: "text-green-800" };
+                          case "cancel":
+                            return { bg: "bg-red-200", text: "text-red-800" };
+                          case "pending":
+                            return { bg: "bg-gray-200", text: "text-gray-800" };
+                          default:
+                            return { bg: "bg-gray-200", text: "text-gray-800" };
+                        }
+                      };
+
+                      const statusColor = getStatusColor(statusStoreOrder);
+
+                      return (
+                        <li key={index} className="p-5 sm:p-7 border-b border-gray-300">
+                          <div className="flex flex-row justify-between items-center w-full mb-6">
+                            <div className="text-lg font-semibold">
+                              {cart_detail?.product?.store?.name}
                             </div>
-                            <div className="ml-8 flex-1 text-sm">
-                              <div className="font-medium text-green-900 sm:flex sm:justify-between">
-                                <h5>{cart_detail?.product?.name_product}</h5>
-                                <div>
-                                  <span className="text-gray-600">{`(x${cart_detail.qty}) `}</span>
-                                  <CurrencyText
-                                    amount={cart_detail?.product?.price}
-                                    className="text-center text-sm font-medium text-slate-700"
-                                  />
+                            <div className={`text-sm font-medium px-2 py-1 rounded-full ${statusColor.bg} ${statusColor.text}`}>
+                              {statusStoreOrder}
+                            </div>
+                          </div>
+                          {cart_detail?.product ? (
+                            <div className="flex items-center sm:items-start">
+                              <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-44 sm:w-44">
+                                <Image
+                                  src={
+                                    cart_detail?.product?.images[0] ||
+                                    "https://flowbite.com/docs/images/examples/image-1@2x.jpg"
+                                  }
+                                  alt={cart_detail?.product?.name_product}
+                                  width={180}
+                                  height={180}
+                                  className="h-full w-full object-cover object-center"
+                                />
+                              </div>
+                              <div className="ml-8 flex-1 text-sm">
+                                <div className="font-medium text-green-900 sm:flex sm:justify-between">
+                                  <h5>{cart_detail?.product?.name_product}</h5>
+                                  <div>
+                                    <span className="text-gray-600">{`(x${cart_detail.qty}) `}</span>
+                                    <CurrencyText
+                                      amount={cart_detail?.product?.price}
+                                      className="text-center text-sm font-medium text-slate-700"
+                                    />
+                                  </div>
                                 </div>
+                                <p className="hidden text-gray-500 sm:mt-2 sm:block">
+                                  {cart_detail?.product?.desc_product}
+                                </p>
                               </div>
-                              <p className="hidden text-gray-500 sm:mt-2 sm:block">
-                                {cart_detail?.product?.desc_product}
-                              </p>
                             </div>
-                          </div>
-                        ) : null}
+                          ) : null}
 
-                        <div className="mt-8 sm:flex sm:justify-between">
-                          <div className="flex items-center">
-                            {order.status === "SUCCESS" && (
-                              <>
-                                {order?.cart_details[0]?.arrival_shipping_status === "PACKING" && (
-                                  <div className="flex flex-row justify-center items-center">
-                                    <LuPackage
-                                      className="h-5 w-5 text-amber-700"
-                                      aria-hidden="true"
-                                    />
-                                    <p className="ml-2 text-sm font-medium text-gray-500">
-                                      Packing
-                                    </p>
-                                  </div>
-                                )}
-                                {order?.cart_details[0]?.arrival_shipping_status === "SHIPPED" && (
-                                  <div className="flex flex-row justify-center items-center">
-                                    <FaShippingFast
-                                      className="h-5 w-5 text-gray-500"
-                                      aria-hidden="true"
-                                    />
-                                    <p className="ml-2 text-sm font-medium text-gray-500">
-                                      Shipped
-                                    </p>
-                                  </div>
-                                )}
-                                {order?.cart_details[0]?.arrival_shipping_status === "ARRIVED" && (
-                                  <div className="flex flex-row justify-center items-center">
-                                    <CheckCircleIcon
-                                      className="h-5 w-5 text-blue-500"
-                                      aria-hidden="true"
-                                    />
-                                    <p className="ml-2 text-sm font-medium text-gray-500">
-                                      Arrived
-                                    </p>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                            {order.status === "CANCEL" && (
-                              <>
-                                <MdCancel
-                                  className="h-5 w-5 text-red-500"
-                                  aria-hidden="true"
-                                />
-                                <p className="ml-2 text-sm font-medium text-gray-500">
-                                  Order Canceled
-                                </p>
-                              </>
-                            )}
-                            {order.status === "PENDING" && (
-                              <>
-                                <FaClock
-                                  className="h-5 w-5 text-yellow-500"
-                                  aria-hidden="true"
-                                />
-                                <p className="ml-2 text-sm font-medium text-gray-500">
-                                  Order Pending
-                                </p>
-                              </>
-                            )}
-                            {order.status === "PAYABLE" && (
-                              <>
-                                <FaMoneyCheck
-                                  className="h-5 w-5 text-blue-500"
-                                  aria-hidden="true"
-                                />
-                                <p className="ml-2 text-sm font-medium text-gray-500">
-                                  Order Payable
-                                </p>
-                              </>
-                            )}
-                            <time
-                              dateTime={order.createdAt}
-                              className="ml-2 text-sm font-medium text-gray-500"
-                            >
-                              {formatReadableDate(order.updatedAt)}
-                            </time>
-                          </div>
-
-                          <div className="mt-8 flex items-center space-x-5 divide-x divide-gray-300 border-t border-gray-300 pt-5 text-sm font-medium sm:ml-5 sm:mt-0 sm:border-none sm:pt-0">
-                            {order.status === "SUCCESS" && order?.cart_details[0]?.arrival_shipping_status == "ARRIVED" && (
-                              <div className="flex flex-1 justify-center">
-                                <Link
-                                  href={`/transaction/${order.id}/product/${order?.cart_details[0]?.product?.id}/rate`}
-                                  className="whitespace-nowrap text-white bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
-                                >
-                                  Rate Product
-                                </Link>
-                              </div>
-                            )}
-                            <div className="flex flex-1 justify-center">
-                              <Link
-                                href={`/product/${order?.cart_details[0]?.product?.id}`}
-                                className="whitespace-nowrap text-white bg-lime-700 px-4 py-2 rounded-md shadow-md hover:bg-lime-800"
+                          <div className="mt-8 sm:flex sm:justify-between">
+                            <div className="flex items-center">
+                              {order.status === "SUCCESS" && (
+                                <>
+                                  {order?.cart_details[0]?.arrival_shipping_status === "PACKING" && (
+                                    <div className="flex flex-row justify-center items-center">
+                                      <LuPackage
+                                        className="h-5 w-5 text-amber-700"
+                                        aria-hidden="true"
+                                      />
+                                      <p className="ml-2 text-sm font-medium text-gray-500">
+                                        Packing
+                                      </p>
+                                    </div>
+                                  )}
+                                  {order?.cart_details[0]?.arrival_shipping_status === "SHIPPED" && (
+                                    <div className="flex flex-row justify-center items-center">
+                                      <FaShippingFast
+                                        className="h-5 w-5 text-gray-500"
+                                        aria-hidden="true"
+                                      />
+                                      <p className="ml-2 text-sm font-medium text-gray-500">
+                                        Shipped
+                                      </p>
+                                    </div>
+                                  )}
+                                  {order?.cart_details[0]?.arrival_shipping_status === "ARRIVED" && (
+                                    <div className="flex flex-row justify-center items-center">
+                                      <CheckCircleIcon
+                                        className="h-5 w-5 text-blue-500"
+                                        aria-hidden="true"
+                                      />
+                                      <p className="ml-2 text-sm font-medium text-gray-500">
+                                        Arrived
+                                      </p>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                              {order.status === "CANCEL" && (
+                                <>
+                                  <MdCancel
+                                    className="h-5 w-5 text-red-500"
+                                    aria-hidden="true"
+                                  />
+                                  <p className="ml-2 text-sm font-medium text-gray-500">
+                                    Order Canceled
+                                  </p>
+                                </>
+                              )}
+                              {order.status === "PENDING" && (
+                                <>
+                                  <FaClock
+                                    className="h-5 w-5 text-yellow-500"
+                                    aria-hidden="true"
+                                  />
+                                  <p className="ml-2 text-sm font-medium text-gray-500">
+                                    Order Pending
+                                  </p>
+                                </>
+                              )}
+                              {order.status === "PAYABLE" && (
+                                <>
+                                  <FaMoneyCheck
+                                    className="h-5 w-5 text-blue-500"
+                                    aria-hidden="true"
+                                  />
+                                  <p className="ml-2 text-sm font-medium text-gray-500">
+                                    Order Payable
+                                  </p>
+                                </>
+                              )}
+                              <time
+                                dateTime={order.createdAt}
+                                className="ml-2 text-sm font-medium text-gray-500"
                               >
-                                View Product
-                              </Link>
+                                {formatReadableDate(order.updatedAt)}
+                              </time>
                             </div>
-
-                            {order.status === "SUCCESS" &&
-                              order?.cart_details[0]?.arrival_shipping_status ==
-                              "ARRIVED" && (
-                                <div className="flex flex-1 justify-center pl-5">
-                                  <button
-                                    className="text-white bg-green-600 px-4 py-2 rounded-md shadow-md hover:bg-green-700"
-                                    type="submit"
-                                    onClick={(event: any) =>
-                                      handleCheckout(
-                                        event,
-                                        order?.cart_details[0]?.product?.id
-                                      )
-                                    }
+                            <div className="mt-8 flex items-center space-x-5 divide-x divide-gray-300 border-t border-gray pt-5 text-sm font-medium sm:ml-5 sm:mt-0 sm:border-none sm:pt-0">
+                              {order.status === "SUCCESS" && order?.cart_details[0]?.arrival_shipping_status == "ARRIVED" && (
+                                <div className="flex flex-1 justify-center">
+                                  <Link
+                                    href={`/transaction/${order.id}/product/${order?.cart_details[0]?.product?.id}/rate`}
+                                    className="whitespace-nowrap text-white bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
                                   >
-                                    Buy Again
-                                  </button>
+                                    Rate Product
+                                  </Link>
                                 </div>
                               )}
+                              <div className="flex justify-center">
+                                <Link
+                                  href={`/product/${order?.cart_details[0]?.product?.id}`}
+                                  className="whitespace-nowrap text-white bg-lime-700 px-4 py-2 rounded-md shadow-md hover:bg-lime-800"
+                                >
+                                  View Product
+                                </Link>
+                              </div>
+
+                              {order.status === "SUCCESS" &&
+                                order?.cart_details[0]?.arrival_shipping_status ==
+                                "ARRIVED" && (
+                                  <div className="flex flex-1 justify-center pl-5">
+                                    <button
+                                      className="text-white bg-green-600 px-4 py-2 rounded-md shadow-md hover:bg-green-700"
+                                      type="submit"
+                                      onClick={(event: any) =>
+                                        handleCheckout(
+                                          event,
+                                          order?.cart_details[0]?.product?.id
+                                        )
+                                      }
+                                    >
+                                      Buy Again
+                                    </button>
+                                  </div>
+                                )}
+                            </div>
                           </div>
+                        </li>
+                      )
+                    })}
+
+                    <div>
+                      <div className="flex items-center justify-center space-x-4">
+                        {order.status === "PAYABLE" && (
+                          <div className="flex items-center justify-center space-x-2 bg-indigo-600 px-4 py-2 rounded-md shadow-md hover:bg-indigo-700 cursor-pointer m-4" title="Pay Transaction">
+                            <FaMoneyBillWave className="text-white" />
+                            <Link
+                              href={`/checkout/${order?.id}`}
+                              className="text-white text-sm"
+                            >
+                              Pay Transaction
+                            </Link>
+                          </div>
+                        )}
+                        {order.status === "PENDING" && (
+                          <div className="flex items-center justify-center space-x-2 bg-red-600 px-4 py-2 rounded-md shadow-md hover:bg-red-400 cursor-pointer m-4" onClick={() => setOpen(true)} title="Cancel Transaction">
+                            <FaTimesCircle className="text-white" />
+                            <span className="text-white text-sm">Cancel Transaction</span>
+                          </div>
+                        )}
+                      </div>
+                      <Dialog open={open} onClose={() => setOpen(false)} className="relative z-50">
+                        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+                          <DialogPanel className="max-w-lg space-y-4 bg-white p-12 rounded-lg shadow-sm">
+                            <DialogTitle className="font-bold text-lg">Cancel Transaction</DialogTitle>
+                            <Description>This will permanently cancel your transaction.</Description>
+                            <form onSubmit={handleSubmit(handleCancel)}>
+                              <p>Are you sure you want to cancel your transaction? Please provide a reason for cancellation.</p>
+                              <textarea
+                                className="w-full p-2 border border-gray-300 rounded-md"
+                                placeholder="Reason for cancellation..."
+                                rows={3}
+                                {...register("cancellation")}
+                              />
+                              <div className="flex gap-4 mt-4">
+                                <button type="button" onClick={() => setOpen(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                                <button type="submit" onClick={() => { setOrderId(order?.id) }} className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Confirm Cancellation</button>
+                              </div>
+                            </form>
+                          </DialogPanel>
                         </div>
-                      </li>
-                    ))}
+                      </Dialog>
+                    </div>
                   </ul>
                 </div>
               ))
