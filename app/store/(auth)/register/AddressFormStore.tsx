@@ -113,7 +113,6 @@ const AddressFormStore = ({ onAddressFormSubmit }: AddressFormStoreProps) => {
         }
       );
       const responseJson = await response.json();
-      // console.log(responseJson)
       if (responseJson.success === true) {
         setProvinces(responseJson.data);
       } else {
@@ -194,13 +193,13 @@ const AddressFormStore = ({ onAddressFormSubmit }: AddressFormStoreProps) => {
     };
     const cityData = cityFound
       ? {
-          city_id: cityId,
-          province_id: provinceId,
-          province: provinceFound ? provinceFound.province : "",
-          type: cityFound.type,
-          city_name: cityFound.city_name,
-          postal_code: cityFound.postal_code,
-        }
+        city_id: cityId,
+        province_id: provinceId,
+        province: provinceFound ? provinceFound.province : "",
+        type: cityFound.type,
+        city_name: cityFound.city_name,
+        postal_code: cityFound.postal_code,
+      }
       : null;
     if (provinceData) {
       setProvince(provinceData);
@@ -211,9 +210,6 @@ const AddressFormStore = ({ onAddressFormSubmit }: AddressFormStoreProps) => {
     }
     setCities(cities);
     set_city_id(cityId);
-
-    // console.log(cityData)
-    // console.log(provinceData);
     onAddressFormSubmit();
   }
 
@@ -255,8 +251,8 @@ const AddressFormStore = ({ onAddressFormSubmit }: AddressFormStoreProps) => {
                   >
                     {provinceId
                       ? provinces.find(
-                          (province) => province.province_id === provinceId
-                        )?.province
+                        (province) => province.province_id === provinceId
+                      )?.province
                       : "Select Province..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -314,7 +310,7 @@ const AddressFormStore = ({ onAddressFormSubmit }: AddressFormStoreProps) => {
                   >
                     {cityId
                       ? cities.find((city) => city.city_id === cityId)
-                          ?.city_name
+                        ?.city_name
                       : "Select city..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>

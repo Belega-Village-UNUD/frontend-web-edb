@@ -1,16 +1,29 @@
-const pluginSecurity = require("eslint-plugin-security");
-const jsoncExtend = require("eslint-plugin-jsonc");
-const html = require("eslint-plugin-html");
-const scanJS = require("eslint-plugin-scanjs-rules");
-const noUnsanitized = require("eslint-plugin-no-unsanitized");
-const noWildCardPostMessage = require("eslint-plugin-no-wildcard-postmessage");
-const pollutionSecurityRules = require("eslint-plugin-prototype-pollution-security-rules");
-const noSecrets = require("eslint-plugin-no-secrets");
-const security = require("eslint-plugin-security");
-const securityNode = require("eslint-plugin-security-node");
-const prettier = require("eslint-config-prettier");
+import pluginSecurity from "eslint-plugin-security";
+import jsoncExtend from "eslint-plugin-jsonc";
+import html from "eslint-plugin-html";
+import scanJS from "eslint-plugin-scanjs-rules";
+import noUnsanitized from "eslint-plugin-no-unsanitized";
+import noWildCardPostMessage from "eslint-plugin-no-wildcard-postmessage";
+import pollutionSecurityRules from "eslint-plugin-prototype-pollution-security-rules";
+import noSecrets from "eslint-plugin-no-secrets";
+import security from "eslint-plugin-security";
+import securityNode from "eslint-plugin-security-node";
+import prettier from "eslint-config-prettier";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import js from "@eslint/js";
+import { FlatCompat } from "@eslint/eslintrc";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-module.exports = [
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
+});
+
+export default [
+  ...compat.extends("next/core-web-vitals"),
   ...jsoncExtend.configs["flat/recommended-with-jsonc"],
   pluginSecurity.configs.recommended,
   prettier,
@@ -36,6 +49,7 @@ module.exports = [
       security: security,
       "security-node": securityNode,
     },
+    files: ["**/**.js", "**/**.js", "**/**.ts", "**/**.tsx"],
     rules: {
       indent: ["warn", 2],
       semi: ["warn", "always"],
