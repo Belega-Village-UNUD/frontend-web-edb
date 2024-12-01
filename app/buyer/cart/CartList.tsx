@@ -321,7 +321,7 @@ const CartList = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl pt-10 lg:max-w-7xl md:max-w-5xl md:px-6 sm:max-w-xl sm:px-2">
+    <div className="mx-auto max-w-7xl py-10 lg:max-w-7xl md:max-w-5xl md:px-6 sm:max-w-xl sm:px-2">
       <div className="max-w-7xl mb-6 sm:px-2">
         <div className="max-w-2xl lg:max-w-4xl">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">

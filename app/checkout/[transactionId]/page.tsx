@@ -10,6 +10,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { IoChevronBackSharp } from "react-icons/io5";
 import { toast } from "sonner";
 import CheckoutLIst from "./checkoutLIst";
 import Payment from "./payment";
@@ -255,13 +256,13 @@ export default function Page({ params }: checkoutProps) {
           <div className="mb-2">
             <div
               onClick={() => router.push('/buyer/history')}
-              className="focus:outline-none hover:underline text-gray-500 text-sm cursor-pointer"
+              className="focus:outline-none hover:underline text-gray-400 text-sm hover:text-green-700 cursor-pointer flex items-center gap-1"
             >
-              <i className="mdi mdi-arrow-left text-gray-400"></i> Back
+              <IoChevronBackSharp /> Back
             </div>
           </div>
           <div className="mb-2">
-            <h1 className="text-3xl md:text-5xl font-bold text-gray-600">
+            <h1 className="text-3xl md:text-5xl font-bold text-green-700">
               Checkout.
             </h1>
           </div>
