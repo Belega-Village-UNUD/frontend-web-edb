@@ -13,8 +13,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/success',
-    '/failed',
     '/buyer/cart', 
     '/buyer/history', 
     '/buyer/profile',
