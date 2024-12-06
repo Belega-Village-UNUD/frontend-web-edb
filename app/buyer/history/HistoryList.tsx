@@ -23,7 +23,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { FaClock, FaMoneyBillWave, FaMoneyCheck, FaShippingFast, FaTimesCircle } from "react-icons/fa";
 import { LuPackage } from "react-icons/lu";
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdOutlineMoveToInbox } from "react-icons/md";
 import { toast } from "sonner";
 
 function classNames(...classes: string[]) {
@@ -34,11 +34,17 @@ const HistoryList = () => {
   const [token, setToken] = useState<string>();
   const [statusFilter, setStatusFilter] = useState("");
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [openCancel, setOpenCancel] = useState(false);
+  const [openArrive, setOpenArrive] = useState(false)
   const [orderId, setOrderId] = useState(null);
+  const [storeId, setStoreId] = useState(null);
 
-  const toggleOpen = useCallback(() => {
-    setOpen((prev) => !prev);
+  const toggleOpenCancel = useCallback(() => {
+    setOpenCancel((prev) => !prev);
+  }, []);
+
+  const toggleOpenArrive = useCallback(() => {
+    setOpenCancel((prev) => !prev);
   }, []);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>();
@@ -160,7 +166,7 @@ const HistoryList = () => {
     data: any
   ) => {
     try {
-      setOpen(false);
+      setOpenCancel(false);
 
       const payload = {
         reason: data.cancellation,
@@ -168,6 +174,41 @@ const HistoryList = () => {
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/transaction/buyer/cancel/${orderId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const responseJson = await response.json();
+      if (responseJson.success) {
+        toast.success(responseJson.message);
+        router.push(`/checkout/${orderId}`)
+      } else {
+        toast.error(responseJson.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleArrived: SubmitHandler<FieldValues> = async (
+    data: any
+  ) => {
+    try {
+      setOpenCancel(false);
+
+      const payload = {
+        transaction_id: orderId,
+        store_id: storeId,
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/shipping/arrived`,
         {
           method: "PUT",
           headers: {
@@ -303,20 +344,6 @@ const HistoryList = () => {
                             />
                           </dd>
                         </div>
-                      </div>
-                      <div className="flex items-center px-2">
-                        {order.status === "SUCCESS" &&
-                          order?.cart_details[0]?.arrival_shipping_status ==
-                          "SHIPPED" && (
-                            <div className="flex flex-1 justify-center">
-                              <button
-                                className="whitespace-nowrap text-white bg-blue-600 px-4 py-2 rounded-md text-sm shadow-md hover:bg-blue-400"
-                                type="submit"
-                              >
-                                Product Has Arrived
-                              </button>
-                            </div>
-                          )}
                       </div>
                       <div className="flex items-center gap-2">
                         {order.cart_details.map((cart_detail: any, index: any) => {
@@ -546,13 +573,27 @@ const HistoryList = () => {
                           </div>
                         )}
                         {order.status === "PENDING" && (
-                          <div className="flex items-center justify-center space-x-2 bg-red-600 px-4 py-2 rounded-md shadow-md hover:bg-red-400 cursor-pointer m-4" onClick={() => setOpen(true)} title="Cancel Transaction">
+                          <div className="flex items-center justify-center space-x-2 bg-red-600 px-4 py-2 rounded-md shadow-md hover:bg-red-400 cursor-pointer m-4" onClick={() => setOpenCancel(true)} title="Cancel Transaction">
                             <FaTimesCircle className="text-white" />
                             <span className="text-white text-sm">Cancel Transaction</span>
                           </div>
                         )}
+                        {order.status === "SUCCESS" &&
+                          order?.cart_details[0]?.arrival_shipping_status ==
+                          "SHIPPED" && (
+                            <div className="flex items-center justify-center space-x-2 bg-indigo-600 px-4 py-2 rounded-md shadow-md hover:bg-indigo-700 cursor-pointer m-4" title="Pay Transaction">
+                              <MdOutlineMoveToInbox className="text-white" />
+                              <Link
+                                href={`/checkout/${order?.id}`}
+                                className="text-white text-sm"
+                              >
+                                <span className="text-white text-sm">Product Has Arrived</span>
+                              </Link>
+                            </div>
+                          )
+                        }
                       </div>
-                      <Dialog open={open} onClose={() => setOpen(false)} className="relative z-50">
+                      <Dialog open={openCancel} onClose={() => setOpenCancel(false)} className="relative z-50">
                         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
                           <DialogPanel className="max-w-lg space-y-4 bg-white p-12 rounded-lg shadow-sm">
                             <DialogTitle className="font-bold text-lg">Cancel Transaction</DialogTitle>
@@ -566,7 +607,7 @@ const HistoryList = () => {
                                 {...register("cancellation")}
                               />
                               <div className="flex gap-4 mt-4">
-                                <button type="button" onClick={() => setOpen(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                                <button type="button" onClick={() => setOpenCancel(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
                                 <button type="submit" onClick={() => { setOrderId(order?.id) }} className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Confirm Cancellation</button>
                               </div>
                             </form>
@@ -583,9 +624,10 @@ const HistoryList = () => {
               </div>
             )}
           </div>
-        </div>
+        </div >
       </section >
-      {open && <BackDrop onClick={toggleOpen} />}
+      {openCancel && <BackDrop onClick={toggleOpenCancel} />}
+      {openArrive && <BackDrop onClick={toggleOpenArrive} />}
     </div >
   );
 };
