@@ -1,17 +1,55 @@
+"use client";
+
 import { formatRupiah } from "@/lib/utils";
 import { formatePrice } from "@/utils/formatPrice";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { Box } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { GrDocumentDownload } from "react-icons/gr";
+import { toast } from "sonner";
 
 interface checkoutListProps {
   order: any;
+  token: any;
 }
 
-function CheckoutLIst({ order }: checkoutListProps) {
+function CheckoutLIst({ order, token }: checkoutListProps) {
+  const [transactionId, setTransactionId] = useState(null);
+  const [storeId, setStoreId] = useState(null);
+
   const products = Object.values(order).flat();
+
+  const { mutate: sendAction, isPending: isPendingArrived } = useMutation({
+    mutationFn: async () => {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/shipping/arrived`,
+        {
+          transaction_id: transactionId,
+          store_id: storeId,
+        },
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data;
+    },
+    onSuccess: (data) => {
+      window.location.reload();
+      toast.success("Status transaction is changed to arrived");
+    },
+    onError: (error) => {
+      toast.error("Failed to update status");
+    },
+  });
   return (
-    <div className="bg-white shadow-lg rounded-lg mb-4 transition-transform transform px-2 py-3 border">
+    <div className="bg-white shadow-lg rounded-lg mb-4 transition-transform transform px-2 py-3 border" >
       {products.map((store: any) => {
         let statusStoreOrder = store?.status_store || "Unknown Status";
         const statusStoreMap: { [key: string]: string } = {
@@ -30,6 +68,15 @@ function CheckoutLIst({ order }: checkoutListProps) {
                 <div className={`text-sm font-medium px-2 py-1 rounded-full ${statusStoreOrder === "Cancelled" ? "bg-red-200 text-red-800" : statusStoreOrder === "Pending" ? "bg-gray-200 text-gray-800" : "bg-green-200 text-green-800"}`}>
                   {statusStoreOrder || "Unknown Status"}
                 </div>
+                {store.status_arrival === "SHIPPED" && (
+                  <button className="flex gap-1 items-center text-green-700 hover:text-gray-300  rounded-md" title="Product Has Arrived" onClick={() => {
+                    setTransactionId(store.transaction_id);
+                    setStoreId(store.store_id);
+                    sendAction();
+                  }}>
+                    <Box />
+                  </button>
+                )}
                 {store.status_arrival === "ARRIVED" && (
                   <button>
                     <Link
@@ -78,9 +125,10 @@ function CheckoutLIst({ order }: checkoutListProps) {
               </>
             ))}
           </>
-        )
-      })}
-    </div>
+        );
+      })
+      }
+    </div >
   );
 }
 

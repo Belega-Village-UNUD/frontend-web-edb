@@ -443,7 +443,7 @@ const CartList = () => {
                       <div className="flex items-center justify-center gap-2">
                         <Dialog>
                           <DialogTrigger>
-                            <MdDeleteOutline className="h-6 w-6 text-red-600 hover:text-red-300" />
+                            <MdDeleteOutline title="Delete Cart" className="h-6 w-6 text-red-600 hover:text-red-300" />
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-md">
                             <DialogHeader>
@@ -474,6 +474,7 @@ const CartList = () => {
 
                         <FaRegSave
                           className="h-6 w-6 cursor-pointer text-green-800 hover:text-green-500"
+                          title="Save Cart"
                           onClick={() =>
                             handleUpdateCart(
                               cart.product_id,

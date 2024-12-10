@@ -35,9 +35,11 @@ const HistoryList = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const router = useRouter();
   const [openCancel, setOpenCancel] = useState(false);
-  const [openArrive, setOpenArrive] = useState(false)
+  const [openArrive, setOpenArrive] = useState(false);
   const [orderId, setOrderId] = useState(null);
   const [storeId, setStoreId] = useState(null);
+  const [openBuyAgain, setOpenBuyAgain] = useState(false);
+
 
   const toggleOpenCancel = useCallback(() => {
     setOpenCancel((prev) => !prev);
@@ -45,6 +47,10 @@ const HistoryList = () => {
 
   const toggleOpenArrive = useCallback(() => {
     setOpenCancel((prev) => !prev);
+  }, []);
+
+  const toggleOpenBuyAgain = useCallback(() => {
+    setOpenBuyAgain((prev) => !prev);
   }, []);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>();
@@ -187,7 +193,7 @@ const HistoryList = () => {
       const responseJson = await response.json();
       if (responseJson.success) {
         toast.success(responseJson.message);
-        router.push(`/checkout/${orderId}`)
+        router.push(`/checkout/${orderId}`);
       } else {
         toast.error(responseJson.message);
       }
@@ -222,7 +228,7 @@ const HistoryList = () => {
       const responseJson = await response.json();
       if (responseJson.success) {
         toast.success(responseJson.message);
-        router.push(`/checkout/${orderId}`)
+        router.push(`/checkout/${orderId}`);
       } else {
         toast.error(responseJson.message);
       }
@@ -243,7 +249,7 @@ const HistoryList = () => {
     PACKING: { bg: "bg-orange-200", text: "text-orange-800" },
     ARRIVED: { bg: "bg-blue-200", text: "text-blue-800" },
     SHIPPED: { bg: "bg-amber-200", text: "text-amber-800" },
-  }
+  };
 
   return (
     <div className="py-12">
@@ -359,7 +365,7 @@ const HistoryList = () => {
                                 {status}
                               </div>
                             </div>
-                          )
+                          );
                         })}
                       </div>
                       <button className="cursor-pointer mx-4" title="Detail Order">
@@ -397,9 +403,11 @@ const HistoryList = () => {
                       return (
                         <li key={index} className="p-5 sm:p-7 border-b border-gray-300">
                           <div className="flex flex-row justify-between items-center w-full mb-6">
-                            <div className="text-lg font-semibold">
-                              {cart_detail?.product?.store?.name}
-                            </div>
+                            <Link href={`/seller/${cart_detail?.product?.store?.id}`}>
+                              <div className="text-lg font-semibold">
+                                {cart_detail?.product?.store?.name}
+                              </div>
+                            </Link>
                             <div className={`text-sm font-medium px-2 py-1 rounded-full ${statusColor.bg} ${statusColor.text}`}>
                               {statusStoreOrder}
                             </div>
@@ -519,7 +527,7 @@ const HistoryList = () => {
                               {order.status === "SUCCESS" && order?.cart_details[0]?.arrival_shipping_status == "ARRIVED" && (
                                 <div className="flex flex-1 justify-center">
                                   <Link
-                                    href={`/transaction/${order.id}/product/${order?.cart_details[0]?.product?.id}/rate`}
+                                    href={`/transaction/${order.id}/product/${cart_detail?.product?.id}/rate`}
                                     className="whitespace-nowrap text-white bg-blue-500 px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
                                   >
                                     Rate Product
@@ -528,7 +536,7 @@ const HistoryList = () => {
                               )}
                               <div className="flex justify-center">
                                 <Link
-                                  href={`/product/${order?.cart_details[0]?.product?.id}`}
+                                  href={`/product/${cart_detail?.product?.id}`}
                                   className="whitespace-nowrap text-white bg-lime-700 px-4 py-2 rounded-md shadow-md hover:bg-lime-800"
                                 >
                                   View Product
@@ -545,18 +553,45 @@ const HistoryList = () => {
                                       onClick={(event: any) =>
                                         handleCheckout(
                                           event,
-                                          order?.cart_details[0]?.product?.id
+                                          cart_detail?.product?.id
                                         )
                                       }
                                     >
                                       Buy Again
                                     </button>
                                   </div>
-                                )}
+                                )
+                              }
+                              {/* {order.status === "SUCCESS" &&
+                                order?.cart_details[0]?.arrival_shipping_status ==
+                                "ARRIVED" && (
+                                  <div className="flex flex-1 justify-center pl-5">
+                                    <button
+                                      className="text-white bg-green-600 px-4 py-2 rounded-md shadow-md hover:bg-green-700"
+                                      type="button"
+                                      onClick={() => setOpenBuyAgain(true)}
+                                    >
+                                      Buy Again
+                                    </button>
+                                  </div>
+                                )
+                              }
+                              <Dialog open={openBuyAgain} onClose={() => setOpenBuyAgain(false)} className="relative z-50">
+                                <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+                                  <DialogPanel className="max-w-lg space-y-4 bg-white p-12 rounded-lg shadow-sm">
+                                    <DialogTitle className="font-bold text-lg">Buy Again</DialogTitle>
+                                    <Description>Are you sure you want to buy this product again?</Description>
+                                    <div className="flex gap-4 mt-4">
+                                      <button type="button" onClick={() => setOpenBuyAgain(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                                      <button type="submit" onClick={(event: any) => { handleCheckout(event, cart_detail?.product?.id); }} className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Confirm Purchase</button>
+                                    </div>
+                                  </DialogPanel>
+                                </div>
+                              </Dialog> */}
                             </div>
                           </div>
                         </li>
-                      )
+                      );
                     })}
 
                     <div>
@@ -608,7 +643,7 @@ const HistoryList = () => {
                               />
                               <div className="flex gap-4 mt-4">
                                 <button type="button" onClick={() => setOpenCancel(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
-                                <button type="submit" onClick={() => { setOrderId(order?.id) }} className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Confirm Cancellation</button>
+                                <button type="submit" onClick={() => { setOrderId(order?.id); }} className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Confirm Cancellation</button>
                               </div>
                             </form>
                           </DialogPanel>
@@ -628,6 +663,7 @@ const HistoryList = () => {
       </section >
       {openCancel && <BackDrop onClick={toggleOpenCancel} />}
       {openArrive && <BackDrop onClick={toggleOpenArrive} />}
+      {openBuyAgain && <BackDrop onClick={toggleOpenBuyAgain} />}
     </div >
   );
 };

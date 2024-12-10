@@ -282,8 +282,6 @@ const TransactionList = () => {
     }
   }, [getToken]);
 
-  console.log(transactions);
-
   useEffect(() => {
     handleGetAllTransaction();
   }, [handleGetAllTransaction]);

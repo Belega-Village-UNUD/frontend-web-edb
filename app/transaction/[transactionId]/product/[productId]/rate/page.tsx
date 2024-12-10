@@ -1,14 +1,12 @@
 "use client";
 
 import Container from "@/components/Container";
-import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import ListRating from "../../../../../product/[productId]/ListRating";
-import DetailRating from "./DetailRating";
+import Loading from "@/components/Loading";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Loading from "@/components/Loading";
-import InfoSeller from "../../../../../product/[productId]/InfoSeller";
+import { useEffect } from "react";
+import ListRating from "../../../../../product/[productId]/ListRating";
+import DetailRating from "./DetailRating";
 
 interface transactionProps {
   params: { transactionId: string; productId: string };

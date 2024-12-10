@@ -71,13 +71,12 @@ const DetailRating: React.FC<ProductDetailsProps> = ({
       );
       return response.data;
     },
-    onError: (e) => {
-      toast("Error submitting rating ⚠️");
+    onError: (e: any) => {
+      toast.error(e.response.data.message);
     },
-    onSuccess: () => {
-      toast("Rating submitted successfully 🎉");
+    onSuccess: (data: any) => {
+      toast.success(data.message);
       window.location.reload();
-      router.refresh();
     },
   });
 
@@ -94,7 +93,7 @@ const DetailRating: React.FC<ProductDetailsProps> = ({
               <Tab.Panels className="aspect-h-1 aspect-w-1 w-full flex justify-center items-center">
                 <Image
                   src={
-                    data?.image_product ||
+                    data?.images[0] ||
                     "https://flowbite.com/docs/images/examples/image-1@2x.jpg"
                   }
                   alt={"more image"}
