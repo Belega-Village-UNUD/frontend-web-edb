@@ -85,6 +85,7 @@ jobs:
 
   eslint:
     needs: setup
+    continue-on-error: true
     runs-on: ubuntu-latest
     environment: staging
     permissions:
@@ -121,6 +122,43 @@ jobs:
         if: success() || failure()
         with:
           sarif_file: eslint-result.sarif
+          wait-for-processing: true
+
+  sast-bearer-cli:
+    needs: eslint
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      packages: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        id: auth-sast-bearer-cli
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA }}
+
+      - name: Run Bearer
+        uses: bearer/bearer-action@v2
+        id: run-bearer-scan
+        with:
+          format: sarif
+          output: ${{ env.REPO }}-${{ env.COMMIT_SHA }}-security.sarif
+
+      - name: Upload analysis results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        id: upload-bearer-result
+        if: success() || failure()
+        with:
+          sarif_file: ${{ env.REPO }}-${{ env.COMMIT_SHA }}-security.sarif
           wait-for-processing: true
 
   build:
